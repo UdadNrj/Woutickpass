@@ -1,0 +1,6 @@
+{
+  "appTitle": "woutickpass",
+  "@appTitle": {
+    "description": "The title of the application"
+  }
+}

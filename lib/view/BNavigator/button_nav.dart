@@ -13,6 +13,7 @@ class _BNavigatorState extends State<BNavigator> {
   @override
   Widget build(BuildContext context) {
     return BottomNavigationBar(
+        backgroundColor: Colors.white,
         currentIndex: index,
         onTap: (int i) {
           setState(() {

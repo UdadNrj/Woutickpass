@@ -37,7 +37,9 @@ class _PageQRState extends State<PageQR> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
+        backgroundColor: Colors.white,
         centerTitle: true,
         title: const Text(
           'Escaner',
@@ -63,7 +65,7 @@ class _PageQRState extends State<PageQR> {
                       ),
                     )
                   : const Text(
-                      'NESCÁNER LISTO',
+                      'ESCÁNER LISTO',
                       style: TextStyle(
                         color: Color(0xFFCED2DA),
                         fontSize: 20,

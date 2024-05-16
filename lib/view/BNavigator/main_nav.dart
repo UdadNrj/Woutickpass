@@ -44,6 +44,7 @@ class _MainPageState extends State<MainPage> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
+          backgroundColor: Colors.white,
           centerTitle: true,
           title: SvgPicture.asset("assets/icons/Logo-Div-black.svg"),
           actions: <Widget>[

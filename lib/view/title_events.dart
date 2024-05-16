@@ -6,6 +6,7 @@ class titleEvent extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: Colors.white,
         centerTitle: true,
         title: Text(
           'Titulo evento',
@@ -190,7 +191,7 @@ class _MyCheckboxListTileState extends State<MyCheckboxListTile> {
             ),
           ),
         ),
-        SizedBox(height: 125),
+        SizedBox(height: 220),
         ButtonDowlond()
       ],
     );

@@ -33,7 +33,7 @@ class _PageEventsState extends State<PageEvents> {
       mainAxisAlignment: MainAxisAlignment.end,
       children: [
         const ListTileEvent(),
-        const SizedBox(height: 210),
+        const SizedBox(height: 300),
         ElevatedButton(
           style: ElevatedButton.styleFrom(
               padding: const EdgeInsets.symmetric(horizontal: 70, vertical: 16),

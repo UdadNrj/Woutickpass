@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:woutickpass/view/BNavigator/main_nav.dart';
+import 'package:woutickpass/view/password_reset.dart';
 
 class LoginPage extends StatelessWidget {
   const LoginPage({Key? key}) : super(key: key);
@@ -7,7 +8,9 @@ class LoginPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
+        backgroundColor: Colors.white,
         leading: IconButton(
           icon: Icon(Icons.close),
           onPressed: () {
@@ -26,12 +29,12 @@ class LoginForm extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 16, vertical: 50),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 50),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.start,
         children: <Widget>[
           titleBar(),
-          SizedBox(
+          const SizedBox(
             height: 20,
           ),
           Container(
@@ -39,7 +42,7 @@ class LoginForm extends StatelessWidget {
               decoration: InputDecoration(
                   hintText: 'Usuario',
                   contentPadding:
-                      EdgeInsets.symmetric(horizontal: 20, vertical: 15),
+                      const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
                   border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(4),
                       borderSide:
@@ -65,7 +68,7 @@ class LoginForm extends StatelessWidget {
             ),
           ),
           SizedBox(height: 30),
-          TextPassword(),
+          TextPassword(context),
           SizedBox(
             height: 70,
           ),
@@ -79,7 +82,7 @@ class LoginForm extends StatelessWidget {
                 MaterialPageRoute(builder: (context) => MainPage()),
               );
             },
-            child: Text(
+            child: const Text(
               'Iniciar sesión',
               style: TextStyle(
                   color: Color.fromRGBO(252, 252, 253, 1),
@@ -87,7 +90,7 @@ class LoginForm extends StatelessWidget {
                   fontWeight: FontWeight.w700),
             ),
           ),
-          SizedBox(
+          const SizedBox(
             height: 40,
           ),
           register(),
@@ -104,11 +107,11 @@ Widget titleBar() {
         padding: EdgeInsets.only(
           top: 0,
         ),
-        child: Text(
+        child: const Text(
           "Iniciar Sesión",
           style: TextStyle(
             color: Color.fromRGBO(20, 28, 36, 1),
-            fontSize: 24,
+            fontSize: 20,
             fontWeight: FontWeight.w700,
           ),
         ),
@@ -117,15 +120,23 @@ Widget titleBar() {
   );
 }
 
-Widget TextPassword() {
+Widget TextPassword(BuildContext context) {
   return Row(
     children: <Widget>[
-      Text(
-        "¿Has olvidado tu contraseña?",
-        style: TextStyle(
-          color: Color.fromRGBO(20, 28, 36, 1),
-          fontSize: 16,
-          fontWeight: FontWeight.w700,
+      TextButton(
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => passwordPage()),
+          );
+        },
+        child: const Text(
+          "¿Has olvidado tu contraseña?",
+          style: TextStyle(
+            color: Color.fromRGBO(20, 28, 36, 1),
+            fontSize: 16,
+            fontWeight: FontWeight.w700,
+          ),
         ),
       ),
     ],

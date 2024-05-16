@@ -34,7 +34,7 @@ class _HomeScreenState extends State<HomeScreen> {
       body: Stack(
         children: [
           Container(
-            decoration: BoxDecoration(
+            decoration: const BoxDecoration(
               image: DecorationImage(
                 image: AssetImage('assets/images/img-login.jpg'),
                 fit: BoxFit.cover,
@@ -46,9 +46,9 @@ class _HomeScreenState extends State<HomeScreen> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
                 TitleUpWidget(),
-                SizedBox(height: 10),
+                const SizedBox(height: 20),
                 TitleFeaturedWidget(),
-                SizedBox(height: 40),
+                const SizedBox(height: 50),
                 ElevatedButton(
                     style: ElevatedButton.styleFrom(
                       padding:
@@ -63,14 +63,14 @@ class _HomeScreenState extends State<HomeScreen> {
                           fontSize: 13,
                           fontWeight: FontWeight.w700),
                     )),
-                SizedBox(height: 20),
+                const SizedBox(height: 20),
                 ButtonHeader(),
                 TextButton(
                   onPressed: () {
                     Navigator.push(
                         context,
                         _createRoute(
-                          LoginPage(),
+                          const LoginPage(),
                         ));
                   },
                   child: const Text(
@@ -156,7 +156,7 @@ class TitleFeaturedWidget extends StatelessWidget {
 class ButtonHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return Text(
+    return const Text(
       "¿Tienes cuenta en management.woutick?",
       style: TextStyle(
         color: Colors.white,

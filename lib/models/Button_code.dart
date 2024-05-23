@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:woutickpass/view/prueba.dart';
 import 'package:woutickpass/view/title_events.dart';
 
 class CodePage extends StatefulWidget {
@@ -10,6 +11,15 @@ class CodePage extends StatefulWidget {
 
 class _CodePageState extends State<CodePage> {
   bool _isScrollControlled = false;
+  bool _isNumberValid = false;
+  String _eventCode = '';
+
+  void _updateIsNumberValid(bool isValid, String code) {
+    setState(() {
+      _isNumberValid = isValid;
+      _eventCode = code;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -31,39 +41,18 @@ class _CodePageState extends State<CodePage> {
               ),
               const SizedBox(height: 10),
               const Text(
-                "Necesitamos la clave de seis dígitos de tu evento para sincronizarlo con el controlador de accesos.",
+                "Necesitamos la clave de ocho dígitos de tu evento para sincronizarlo con el controlador de accesos.",
                 style: TextStyle(
-                    color: Color.fromRGBO(113, 113, 133, 1),
-                    fontSize: 14,
-                    fontWeight: FontWeight.w500),
+                  color: Color.fromRGBO(113, 113, 133, 1),
+                  fontSize: 14,
+                  fontWeight: FontWeight.w500,
+                ),
               ),
               const SizedBox(height: 10),
-              TextFieldWithButton(),
-              // TextField(
-              //   onTap: () {
-              //     setState(() {
-              //       _isScrollControlled = true;
-              //     });
-              //   },
-              //   onEditingComplete: () {
-              //     setState(() {
-              //       _isScrollControlled = false;
-              //     });
-              //   },
-              //   decoration: InputDecoration(
-              //       hintText: 'ej 123456',
-              //       contentPadding:
-              //           EdgeInsets.symmetric(horizontal: 20, vertical: 15),
-              //       border: OutlineInputBorder(
-              //           borderRadius: BorderRadius.circular(4),
-              //           borderSide: BorderSide(
-              //               color: Color.fromRGBO(172, 172, 172, 1))),
-              //       fillColor: Color.fromRGBO(252, 252, 253, 1),
-              //       filled: true),
-              // ),
+              TextFieldWithButton(updateIsNumberValid: _updateIsNumberValid),
               const SizedBox(height: 10),
               RichText(
-                text: TextSpan(
+                text: const TextSpan(
                   children: <TextSpan>[
                     TextSpan(
                       text: "Al registrar tu evento aceptas nuestros ",
@@ -73,7 +62,7 @@ class _CodePageState extends State<CodePage> {
                         fontWeight: FontWeight.w500,
                       ),
                     ),
-                    const TextSpan(
+                    TextSpan(
                       text: "Términos de Servicio y Política de Privacidad",
                       style: TextStyle(
                         color: Colors.black,
@@ -85,7 +74,7 @@ class _CodePageState extends State<CodePage> {
                 ),
               ),
               const SizedBox(height: 20),
-              ButtonCode(),
+              ButtonCode(isNumberValid: _isNumberValid, eventCode: _eventCode),
             ],
           ),
         ),
@@ -95,13 +84,16 @@ class _CodePageState extends State<CodePage> {
 }
 
 class TextFieldWithButton extends StatefulWidget {
+  final Function(bool, String) updateIsNumberValid;
+
+  TextFieldWithButton({required this.updateIsNumberValid});
+
   @override
   _TextFieldWithButtonState createState() => _TextFieldWithButtonState();
 }
 
 class _TextFieldWithButtonState extends State<TextFieldWithButton> {
   TextEditingController _controller = TextEditingController();
-  bool _isNumberValid = false;
 
   @override
   void initState() {
@@ -116,10 +108,9 @@ class _TextFieldWithButtonState extends State<TextFieldWithButton> {
   }
 
   void _checkIfNumber() {
-    setState(() {
-      _isNumberValid = _controller.text.length == 6 &&
-          int.tryParse(_controller.text) != null;
-    });
+    bool isValid =
+        _controller.text.length == 8 && int.tryParse(_controller.text) != null;
+    widget.updateIsNumberValid(isValid, _controller.text);
   }
 
   @override
@@ -130,9 +121,9 @@ class _TextFieldWithButtonState extends State<TextFieldWithButton> {
         TextField(
           controller: _controller,
           keyboardType: TextInputType.number,
-          maxLength: 6,
+          maxLength: 8,
           decoration: InputDecoration(
-            hintText: 'ej. 123456',
+            hintText: 'ej. 12345678',
             contentPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 15),
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(4),
@@ -149,11 +140,12 @@ class _TextFieldWithButtonState extends State<TextFieldWithButton> {
 }
 
 class ButtonCode extends StatelessWidget {
-  const ButtonCode({Key? key}) : super(key: key);
+  final bool isNumberValid;
+  final String eventCode;
 
-  bool _isNumberValid() {
-    return true;
-  }
+  const ButtonCode(
+      {Key? key, required this.isNumberValid, required this.eventCode})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -161,20 +153,25 @@ class ButtonCode extends StatelessWidget {
       children: [
         ElevatedButton(
           style: ElevatedButton.styleFrom(
-              padding: EdgeInsets.symmetric(horizontal: 30, vertical: 16),
-              backgroundColor: Color.fromRGBO(32, 43, 55, 1)),
-          onPressed: _isNumberValid()
+            padding: EdgeInsets.symmetric(horizontal: 30, vertical: 16),
+            backgroundColor: Color.fromRGBO(32, 43, 55, 1),
+          ),
+          onPressed: isNumberValid
               ? () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => titleEvent()),
+                    MaterialPageRoute(
+                        builder: (context) => BoxPage(eventCode: eventCode)),
                   );
                 }
               : null,
           child: Text(
             "REGISTRAR EVENTO",
             style: TextStyle(
-                color: Colors.white, fontSize: 14, fontWeight: FontWeight.w700),
+              color: Colors.white,
+              fontSize: 14,
+              fontWeight: FontWeight.w700,
+            ),
           ),
         ),
       ],

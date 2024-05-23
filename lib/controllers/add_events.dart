@@ -117,14 +117,7 @@ class ButtonCode extends StatelessWidget {
           style: ElevatedButton.styleFrom(
               padding: EdgeInsets.symmetric(horizontal: 30, vertical: 16),
               backgroundColor: Color.fromRGBO(32, 43, 55, 1)),
-          onPressed: _isNumberValid()
-              ? () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => titleEvent()),
-                  );
-                }
-              : null,
+          onPressed: _isNumberValid() ? () {} : null,
           child: Text(
             "REGISTRAR EVENTO",
             style: TextStyle(

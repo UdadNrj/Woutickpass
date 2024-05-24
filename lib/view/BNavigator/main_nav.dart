@@ -30,14 +30,16 @@ class _MainPageState extends State<MainPage> {
   String token = "";
   BNavigator? bottomRoute;
 
-  @override
   void initState() {
     super.initState();
-    bottomRoute = BNavigator(currentIndex: (route) {
-      setState(() {
-        index = route;
-      });
-    });
+    bottomRoute = BNavigator(
+      currentIndex: index,
+      onIndexChanged: (route) {
+        setState(() {
+          index = route;
+        });
+      },
+    );
   }
 
   @override

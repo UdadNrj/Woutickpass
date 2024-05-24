@@ -18,7 +18,10 @@ class LoginPage extends StatelessWidget {
           },
         ),
       ),
-      body: LoginForm(),
+      body: const SingleChildScrollView(
+        padding: EdgeInsets.symmetric(horizontal: 16, vertical: 50),
+        child: LoginForm(),
+      ),
     );
   }
 }
@@ -28,74 +31,67 @@ class LoginForm extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 50),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.start,
-        children: <Widget>[
-          titleBar(),
-          const SizedBox(
-            height: 20,
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.start,
+      children: <Widget>[
+        titleBar(),
+        const SizedBox(height: 20),
+        TextField(
+          decoration: InputDecoration(
+            hintText: 'Usuario',
+            contentPadding:
+                const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(4),
+              borderSide:
+                  const BorderSide(color: Color.fromRGBO(172, 172, 172, 1)),
+            ),
+            fillColor: Color.fromRGBO(252, 252, 253, 1),
+            filled: true,
           ),
-          Container(
-            child: TextField(
-              decoration: InputDecoration(
-                  hintText: 'Usuario',
-                  contentPadding:
-                      const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
-                  border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(4),
-                      borderSide:
-                          BorderSide(color: Color.fromRGBO(172, 172, 172, 1))),
-                  fillColor: Color.fromRGBO(252, 252, 253, 1),
-                  filled: true),
+        ),
+        const SizedBox(height: 40),
+        TextField(
+          obscureText: true,
+          decoration: InputDecoration(
+            hintText: 'Contraseña',
+            contentPadding:
+                const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(4),
+              borderSide:
+                  const BorderSide(color: Color.fromRGBO(172, 172, 172, 1)),
+            ),
+            fillColor: Color.fromRGBO(252, 252, 253, 1),
+            filled: true,
+          ),
+        ),
+        const SizedBox(height: 30),
+        TextPassword(context),
+        const SizedBox(height: 70),
+        TextButton(
+          style: TextButton.styleFrom(
+            padding: EdgeInsets.symmetric(horizontal: 125, vertical: 16),
+            backgroundColor: Color.fromRGBO(32, 43, 55, 1),
+          ),
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => MainPage()),
+            );
+          },
+          child: const Text(
+            'Iniciar sesión',
+            style: TextStyle(
+              color: Color.fromRGBO(252, 252, 253, 1),
+              fontSize: 16,
+              fontWeight: FontWeight.w700,
             ),
           ),
-          SizedBox(height: 40),
-          Container(
-            child: TextField(
-              obscureText: true,
-              decoration: InputDecoration(
-                  hintText: 'Contraseña',
-                  contentPadding:
-                      EdgeInsets.symmetric(horizontal: 20, vertical: 15),
-                  border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(4),
-                      borderSide:
-                          BorderSide(color: Color.fromRGBO(172, 172, 172, 1))),
-                  fillColor: Color.fromRGBO(252, 252, 253, 1),
-                  filled: true),
-            ),
-          ),
-          SizedBox(height: 30),
-          TextPassword(context),
-          SizedBox(
-            height: 70,
-          ),
-          TextButton(
-            style: TextButton.styleFrom(
-                padding: EdgeInsets.symmetric(horizontal: 125, vertical: 16),
-                backgroundColor: Color.fromRGBO(32, 43, 55, 1)),
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => MainPage()),
-              );
-            },
-            child: const Text(
-              'Iniciar sesión',
-              style: TextStyle(
-                  color: Color.fromRGBO(252, 252, 253, 1),
-                  fontSize: 16,
-                  fontWeight: FontWeight.w700),
-            ),
-          ),
-          const SizedBox(
-            height: 40,
-          ),
-          register(),
-        ],
-      ),
+        ),
+        const SizedBox(height: 40),
+        register(),
+      ],
     );
   }
 }
@@ -104,9 +100,7 @@ Widget titleBar() {
   return Row(
     children: <Widget>[
       Container(
-        padding: EdgeInsets.only(
-          top: 0,
-        ),
+        padding: EdgeInsets.only(top: 0),
         child: const Text(
           "Iniciar Sesión",
           style: TextStyle(
@@ -144,7 +138,7 @@ Widget TextPassword(BuildContext context) {
 }
 
 Widget register() {
-  return Column(
+  return const Column(
     children: <Widget>[
       Text(
         "¿No tienes cuenta? Regístrate",

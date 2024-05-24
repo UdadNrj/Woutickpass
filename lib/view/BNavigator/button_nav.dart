@@ -1,36 +1,57 @@
 import 'package:flutter/material.dart';
 
 class BNavigator extends StatefulWidget {
-  final Function currentIndex;
-  const BNavigator({super.key, required this.currentIndex});
+  final int currentIndex;
+  final Function(int) onIndexChanged; // Agregamos este callback
+
+  const BNavigator({
+    Key? key,
+    required this.currentIndex,
+    required this.onIndexChanged,
+  }) : super(key: key);
 
   @override
   State<StatefulWidget> createState() => _BNavigatorState();
 }
 
 class _BNavigatorState extends State<BNavigator> {
-  int index = 1;
+  late int _index;
+
+  @override
+  void initState() {
+    super.initState();
+    _index = widget.currentIndex;
+  }
+
   @override
   Widget build(BuildContext context) {
     return BottomNavigationBar(
-        backgroundColor: Colors.white,
-        currentIndex: index,
-        onTap: (int i) {
-          setState(() {
-            index = i;
-            widget.currentIndex(i);
-          });
-        },
-        selectedItemColor: Colors.pink,
-        iconSize: 25.0,
-        selectedFontSize: 14.0,
-        unselectedFontSize: 12.0,
-        items: const [
-          BottomNavigationBarItem(
-              icon: Icon(Icons.event), label: 'Multi-Eventos'),
-          BottomNavigationBarItem(
-              icon: Icon(Icons.event_available_outlined), label: 'Eventos'),
-          BottomNavigationBarItem(icon: Icon(Icons.settings), label: 'Settigs')
-        ]);
+      backgroundColor: Colors.white,
+      currentIndex: _index,
+      onTap: (int i) {
+        setState(() {
+          _index = i;
+          widget.onIndexChanged(i);
+        });
+      },
+      selectedItemColor: Colors.pink,
+      iconSize: 25.0,
+      selectedFontSize: 14.0,
+      unselectedFontSize: 12.0,
+      items: const <BottomNavigationBarItem>[
+        BottomNavigationBarItem(
+          icon: Icon(Icons.event),
+          label: 'Multi-Eventos',
+        ),
+        BottomNavigationBarItem(
+          icon: Icon(Icons.event_available_outlined),
+          label: 'Eventos',
+        ),
+        BottomNavigationBarItem(
+          icon: Icon(Icons.settings),
+          label: 'Settings',
+        ),
+      ],
+    );
   }
 }

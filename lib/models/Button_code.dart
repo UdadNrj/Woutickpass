@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:woutickpass/view/prueba.dart';
 import 'package:woutickpass/view/title_events.dart';
 
 class CodePage extends StatefulWidget {
@@ -124,16 +123,18 @@ class _TextFieldWithButtonState extends State<TextFieldWithButton> {
           maxLength: 8,
           decoration: InputDecoration(
             hintText: 'ej. 12345678',
-            contentPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 15),
+            contentPadding:
+                const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(4),
-              borderSide: BorderSide(color: Color.fromRGBO(172, 172, 172, 1)),
+              borderSide:
+                  const BorderSide(color: Color.fromRGBO(172, 172, 172, 1)),
             ),
             fillColor: Color.fromRGBO(252, 252, 253, 1),
             filled: true,
           ),
         ),
-        SizedBox(height: 10),
+        const SizedBox(height: 10),
       ],
     );
   }
@@ -153,7 +154,7 @@ class ButtonCode extends StatelessWidget {
       children: [
         ElevatedButton(
           style: ElevatedButton.styleFrom(
-            padding: EdgeInsets.symmetric(horizontal: 30, vertical: 16),
+            padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 16),
             backgroundColor: Color.fromRGBO(32, 43, 55, 1),
           ),
           onPressed: isNumberValid
@@ -165,7 +166,7 @@ class ButtonCode extends StatelessWidget {
                   );
                 }
               : null,
-          child: Text(
+          child: const Text(
             "REGISTRAR EVENTO",
             style: TextStyle(
               color: Colors.white,

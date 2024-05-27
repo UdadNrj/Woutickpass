@@ -22,6 +22,7 @@ class _MainPageState extends State<MainPage> {
       context: context,
       builder: (ctx) => SingleChildScrollView(
         child: Container(
+          height: MediaQuery.of(context).size.height * 0.8,
           padding: EdgeInsets.all(16),
           child: addFilter(),
         ),

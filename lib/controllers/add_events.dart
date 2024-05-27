@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:woutickpass/view/title_events.dart';
 
 class addEvents extends StatefulWidget {
   const addEvents({Key? key}) : super(key: key);

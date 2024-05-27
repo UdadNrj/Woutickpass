@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:woutickpass/view/home_screen.dart';
 
 class PageSetting extends StatefulWidget {
   const PageSetting({Key? key}) : super(key: key);
@@ -156,7 +157,14 @@ class _PageSettingState extends State<PageSetting> {
               title: Text("Legal"),
               trailing: Icon(Icons.keyboard_arrow_right),
             ),
-            ElevatedButton(onPressed: () {}, child: Text("CERRAR SESION"))
+            ElevatedButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => HomeScreen()),
+                  );
+                },
+                child: Text("CERRAR SESION"))
           ],
         ),
       ),

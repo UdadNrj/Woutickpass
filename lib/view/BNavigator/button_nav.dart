@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 class BNavigator extends StatefulWidget {
   final int currentIndex;
-  final Function(int) onIndexChanged; // Agregamos este callback
+  final Function(int) onIndexChanged;
 
   const BNavigator({
     Key? key,

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:woutickpass/view/title_events.dart';
+import 'package:woutickpass/screens/title_events.dart';
 
 class addMultiEvents extends StatefulWidget {
   const addMultiEvents({Key? key}) : super(key: key);

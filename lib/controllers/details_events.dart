@@ -5,9 +5,9 @@ import 'package:woutickpass/controllers/aforo.dart';
 import 'package:woutickpass/controllers/assistants.dart';
 import 'package:woutickpass/controllers/filter.dart';
 import 'package:woutickpass/controllers/vaciar_aforo.dart';
-import 'package:woutickpass/view/BNavigator/button_nav.dart';
-import 'package:woutickpass/view/BNavigator/page_multievents.dart';
-import 'package:woutickpass/view/BNavigator/page_settings.dart';
+import 'package:woutickpass/screens/Tabs/button_nav.dart';
+import 'package:woutickpass/screens/Tabs/page_multievents.dart';
+import 'package:woutickpass/screens/Tabs/page_settings.dart';
 
 class DetailsButton extends StatefulWidget {
   const DetailsButton({Key? key}) : super(key: key);

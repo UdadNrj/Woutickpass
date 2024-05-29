@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:woutickpass/view/BNavigator/page_events.dart';
-import 'package:woutickpass/view/BNavigator/page_multievents.dart';
-import 'package:woutickpass/view/BNavigator/page_settings.dart';
+import 'package:woutickpass/screens/Tabs/page_events.dart';
+import 'package:woutickpass/screens/Tabs/page_multievents.dart';
+import 'package:woutickpass/screens/Tabs/page_settings.dart';
 
 class Routes extends StatelessWidget {
   final int index;

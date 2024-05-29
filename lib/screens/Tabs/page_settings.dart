@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:woutickpass/view/home_screen.dart';
+import 'package:woutickpass/screens/home_screen.dart';
 
 class PageSetting extends StatefulWidget {
   const PageSetting({Key? key}) : super(key: key);

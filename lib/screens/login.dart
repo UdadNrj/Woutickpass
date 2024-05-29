@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:woutickpass/view/BNavigator/main_nav.dart';
-import 'package:woutickpass/view/password_reset.dart';
+import 'package:woutickpass/screens/Tabs/main_nav.dart';
+import 'package:woutickpass/screens/password_reset.dart';
+import 'package:woutickpass/src/widgets/custom_button.dart';
 
 class LoginPage extends StatelessWidget {
   const LoginPage({Key? key}) : super(key: key);
@@ -69,25 +70,14 @@ class LoginForm extends StatelessWidget {
         const SizedBox(height: 30),
         TextPassword(context),
         const SizedBox(height: 70),
-        TextButton(
-          style: TextButton.styleFrom(
-            padding: EdgeInsets.symmetric(horizontal: 125, vertical: 16),
-            backgroundColor: Color.fromRGBO(32, 43, 55, 1),
-          ),
+        CustomIconButton(
+          text: "INICIAR SESION",
           onPressed: () {
             Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => MainPage()),
-            );
+                context, MaterialPageRoute(builder: (context) => MainPage()));
           },
-          child: const Text(
-            'Iniciar sesión',
-            style: TextStyle(
-              color: Color.fromRGBO(252, 252, 253, 1),
-              fontSize: 16,
-              fontWeight: FontWeight.w700,
-            ),
-          ),
+          showIcon: false,
+          padding: EdgeInsets.symmetric(horizontal: 110, vertical: 16),
         ),
         const SizedBox(height: 40),
         register(),

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:woutickpass/models/Button_code.dart';
 
-import 'package:woutickpass/view/login.dart';
+import 'package:woutickpass/screens/login.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);

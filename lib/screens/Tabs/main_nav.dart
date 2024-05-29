@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:woutickpass/controllers/filter.dart';
 import 'package:woutickpass/controllers/route.dart';
-import 'package:woutickpass/view/BNavigator/button_nav.dart';
+import 'package:woutickpass/screens/Tabs/button_nav.dart';
 
 class MainPage extends StatefulWidget {
   const MainPage({Key? key});

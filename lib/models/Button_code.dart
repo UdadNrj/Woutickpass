@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:woutickpass/view/title_events.dart';
+import 'package:woutickpass/screens/title_events.dart';
+import 'package:woutickpass/src/widgets/custom_button.dart';
 
 class CodePage extends StatefulWidget {
   const CodePage({Key? key}) : super(key: key);
@@ -23,7 +24,7 @@ class _CodePageState extends State<CodePage> {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 16, 16, 16),
+      padding: const EdgeInsets.all(16),
       child: SingleChildScrollView(
         controller: _isScrollControlled ? ScrollController() : null,
         child: SizedBox(
@@ -144,34 +145,33 @@ class ButtonCode extends StatelessWidget {
   final bool isNumberValid;
   final String eventCode;
 
-  const ButtonCode(
-      {Key? key, required this.isNumberValid, required this.eventCode})
-      : super(key: key);
+  const ButtonCode({
+    Key? key,
+    required this.isNumberValid,
+    required this.eventCode,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Column(
       children: [
-        ElevatedButton(
-          style: ElevatedButton.styleFrom(
-            padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 16),
-            backgroundColor: Color.fromRGBO(32, 43, 55, 1),
-          ),
-          onPressed: isNumberValid
-              ? () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => BoxPage(eventCode: eventCode)),
-                  );
-                }
-              : null,
-          child: const Text(
-            "REGISTRAR EVENTO",
-            style: TextStyle(
-              color: Colors.white,
-              fontSize: 14,
-              fontWeight: FontWeight.w700,
+        SizedBox(
+          width: 200,
+          child: Container(
+            height: 50,
+            child: CustomValidadButton(
+              text: "REGISTRAR EVENTO",
+              isNumberValid: true,
+              onPressed: isNumberValid
+                  ? () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => BoxPage(eventCode: eventCode),
+                        ),
+                      );
+                    }
+                  : null,
             ),
           ),
         ),

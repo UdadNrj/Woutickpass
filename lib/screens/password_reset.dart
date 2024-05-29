@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:woutickpass/src/widgets/custom_button.dart';
 
 class passwordPage extends StatelessWidget {
   const passwordPage({super.key});
@@ -63,19 +64,12 @@ class Email extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 70),
-          TextButton(
-            style: TextButton.styleFrom(
-                padding: EdgeInsets.symmetric(horizontal: 125, vertical: 16),
-                backgroundColor: Color.fromRGBO(32, 43, 55, 1)),
+          CustomIconButton(
+            text: "RESTABLECER",
             onPressed: () {},
-            child: const Text(
-              'RESTABLECER',
-              style: TextStyle(
-                  color: Color.fromRGBO(252, 252, 253, 1),
-                  fontSize: 16,
-                  fontWeight: FontWeight.w700),
-            ),
-          ),
+            showIcon: false,
+            padding: EdgeInsets.symmetric(horizontal: 110, vertical: 16),
+          )
         ],
       ),
     );

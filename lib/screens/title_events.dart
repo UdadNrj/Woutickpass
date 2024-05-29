@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:woutickpass/view/BNavigator/main_nav.dart';
+import 'package:woutickpass/screens/Tabs/main_nav.dart';
 
 class BoxPage extends StatefulWidget {
   final String eventCode;

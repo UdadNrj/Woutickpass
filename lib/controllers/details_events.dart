@@ -1,167 +1,104 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
-import 'package:woutickpass/controllers/Input%20configuration.dart';
-import 'package:woutickpass/controllers/aforo.dart';
-import 'package:woutickpass/controllers/assistants.dart';
-import 'package:woutickpass/controllers/filter.dart';
-import 'package:woutickpass/controllers/vaciar_aforo.dart';
-import 'package:woutickpass/screens/Tabs/button_nav.dart';
-import 'package:woutickpass/screens/Tabs/page_multievents.dart';
-import 'package:woutickpass/screens/Tabs/page_settings.dart';
+import 'package:woutickpass/controllers/Events_sesion.dart';
+import 'package:woutickpass/controllers/List_assitens.dart';
+import 'package:woutickpass/controllers/Logout.dart';
+import 'package:woutickpass/controllers/Statistics_capacity.dart';
+import 'package:woutickpass/controllers/settings_tickets.dart';
+import 'package:woutickpass/src/widgets/custom_Details_events.dart';
 
-class DetailsButton extends StatefulWidget {
-  const DetailsButton({Key? key}) : super(key: key);
+class DetailsButton extends StatelessWidget {
+  final Evento evento;
 
-  @override
-  _DetailsButtonState createState() => _DetailsButtonState();
-}
-
-class _DetailsButtonState extends State<DetailsButton> {
-  int _currentIndex = 1;
-
-  void _updateIndex(int newIndex) {
-    setState(() {
-      _currentIndex = newIndex;
-    });
-  }
+  DetailsButton({required this.evento});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: _buildAppBar(),
-      bottomNavigationBar: BNavigator(
-        currentIndex: _currentIndex,
-        onIndexChanged: _updateIndex,
+      appBar: AppBar(
+        title: Text(evento.titulo),
       ),
-      body: Container(
-        color: const Color(0xFFdddddd),
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-        child: Column(
-          children: [
-            Container(),
-            Expanded(
-              child: _buildBody(_currentIndex),
+      body: ListView(
+        children: [
+          // OptionCard(
+          //   icon: Icons.people,
+          //   title: 'Lista de asistentes',
+          //   description:
+          //       'Revisa la lista de asistentes totales a tu evento y edita los estados de las entradas de forma manual.',
+          //   onTap: () {
+          //     // Navegar a la pantalla de lista de asistentes
+          //     Navigator.push(
+          //       context,
+          //       MaterialPageRoute(
+          //           builder: (context) => ListaAsistentesScreen()),
+          //     );
+          //   },
+          // ),
+          // OptionCard(
+          //   icon: Icons.settings,
+          //   title: 'Configuración de entradas',
+          //   description:
+          //       'Edita qué entradas quieres que se sincronicen con el escáner para esta sesión.',
+          //   onTap: () {
+          //     // Navegar a la pantalla de configuración de entradas
+          //     Navigator.push(
+          //       context,
+          //       MaterialPageRoute(
+          //           builder: (context) => ConfiguracionEntradasScreen()),
+          //     );
+          //   },
+          // ),
+          // OptionCard(
+          //   icon: Icons.bar_chart,
+          //   title: 'Estadísticas de aforo',
+          //   description:
+          //       'Accede a la información detallada y actualizada de los asistentes a esta sesión.',
+          //   onTap: () {
+          //     // Navegar a la pantalla de estadísticas de aforo
+          //     Navigator.push(
+          //       context,
+          //       MaterialPageRoute(
+          //           builder: (context) => EstadisticasAforoScreen()),
+          //     );
+          //   },
+          // ),
+          // OptionCard(
+          //   icon: Icons.exit_to_app,
+          //   title: 'Finalizar sesión',
+          //   description:
+          //       'Subir la información al servidor y borrar todas las entradas descargadas en el dispositivo.',
+          //   onTap: () {
+          //     // Navegar a la pantalla de finalizar sesión
+          //     Navigator.push(
+          //       context,
+          //       MaterialPageRoute(
+          //           builder: (context) => FinalizarSesionScreen()),
+          //     );
+          //   },
+          // ),
+          Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: ElevatedButton.icon(
+              style: ElevatedButton.styleFrom(
+                padding: EdgeInsets.symmetric(vertical: 16),
+                backgroundColor: Colors.pink,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
+              ),
+              icon: Icon(Icons.qr_code_scanner, color: Colors.white),
+              label: Text('ESCANEAR ENTRADAS',
+                  style: TextStyle(color: Colors.white)),
+              onPressed: () {
+                // Acción para escanear entradas
+              },
             ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  AppBar _buildAppBar() {
-    return AppBar(
-      backgroundColor: Colors.white,
-      centerTitle: true,
-      title: const Text(
-        'Título evento',
-        style: TextStyle(
-          color: Color.fromRGBO(20, 26, 36, 1),
-          fontWeight: FontWeight.w700,
-          fontSize: 16,
-        ),
-      ),
-      // actions: const [
-      //   IconButton(
-      //     icon: Icon(Icons.filter_list),
-      //     onPressed: _DetailsButtonState.new,
-      //   ),
-      // ],
-    );
-  }
-
-  Widget _buildBody(int index) {
-    switch (index) {
-      case 0:
-        return const PageMultievents();
-      case 1:
-        return _buildDetailsList();
-      case 2:
-        return const PageSetting();
-      default:
-        return Container();
-    }
-  }
-
-  Widget _buildDetailsList() {
-    return ListView(
-      children: [
-        _buildListTile(
-          context,
-          'Lista de asistentes',
-          'Revisa la lista de asistentes totales a tu evento y edita los estados de las entradas de forma manual.',
-          'assets/icons/Assit.svg',
-          () => const assistantsButton(),
-        ),
-        const SizedBox(height: 20),
-        _buildListTile(
-          context,
-          'Configuración de entradas',
-          'Edita qué entradas quieres que se sincronicen con el escáner para esta sesión.',
-          'assets/icons/Tickets.svg',
-          () => const InputButton(),
-        ),
-        const SizedBox(height: 20),
-        _buildListTile(
-          context,
-          'Estadísticas de aforo',
-          'Accede a la información detallada y actualizada de los asistentes a esta sesión.',
-          'assets/icons/Aforo.svg',
-          () => const aforoButton(),
-        ),
-        const SizedBox(height: 20),
-        _buildListTile(
-          context,
-          'Finalizar sesión',
-          'Subir la información al servidor y borrar todas las entradas descargadas en el dispositivo.',
-          'assets/icons/Sesion.svg',
-          () {},
-        ),
-        const SizedBox(height: 20),
-        _buildListTile(
-          context,
-          'Vaciar aforo',
-          'Reiniciar la lista de entradas validadas para esta sesión',
-          'assets/icons/Aforo1.svg',
-          () => const VaciaraforoButton(),
-        ),
-      ],
-    );
-  }
-
-  ListTile _buildListTile(
-    BuildContext context,
-    String title,
-    String subtitle,
-    String iconPath,
-    Function() onTap,
-  ) {
-    return ListTile(
-      title: Text(title),
-      subtitle: Text(subtitle),
-      trailing: SvgPicture.asset(
-        iconPath,
-        width: 40,
-        height: 40,
-      ),
-      onTap: onTap,
-      onLongPress: () {},
-    );
-  }
-
-  void _openFilter() {
-    showModalBottomSheet(
-      backgroundColor: Colors.white,
-      isScrollControlled: true,
-      context: context,
-      builder: (ctx) => SingleChildScrollView(
-        child: Container(
-          padding: const EdgeInsets.all(16),
-          child: const addFilter(),
-        ),
+          ),
+        ],
       ),
     );
   }
 }
+
 
 
 // class ListTileEvent extends StatelessWidget {

@@ -1,129 +1,104 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+import 'package:woutickpass/controllers/Events_sesion.dart';
 
-class addEvents extends StatefulWidget {
-  const addEvents({Key? key}) : super(key: key);
+class AddEvents extends StatefulWidget {
+  final Function(Evento) onAddEvent;
+
+  AddEvents({required this.onAddEvent});
 
   @override
-  _addEventsState createState() => _addEventsState();
+  _AddEventsState createState() => _AddEventsState();
 }
 
-class _addEventsState extends State<addEvents> {
-  bool _isScrollControlled = true;
+class _AddEventsState extends State<AddEvents> {
+  final _formKey = GlobalKey<FormState>();
+  final _idController = TextEditingController();
+  final _tituloController = TextEditingController();
+  final _fechaController = TextEditingController();
+  final _ubicacionController = TextEditingController();
+
+  void _submit() {
+    if (_formKey.currentState!.validate()) {
+      final id = _idController.text;
+      final titulo = _tituloController.text;
+      final fecha = DateFormat('dd/MM/yyyy HH:mm').parse(_fechaController.text);
+      final ubicacion = _ubicacionController.text;
+
+      final newEvent = Evento(
+        id: id,
+        titulo: titulo,
+        fecha: fecha,
+        ubicacion: ubicacion,
+        sesiones: [],
+      );
+
+      widget.onAddEvent(newEvent);
+      Navigator.of(context).pop();
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 16, 16, 16),
-      child: SingleChildScrollView(
-        controller: _isScrollControlled ? ScrollController() : null,
-        child: SizedBox(
-          width: double.infinity,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              const Text(
-                'Introducir código de evento',
-                style: TextStyle(
-                  fontWeight: FontWeight.w700,
-                  fontSize: 20,
-                ),
-              ),
-              const SizedBox(height: 10),
-              const Text(
-                "Necesitamos la clave de seis dígitos de tu evento para sincronizarlo con el controlador de accesos.",
-                style: TextStyle(
-                    color: Color.fromRGBO(113, 113, 133, 1),
-                    fontSize: 14,
-                    fontWeight: FontWeight.w500),
-              ),
-              const SizedBox(height: 10),
-              TextFieldWithButton(),
-              ButtonCode(),
-            ],
-          ),
+      padding: const EdgeInsets.all(16.0),
+      child: Form(
+        key: _formKey,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            TextFormField(
+              controller: _idController,
+              decoration: InputDecoration(labelText: 'ID del Evento'),
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return 'Por favor, introduce un ID';
+                }
+                if (value.length != 8) {
+                  return 'El ID debe tener 8 dígitos';
+                }
+                return null;
+              },
+            ),
+            TextFormField(
+              controller: _tituloController,
+              decoration: InputDecoration(labelText: 'Título del Evento'),
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return 'Por favor, introduce un título';
+                }
+                return null;
+              },
+            ),
+            TextFormField(
+              controller: _fechaController,
+              decoration: InputDecoration(
+                  labelText: 'Fecha del Evento (DD/MM/YYYY HH:MM)'),
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return 'Por favor, introduce una fecha';
+                }
+                return null;
+              },
+            ),
+            TextFormField(
+              controller: _ubicacionController,
+              decoration: InputDecoration(labelText: 'Ubicación del Evento'),
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return 'Por favor, introduce una ubicación';
+                }
+                return null;
+              },
+            ),
+            SizedBox(height: 20),
+            ElevatedButton(
+              onPressed: _submit,
+              child: Text('Agregar Evento'),
+            ),
+          ],
         ),
       ),
-    );
-  }
-}
-
-class TextFieldWithButton extends StatefulWidget {
-  @override
-  _TextFieldWithButtonState createState() => _TextFieldWithButtonState();
-}
-
-class _TextFieldWithButtonState extends State<TextFieldWithButton> {
-  TextEditingController _controller = TextEditingController();
-  bool _isNumberValid = false;
-
-  @override
-  void initState() {
-    super.initState();
-    _controller.addListener(_checkIfNumber);
-  }
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
-
-  void _checkIfNumber() {
-    setState(() {
-      _isNumberValid = _controller.text.length == 6 &&
-          int.tryParse(_controller.text) != null;
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: <Widget>[
-        TextField(
-          controller: _controller,
-          keyboardType: TextInputType.number,
-          maxLength: 6,
-          decoration: InputDecoration(
-            hintText: 'ej. 123456',
-            contentPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 15),
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(4),
-              borderSide: BorderSide(color: Color.fromRGBO(172, 172, 172, 1)),
-            ),
-            fillColor: Color.fromRGBO(252, 252, 253, 1),
-            filled: true,
-          ),
-        ),
-        SizedBox(height: 10),
-      ],
-    );
-  }
-}
-
-class ButtonCode extends StatelessWidget {
-  const ButtonCode({Key? key}) : super(key: key);
-
-  bool _isNumberValid() {
-    return true;
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      children: [
-        ElevatedButton(
-          style: ElevatedButton.styleFrom(
-              padding: EdgeInsets.symmetric(horizontal: 30, vertical: 16),
-              backgroundColor: Color.fromRGBO(32, 43, 55, 1)),
-          onPressed: _isNumberValid() ? () {} : null,
-          child: Text(
-            "REGISTRAR EVENTO",
-            style: TextStyle(
-                color: Colors.white, fontSize: 14, fontWeight: FontWeight.w700),
-          ),
-        ),
-      ],
     );
   }
 }

@@ -36,7 +36,7 @@ class _BoxPageState extends State<BoxPage> {
   }
 
   void _checkEventCode() {
-    if (widget.eventCode == "23456578") {
+    if (widget.eventCode == "87654321") {
       setState(() {
         _checkboxValues.add(false);
         _checkboxTitles.add("Título evento ${_checkboxTitles.length + 1}");

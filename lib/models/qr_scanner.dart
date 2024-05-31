@@ -2,7 +2,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:sunmi_scanner/sunmi_scanner.dart';
 import 'package:qr_code_scanner/qr_code_scanner.dart';
-import 'package:woutickpass/controllers/qr_validation.dart';
+import 'package:woutickpass/models/qr_validation.dart';
 
 class PageQR extends StatefulWidget {
   const PageQR({Key? key}) : super(key: key);

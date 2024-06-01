@@ -18,8 +18,7 @@ dependencies:
   qr_code_scanner: ^1.0.1
   qr_flutter: ^4.1.0
   sunmi_scanner: ^0.0.4
-   shared_preferences: ^2.2.3  
-
+  
 dev_dependencies:
   flutter_lints: ^3.0.0
   flutter_test:

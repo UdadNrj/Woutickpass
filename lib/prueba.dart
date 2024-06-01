@@ -298,117 +298,286 @@
 
 import 'package:flutter/material.dart';
 
-void main() => runApp(MyApp());
+void main() {
+  runApp(MyApp());
+}
 
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Tabs Demo',
+      title: 'Event Sessions',
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: MyHomePage(),
+      home: EventSessionsPage(),
     );
   }
 }
 
-class MyHomePage extends StatefulWidget {
+class EventSessionsPage extends StatefulWidget {
   @override
-  _MyHomePageState createState() => _MyHomePageState();
+  _EventSessionsPageState createState() => _EventSessionsPageState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
-  int _currentIndex = 0;
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      body: IndexedStack(
-        index: _currentIndex,
-        children: [
-          TabPage(title: 'Multi Evento'),
-          TabPageWithButton(),
-          TabPage(title: 'Page 3'),
-        ],
-      ),
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: _currentIndex,
-        onTap: (int index) {
-          setState(() {
-            _currentIndex = index;
-          });
-        },
-        items: [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: 'Page 1',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.search),
-            label: 'Page 2',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.person),
-            label: 'Page 3',
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class TabPage extends StatelessWidget {
-  final String title;
-
-  const TabPage({Key? key, required this.title}) : super(key: key);
+class _EventSessionsPageState extends State<EventSessionsPage> {
+  String enteredCode = '';
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(title),
+        title: Text('Event Sessions'),
       ),
-      body: Center(
-        child: Text(title),
-      ),
-    );
-  }
-}
-
-class TabPageWithButton extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Page 2'),
-      ),
-      body: Center(
-        child: ElevatedButton(
-          onPressed: () {
-            Navigator.of(context).push(
-              MaterialPageRoute(
-                builder: (context) => SecondPage(),
-              ),
-            );
-          },
-          child: Text('Go to Second Page'),
+      body: Padding(
+        padding: EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: <Widget>[
+            TextField(
+              decoration: InputDecoration(labelText: 'Enter Event Code'),
+              onChanged: (value) {
+                setState(() {
+                  enteredCode = value;
+                });
+              },
+            ),
+            SizedBox(height: 20.0),
+            ElevatedButton(
+              onPressed: () {
+                if (enteredCode.length == 8) {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => SessionSelectionPage(),
+                    ),
+                  );
+                } else {
+                  showDialog(
+                    context: context,
+                    builder: (BuildContext context) {
+                      return AlertDialog(
+                        title: Text('Invalid Code'),
+                        content: Text('Please enter a valid 8-digit code.'),
+                        actions: <Widget>[
+                          TextButton(
+                            onPressed: () {
+                              Navigator.of(context).pop();
+                            },
+                            child: Text('OK'),
+                          ),
+                        ],
+                      );
+                    },
+                  );
+                }
+              },
+              child: Text('Validate Code'),
+            ),
+          ],
         ),
       ),
     );
   }
 }
 
-class SecondPage extends StatelessWidget {
+class SessionSelectionPage extends StatefulWidget {
+  @override
+  _SessionSelectionPageState createState() => _SessionSelectionPageState();
+}
+
+class _SessionSelectionPageState extends State<SessionSelectionPage> {
+  List<Session> sessions = [
+    Session(title: 'Session 1', isSelected: false),
+    Session(title: 'Session 2', isSelected: false),
+    Session(title: 'Session 3', isSelected: false),
+  ];
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Second Page'),
+        title: Text('Session Selection'),
       ),
-      body: Center(
-        child: Text('This is the second page'),
+      body: Padding(
+        padding: EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: <Widget>[
+            Text(
+              'Event Sessions:',
+              style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold),
+            ),
+            SizedBox(height: 10.0),
+            Expanded(
+              child: ListView.builder(
+                itemCount: sessions.length,
+                itemBuilder: (BuildContext context, int index) {
+                  return CheckboxListTile(
+                    title: Text(sessions[index].title),
+                    value: sessions[index].isSelected,
+                    onChanged: (bool? value) {
+                      setState(() {
+                        sessions[index].isSelected = value!;
+                      });
+                    },
+                  );
+                },
+              ),
+            ),
+            SizedBox(height: 20.0),
+            ElevatedButton(
+              onPressed: () {
+                List<Session> selectedSessions =
+                    sessions.where((session) => session.isSelected).toList();
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => SelectedSessionsPage(
+                        selectedSessions: selectedSessions),
+                  ),
+                );
+              },
+              child: Text('Show Selected Sessions'),
+            ),
+          ],
+        ),
       ),
     );
   }
+}
+
+class SelectedSessionsPage extends StatelessWidget {
+  final List<Session> selectedSessions;
+
+  SelectedSessionsPage({required this.selectedSessions});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Selected Sessions'),
+      ),
+      body: Padding(
+        padding: EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: <Widget>[
+            Text(
+              'Selected Sessions:',
+              style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold),
+            ),
+            SizedBox(height: 10.0),
+            Expanded(
+              child: ListView.builder(
+                itemCount: selectedSessions.length,
+                itemBuilder: (BuildContext context, int index) {
+                  return ListTile(
+                    title: Text(selectedSessions[index].title),
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => SessionConfigurationPage(
+                              session: selectedSessions[index]),
+                        ),
+                      );
+                    },
+                  );
+                },
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class SessionConfigurationPage extends StatefulWidget {
+  final Session session;
+
+  SessionConfigurationPage({required this.session});
+
+  @override
+  _SessionConfigurationPageState createState() =>
+      _SessionConfigurationPageState();
+}
+
+class _SessionConfigurationPageState extends State<SessionConfigurationPage> {
+  TextEditingController nameController = TextEditingController();
+  TextEditingController surnameController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    nameController.text = widget.session.name;
+    surnameController.text = widget.session.surname;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Session Configuration'),
+      ),
+      body: Padding(
+        padding: EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: <Widget>[
+            Text(
+              'Session Details:',
+              style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold),
+            ),
+            SizedBox(height: 10.0),
+            Text('Title: ${widget.session.title}'),
+            SizedBox(height: 10.0),
+            TextField(
+              controller: nameController,
+              decoration: InputDecoration(labelText: 'Enter Name'),
+              onChanged: (value) {
+                setState(() {
+                  widget.session.name = value;
+                });
+              },
+            ),
+            TextField(
+              controller: surnameController,
+              decoration: InputDecoration(labelText: 'Enter Surname'),
+              onChanged: (value) {
+                setState(() {
+                  widget.session.surname = value;
+                });
+              },
+            ),
+            SizedBox(height: 20.0),
+            ElevatedButton(
+              onPressed: () {
+                // Guardar los cambios y volver a la página anterior
+                Navigator.pop(context, widget.session);
+              },
+              child: Text('Save Changes'),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  @override
+  void dispose() {
+    nameController.dispose();
+    surnameController.dispose();
+    super.dispose();
+  }
+}
+
+class Session {
+  final String title;
+  bool isSelected;
+  String name = '';
+  String surname = '';
+
+  Session({required this.title, this.isSelected = false});
 }

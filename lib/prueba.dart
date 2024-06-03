@@ -391,6 +391,8 @@ class _SessionSelectionPageState extends State<SessionSelectionPage> {
     Session(title: 'Session 1', isSelected: false),
     Session(title: 'Session 2', isSelected: false),
     Session(title: 'Session 3', isSelected: false),
+    Session(title: 'Session 4', isSelected: false),
+    Session(title: 'Session 5', isSelected: false),
   ];
 
   @override

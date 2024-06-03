@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:woutickpass/screens/title_events.dart';
-import 'package:woutickpass/src/widgets/custom_button.dart';
 
 class CodePage extends StatefulWidget {
   const CodePage({Key? key}) : super(key: key);
@@ -11,14 +10,9 @@ class CodePage extends StatefulWidget {
 
 class _CodePageState extends State<CodePage> {
   bool _isScrollControlled = false;
-  bool _isNumberValid = false;
-  String _eventCode = '';
 
   void _updateIsNumberValid(bool isValid, String code) {
-    setState(() {
-      _isNumberValid = isValid;
-      _eventCode = code;
-    });
+    setState(() {});
   }
 
   @override
@@ -49,7 +43,7 @@ class _CodePageState extends State<CodePage> {
                 ),
               ),
               const SizedBox(height: 10),
-              TextFieldWithButton(updateIsNumberValid: _updateIsNumberValid),
+              TextFieldValided(updateIsNumberValid: _updateIsNumberValid),
               const SizedBox(height: 10),
               RichText(
                 text: const TextSpan(
@@ -74,7 +68,7 @@ class _CodePageState extends State<CodePage> {
                 ),
               ),
               const SizedBox(height: 20),
-              ButtonCode(isNumberValid: _isNumberValid, eventCode: _eventCode),
+              // ButtonCode(isNumberValid: _isNumberValid, eventCode: _eventCode)
             ],
           ),
         ),
@@ -83,35 +77,18 @@ class _CodePageState extends State<CodePage> {
   }
 }
 
-class TextFieldWithButton extends StatefulWidget {
+class TextFieldValided extends StatefulWidget {
   final Function(bool, String) updateIsNumberValid;
 
-  TextFieldWithButton({required this.updateIsNumberValid});
+  TextFieldValided({required this.updateIsNumberValid});
 
   @override
-  _TextFieldWithButtonState createState() => _TextFieldWithButtonState();
+  _TextFieldValidedState createState() => _TextFieldValidedState();
 }
 
-class _TextFieldWithButtonState extends State<TextFieldWithButton> {
-  TextEditingController _controller = TextEditingController();
-
-  @override
-  void initState() {
-    super.initState();
-    _controller.addListener(_checkIfNumber);
-  }
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
-
-  void _checkIfNumber() {
-    bool isValid =
-        _controller.text.length == 8 && int.tryParse(_controller.text) != null;
-    widget.updateIsNumberValid(isValid, _controller.text);
-  }
+class _TextFieldValidedState extends State<TextFieldValided> {
+  String enteredCode = '';
+  final TextEditingController _controller = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -121,9 +98,8 @@ class _TextFieldWithButtonState extends State<TextFieldWithButton> {
         TextField(
           controller: _controller,
           keyboardType: TextInputType.number,
-          maxLength: 8,
           decoration: InputDecoration(
-            hintText: 'ej. 12345678',
+            labelText: '12345678',
             contentPadding:
                 const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
             border: OutlineInputBorder(
@@ -134,48 +110,97 @@ class _TextFieldWithButtonState extends State<TextFieldWithButton> {
             fillColor: Color.fromRGBO(252, 252, 253, 1),
             filled: true,
           ),
+          onChanged: (value) {
+            setState(() {
+              enteredCode = value;
+            });
+          },
         ),
         const SizedBox(height: 10),
-      ],
-    );
-  }
-}
-
-class ButtonCode extends StatelessWidget {
-  final bool isNumberValid;
-  final String eventCode;
-
-  const ButtonCode({
-    Key? key,
-    required this.isNumberValid,
-    required this.eventCode,
-  }) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      children: [
-        SizedBox(
-          width: 200,
-          child: Container(
-            height: 50,
-            child: CustomValidadButton(
-              text: "REGISTRAR EVENTO",
-              isNumberValid: true,
-              onPressed: isNumberValid
-                  ? () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => BoxPage(eventCode: eventCode),
-                        ),
+        Row(
+          children: [
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                padding: EdgeInsets.symmetric(horizontal: 30, vertical: 16),
+                backgroundColor: enteredCode.length == 8
+                    ? Color(0xFF141C24)
+                    : Color(0xFFCED2DA),
+              ),
+              onPressed: () {
+                if (enteredCode.length == 8) {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => EventSessionsPage(),
+                    ),
+                  );
+                } else {
+                  showDialog(
+                    context: context,
+                    builder: (BuildContext context) {
+                      return AlertDialog(
+                        title: Text('Invalid Code'),
+                        content: Text('Please enter a valid 8-digit code.'),
+                        actions: <Widget>[
+                          TextButton(
+                            onPressed: () {
+                              Navigator.of(context).pop();
+                            },
+                            child: Text('OK'),
+                          ),
+                        ],
                       );
-                    }
-                  : null,
+                    },
+                  );
+                }
+              },
+              child: Text(
+                'REGISTRAR EVENTO',
+                style: TextStyle(color: Colors.white),
+              ),
             ),
-          ),
+          ],
         ),
       ],
     );
   }
 }
+
+// class ButtonCode extends StatelessWidget {
+//   final bool isNumberValid;
+//   final String eventCode;
+
+//   const ButtonCode({
+//     Key? key,
+//     required this.isNumberValid,
+//     required this.eventCode,
+//   }) : super(key: key);
+
+//   @override
+//   Widget build(BuildContext context) {
+//     return Column(
+//       children: [
+//         SizedBox(
+//           width: 200,
+//           child: Container(
+//             height: 50,
+//             child: CustomValidadButton(
+//               text: "REGISTRAR EVENTO",
+//               isNumberValid: true,
+//               onPressed: isNumberValid
+//                   ? () {
+//                       Navigator.push(
+//                         context,
+//                         MaterialPageRoute(
+//                           builder: (context) => BoxPage(eventCode: eventCode),
+//                         ),
+//                       );
+//                     }
+//                   : null,
+//             ),
+//           ),
+//         ),
+//       ],
+//     );
+//   }
+// }

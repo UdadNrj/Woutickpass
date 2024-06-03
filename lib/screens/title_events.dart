@@ -1,118 +1,73 @@
 import 'package:flutter/material.dart';
-import 'package:woutickpass/screens/Tabs/main_nav.dart';
+import 'package:woutickpass/src/widgets/Custom_Session.dart';
 
-class BoxPage extends StatefulWidget {
-  final String eventCode;
-
-  BoxPage({required this.eventCode});
-
+class EventSessionsPage extends StatefulWidget {
   @override
-  _BoxPageState createState() => _BoxPageState();
+  _EventSessionsPageState createState() => _EventSessionsPageState();
 }
 
-class _BoxPageState extends State<BoxPage> {
-  List<bool> _checkboxValues = [false, false, false];
-  List<String> _checkboxTitles = [
-    "Título evento ",
-    "Título evento ",
-    "Título evento "
+class _EventSessionsPageState extends State<EventSessionsPage> {
+  List<SessionOn> sessions = [
+    SessionOn(title: 'Session 1', isSelected: false),
+    SessionOn(title: 'Session 2', isSelected: false),
+    SessionOn(title: 'Session 3', isSelected: false),
+    SessionOn(title: 'Session 4', isSelected: false),
+    SessionOn(title: 'Session 5', isSelected: false),
   ];
-
-  bool get _isButtonEnabled {
-    return _checkboxValues.contains(true);
-  }
-
-  void _navigateToNextPage(BuildContext context) {
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => MainPage()),
-    );
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    _checkEventCode();
-  }
-
-  void _checkEventCode() {
-    if (widget.eventCode == "87654321") {
-      setState(() {
-        _checkboxValues.add(false);
-        _checkboxTitles.add("Título evento ${_checkboxTitles.length + 1}");
-      });
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color(0xFFdddddd),
+      backgroundColor: Colors.white,
       appBar: AppBar(
-        centerTitle: true,
         backgroundColor: Colors.white,
-        title: const Text('Lista de Eventos'),
+        title: const Text('Lista de Sesiones'),
       ),
-      body: Stack(
-        children: [
-          SingleChildScrollView(
-            padding: const EdgeInsets.all(10),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                Text(
-                  'Evento: ${widget.eventCode}',
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                ),
-                const SizedBox(height: 20),
-                ..._checkboxTitles.asMap().entries.map((entry) {
-                  int index = entry.key;
-                  String title = entry.value;
-                  return Padding(
-                    padding: const EdgeInsets.only(bottom: 12),
-                    child: Container(
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(8.0),
-                        border: Border.all(
-                          color: const Color(0xFFE4E7EC),
-                        ),
-                      ),
-                      child: CheckboxListTile(
-                        contentPadding: const EdgeInsets.symmetric(
-                            horizontal: 10, vertical: 5),
-                        title: Text(
-                          title,
-                          style: const TextStyle(
-                              fontSize: 16, fontWeight: FontWeight.w500),
-                        ),
-                        activeColor: Color.fromRGBO(0, 128, 0, 1),
-                        checkColor: Colors.white,
-                        subtitle: const Text("01/10/2024 12:00h – Ubicación"),
-                        value: _checkboxValues[index],
-                        onChanged: (bool? value) {
-                          setState(() {
-                            _checkboxValues[index] = value ?? false;
-                          });
-                        },
-                      ),
-                    ),
+      body: Padding(
+        padding: EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: <Widget>[
+            const Text(
+              'Lista Name Evento:',
+              style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 10.0),
+            Expanded(
+              child: ListView.builder(
+                itemCount: sessions.length,
+                itemBuilder: (BuildContext context, int index) {
+                  return CheckboxListTile(
+                    title: Text(sessions[index].title),
+                    value: sessions[index].isSelected,
+                    activeColor: Colors.green,
+                    onChanged: (bool? value) {
+                      setState(() {
+                        sessions[index].isSelected = value!;
+                      });
+                    },
                   );
-                }).toList(),
-                const SizedBox(height: 450),
-              ],
+                },
+              ),
             ),
-          ),
-          Positioned(
-            left: 16.0,
-            right: 16.0,
-            bottom: 16.0,
-            child: DownloadEvents(
-              isButtonEnabled: _isButtonEnabled,
-              navigateToNextPage: _navigateToNextPage,
+            const SizedBox(height: 20.0),
+            ElevatedButton(
+              onPressed: () {
+                List<SessionOn> selectedSessions = sessions
+                    .where((SessionOn) => SessionOn.isSelected)
+                    .toList();
+                // Navigator.push(
+                //   context,
+                //   MaterialPageRoute(
+                //     builder: (context) => SelectedSessionsPage(
+                //         selectedSessions: selectedSessions),
+                //   ),
+                // );
+              },
+              child: const Text('Show Selected Sessions'),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

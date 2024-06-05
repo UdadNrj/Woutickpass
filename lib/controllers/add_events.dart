@@ -1,100 +1,58 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
-import 'package:woutickpass/controllers/Events_sesion.dart';
+import 'package:woutickpass/src/widgets/Custom_Session.dart';
 
-class AddEvents extends StatefulWidget {
-  final Function(Evento) onAddEvent;
+class SessionConfigurationPage extends StatelessWidget {
+  final SessionOn session;
 
-  AddEvents({required this.onAddEvent});
-
-  @override
-  _AddEventsState createState() => _AddEventsState();
-}
-
-class _AddEventsState extends State<AddEvents> {
-  final _formKey = GlobalKey<FormState>();
-  final _idController = TextEditingController();
-  final _tituloController = TextEditingController();
-  final _fechaController = TextEditingController();
-  final _ubicacionController = TextEditingController();
-
-  void _submit() {
-    if (_formKey.currentState!.validate()) {
-      final id = _idController.text;
-      final titulo = _tituloController.text;
-      final fecha = DateFormat('dd/MM/yyyy HH:mm').parse(_fechaController.text);
-      final ubicacion = _ubicacionController.text;
-
-      final newEvent = Evento(
-        id: id,
-        titulo: titulo,
-        fecha: fecha,
-        ubicacion: ubicacion,
-        sesiones: [],
-      );
-
-      widget.onAddEvent(newEvent);
-      Navigator.of(context).pop();
-    }
-  }
+  const SessionConfigurationPage({super.key, required this.session});
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(16.0),
-      child: Form(
-        key: _formKey,
+    final TextEditingController nameController = TextEditingController();
+    final TextEditingController surnameController = TextEditingController();
+
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Configurar Sesión'),
+      ),
+      body: Padding(
+        padding: EdgeInsets.all(16.0),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            TextFormField(
-              controller: _idController,
-              decoration: InputDecoration(labelText: 'ID del Evento'),
-              validator: (value) {
-                if (value == null || value.isEmpty) {
-                  return 'Por favor, introduce un ID';
-                }
-                if (value.length != 8) {
-                  return 'El ID debe tener 8 dígitos';
-                }
-                return null;
-              },
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: <Widget>[
+            Text(
+              'Configuración para: ${session.title}',
+              style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold),
             ),
-            TextFormField(
-              controller: _tituloController,
-              decoration: InputDecoration(labelText: 'Título del Evento'),
-              validator: (value) {
-                if (value == null || value.isEmpty) {
-                  return 'Por favor, introduce un título';
-                }
-                return null;
-              },
-            ),
-            TextFormField(
-              controller: _fechaController,
+            SizedBox(height: 20.0),
+            TextField(
+              controller: nameController,
               decoration: InputDecoration(
-                  labelText: 'Fecha del Evento (DD/MM/YYYY HH:MM)'),
-              validator: (value) {
-                if (value == null || value.isEmpty) {
-                  return 'Por favor, introduce una fecha';
-                }
-                return null;
-              },
+                labelText: 'Nombre',
+                border: OutlineInputBorder(),
+              ),
             ),
-            TextFormField(
-              controller: _ubicacionController,
-              decoration: InputDecoration(labelText: 'Ubicación del Evento'),
-              validator: (value) {
-                if (value == null || value.isEmpty) {
-                  return 'Por favor, introduce una ubicación';
-                }
-                return null;
-              },
+            SizedBox(height: 20.0),
+            TextField(
+              controller: surnameController,
+              decoration: InputDecoration(
+                labelText: 'Apellido',
+                border: OutlineInputBorder(),
+              ),
             ),
-            SizedBox(height: 20),
+            SizedBox(height: 20.0),
             ElevatedButton(
-              onPressed: _submit,
-              child: Text('Agregar Evento'),
+              onPressed: () {
+                // Acción para guardar los cambios
+                String name = nameController.text;
+                String surname = surnameController.text;
+                // Lógica para guardar el nombre y apellido
+                // Aquí puedes realizar las acciones necesarias para guardar los cambios
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(content: Text('Cambios guardados: $name $surname')),
+                );
+              },
+              child: Text('Guardar Cambios'),
             ),
           ],
         ),

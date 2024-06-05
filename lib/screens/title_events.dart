@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:woutickpass/screens/Tabs/page_events.dart';
 import 'package:woutickpass/src/widgets/Custom_Session.dart';
 
 class EventSessionsPage extends StatefulWidget {
@@ -24,7 +25,7 @@ class _EventSessionsPageState extends State<EventSessionsPage> {
         title: const Text('Lista de Sesiones'),
       ),
       body: Padding(
-        padding: EdgeInsets.all(16.0),
+        padding: EdgeInsets.symmetric(horizontal: 20, vertical: 24),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: <Widget>[
@@ -56,13 +57,13 @@ class _EventSessionsPageState extends State<EventSessionsPage> {
                 List<SessionOn> selectedSessions = sessions
                     .where((SessionOn) => SessionOn.isSelected)
                     .toList();
-                // Navigator.push(
-                //   context,
-                //   MaterialPageRoute(
-                //     builder: (context) => SelectedSessionsPage(
-                //         selectedSessions: selectedSessions),
-                //   ),
-                // );
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) =>
+                        PageEvents(selectedSessions: selectedSessions),
+                  ),
+                );
               },
               child: const Text('Show Selected Sessions'),
             ),

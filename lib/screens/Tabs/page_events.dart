@@ -1,139 +1,134 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:woutickpass/controllers/add_events.dart';
-import 'package:woutickpass/controllers/details_events.dart';
-import 'package:woutickpass/controllers/Events_sesion.dart';
+import 'package:woutickpass/src/widgets/Custom_Session.dart';
 
 class PageEvents extends StatefulWidget {
-  const PageEvents({super.key});
+  final List<SessionOn> selectedSessions;
+
+  const PageEvents({super.key, required this.selectedSessions});
 
   @override
-  State<StatefulWidget> createState() => _PageEventsState();
+  State<PageEvents> createState() => _PageEventsState();
 }
 
 class _PageEventsState extends State<PageEvents> {
-  List<Evento> eventos = [
-    Evento(
-      id: '87654321',
-      titulo: 'Velada IIII',
-      fecha: DateTime.now(),
-      ubicacion: 'Bernabeu',
-      sesiones: [],
-    ),
-    Evento(
-      id: '12345678',
-      titulo: 'Concierto de Rock',
-      fecha: DateTime.now(),
-      ubicacion: 'Estadio Nacional',
-      sesiones: [],
-    ),
-    Evento(
-      id: '87654321',
-      titulo: 'Feria de Libros',
-      fecha: DateTime.now(),
-      ubicacion: 'Centro de Convenciones',
-      sesiones: [],
-    ),
-  ];
-
-  void _openIconButtonPressed(BuildContext context) {
-    showModalBottomSheet(
-      backgroundColor: const Color.fromARGB(255, 255, 255, 255),
-      isScrollControlled: true,
-      context: context,
-      builder: (ctx) => SingleChildScrollView(
-        child: Container(
-          height: MediaQuery.of(context).size.height * 0.8,
-          padding: EdgeInsets.only(
-            bottom: MediaQuery.of(context).viewInsets.bottom,
-          ),
-          child: AddEvents(onAddEvent: _addEvent),
-        ),
-      ),
-    );
-  }
-
-  void _addEvent(Evento newEvent) {
-    setState(() {
-      eventos.add(newEvent);
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color(0xFFdddddd),
-      body: Column(
-        mainAxisAlignment: MainAxisAlignment.end,
-        children: [
-          Expanded(
-            child: ListView.builder(
-              itemCount: eventos.length,
-              itemBuilder: (context, index) {
-                return ListTileEvent(
-                  evento: eventos[index],
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) =>
-                            DetailsButton(evento: eventos[index]),
-                      ),
-                    );
-                  },
-                );
-              },
-            ),
-          ),
-          const SizedBox(height: 20),
-          ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              padding: const EdgeInsets.symmetric(horizontal: 70, vertical: 16),
-              backgroundColor: const Color(0xFF202B37),
-            ),
-            onPressed: () => _openIconButtonPressed(context),
-            child: const Text(
-              "INTRODUCIR CODIGO DE EVENTO",
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 13,
-                fontWeight: FontWeight.w700,
-              ),
-            ),
+      backgroundColor: Colors.white,
+      appBar: AppBar(
+        backgroundColor: Colors.white,
+        elevation: 0,
+        title:
+            Center(child: SvgPicture.asset("assets/icons/Logo-Div-black.svg")),
+        actions: [
+          IconButton(
+            icon: Icon(Icons.filter_list, color: Colors.black),
+            onPressed: () {
+              // Acción del filtro
+            },
           ),
         ],
-      ),
-    );
-  }
-}
-
-class ListTileEvent extends StatelessWidget {
-  final Evento evento;
-  final VoidCallback onTap;
-
-  const ListTileEvent({required this.evento, required this.onTap, super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      child: Card(
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(10),
-        ),
-        child: ListTile(
-          title: Text(evento.titulo),
-          subtitle: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                '${evento.fecha.day}/${evento.fecha.month}/${evento.fecha.year} ${evento.fecha.hour}:${evento.fecha.minute} – ${evento.ubicacion}',
+        leading: Padding(
+          padding: const EdgeInsets.all(8),
+          child: ElevatedButton(
+            onPressed: () {},
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.pink,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(80),
               ),
-              Text('0/200 entradas validadas'), // Ejemplo de entradas validadas
-            ],
+            ),
+            child: const Text('Modo online'),
           ),
-          trailing: const Icon(Icons.arrow_forward_ios),
-          onTap: onTap,
         ),
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: <Widget>[
+            Expanded(
+              child: ListView.builder(
+                itemCount: widget.selectedSessions.length,
+                itemBuilder: (BuildContext context, int index) {
+                  return Card(
+                    margin: const EdgeInsets.symmetric(vertical: 8.0),
+                    child: ListTile(
+                      title: Text(
+                        widget.selectedSessions[index].title,
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                      subtitle: const Text(
+                          'DD/MM/YYYY HH:MM – Ubicación\n0/200 entradas validadas'),
+                      trailing: Icon(Icons.chevron_right),
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => SessionConfigurationPage(
+                              session: widget.selectedSessions[index],
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+                  );
+                },
+              ),
+            ),
+            const SizedBox(height: 10.0),
+            // CustomIconButton(
+            //     padding: EdgeInsets.symmetric(vertical: 16, horizontal: 24),
+            //     text: "AGREGAR NUEVO EVENTO",
+            //     textStyle: TextStyle(
+            //         color: Colors.white,
+            //         fontSize: 14,
+            //         fontWeight: FontWeight.w700),
+            //     onPressed: () {})
+            ElevatedButton.icon(
+              onPressed: () {
+                // Acción para agregar nuevo evento
+              },
+              icon: SvgPicture.asset('assets/icons/Group.svg'),
+              label: const Text(
+                'AGREGAR NUEVO EVENTO',
+                style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 14,
+                    fontWeight: FontWeight.w700),
+              ),
+              style: ElevatedButton.styleFrom(
+                padding: EdgeInsets.symmetric(vertical: 16.0),
+                backgroundColor: Color(0xFF202B37),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(80),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+      bottomNavigationBar: BottomNavigationBar(
+        items: [
+          BottomNavigationBarItem(
+            icon: Icon(Icons.calendar_today),
+            label: 'Multi-Evento',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.event),
+            label: 'Eventos',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.settings),
+            label: 'Ajustes',
+          ),
+        ],
+        currentIndex: 1,
+        onTap: (index) {
+          // Handle bottom navigation bar tap
+        },
       ),
     );
   }

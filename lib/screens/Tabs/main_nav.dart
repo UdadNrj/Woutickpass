@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/svg.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:woutickpass/controllers/filter.dart';
 import 'package:woutickpass/controllers/route.dart';
 import 'package:woutickpass/screens/Tabs/button_nav.dart';
+import 'package:woutickpass/src/widgets/Custom_Session.dart';
 
 class MainPage extends StatefulWidget {
   const MainPage({Key? key});
@@ -14,6 +15,8 @@ class MainPage extends StatefulWidget {
 class _MainPageState extends State<MainPage> {
   int _currentIndex = 1;
   String token = "";
+  List<SessionOn> selectedSessions =
+      []; // Inicializar la lista de sesiones seleccionadas
 
   void _openFilterSheet(BuildContext context) {
     showModalBottomSheet(
@@ -52,10 +55,11 @@ class _MainPageState extends State<MainPage> {
         centerTitle: true,
         title: _getAppBarTitle(_currentIndex),
         leading: IconButton(
-            onPressed: () {},
-            icon: SvgPicture.asset(
-              "assets/icons/Modo_online.svg",
-            )),
+          onPressed: () {},
+          icon: SvgPicture.asset(
+            "assets/icons/Modo_online.svg",
+          ),
+        ),
         actions: <Widget>[
           if (_currentIndex == 1)
             IconButton(
@@ -79,7 +83,10 @@ class _MainPageState extends State<MainPage> {
           children: [
             Container(),
             Expanded(
-              child: Routes(index: _currentIndex),
+              child: Routes(
+                index: _currentIndex,
+                selectedSessions: selectedSessions,
+              ),
             ),
           ],
         ),

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:woutickpass/screens/Tabs/page_events.dart';
+import 'package:woutickpass/screens/Tabs/main_nav.dart';
 import 'package:woutickpass/src/widgets/Custom_Session.dart';
 
 class EventSessionsPage extends StatefulWidget {
@@ -53,51 +53,28 @@ class _EventSessionsPageState extends State<EventSessionsPage> {
             ),
             const SizedBox(height: 20.0),
             ElevatedButton(
-              onPressed: () {
-                List<SessionOn> selectedSessions = sessions
-                    .where((SessionOn) => SessionOn.isSelected)
-                    .toList();
-                Navigator.push(
+              onPressed: () async {
+                List<SessionOn> selectedSessions =
+                    sessions.where((session) => session.isSelected).toList();
+                final result = await Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) =>
-                        PageEvents(selectedSessions: selectedSessions),
+                    builder: (context) => MainPage(
+                      currentIndex: 1,
+                      selectedSessions: selectedSessions,
+                    ),
                   ),
                 );
+                // Update sessions if necessary
+                if (result != null && result is List<SessionOn>) {
+                  setState(() {
+                    sessions = result;
+                  });
+                }
               },
               child: const Text('Show Selected Sessions'),
             ),
           ],
-        ),
-      ),
-    );
-  }
-}
-
-class DownloadEvents extends StatelessWidget {
-  final bool isButtonEnabled;
-  final void Function(BuildContext) navigateToNextPage;
-
-  const DownloadEvents({
-    required this.isButtonEnabled,
-    required this.navigateToNextPage,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return ElevatedButton(
-      style: ElevatedButton.styleFrom(
-        padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 16),
-        backgroundColor:
-            isButtonEnabled ? const Color(0xFF202B37) : Colors.grey,
-      ),
-      onPressed: isButtonEnabled ? () => navigateToNextPage(context) : null,
-      child: const Text(
-        "DESCARGAR ENTRADAS",
-        style: TextStyle(
-          color: Colors.white,
-          fontSize: 14,
-          fontWeight: FontWeight.w700,
         ),
       ),
     );

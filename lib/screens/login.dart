@@ -70,15 +70,15 @@ class LoginForm extends StatelessWidget {
         const SizedBox(height: 30),
         TextPassword(context),
         const SizedBox(height: 70),
-        CustomIconButton(
-          text: "INICIAR SESION",
-          onPressed: () {
-            Navigator.push(
-                context, MaterialPageRoute(builder: (context) => MainPage()));
-          },
-          showIcon: false,
-          padding: EdgeInsets.symmetric(horizontal: 110, vertical: 16),
-        ),
+        // CustomIconButton(
+        //   text: "INICIAR SESION",
+        //   onPressed: () {
+        //     Navigator.push(
+        //         context, MaterialPageRoute(builder: (context) => MainPage()));
+        //   },
+        //   showIcon: false,
+        //   padding: EdgeInsets.symmetric(horizontal: 110, vertical: 16),
+        // ),
         const SizedBox(height: 40),
         register(),
       ],

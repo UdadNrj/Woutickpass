@@ -88,6 +88,7 @@ class TextFieldValided extends StatefulWidget {
 
 class _TextFieldValidedState extends State<TextFieldValided> {
   String enteredCode = '';
+
   final TextEditingController _controller = TextEditingController();
 
   @override
@@ -99,7 +100,7 @@ class _TextFieldValidedState extends State<TextFieldValided> {
           controller: _controller,
           keyboardType: TextInputType.number,
           decoration: InputDecoration(
-            labelText: '12345678',
+            labelText: 'ej. 12345678',
             contentPadding:
                 const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
             border: OutlineInputBorder(

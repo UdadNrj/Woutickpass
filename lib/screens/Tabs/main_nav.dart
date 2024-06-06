@@ -6,17 +6,29 @@ import 'package:woutickpass/screens/Tabs/button_nav.dart';
 import 'package:woutickpass/src/widgets/Custom_Session.dart';
 
 class MainPage extends StatefulWidget {
-  const MainPage({Key? key});
+  final int currentIndex;
+  final List<SessionOn> selectedSessions;
+
+  const MainPage({
+    Key? key,
+    required this.currentIndex,
+    required this.selectedSessions,
+  }) : super(key: key);
 
   @override
   State<StatefulWidget> createState() => _MainPageState();
 }
 
 class _MainPageState extends State<MainPage> {
-  int _currentIndex = 1;
-  String token = "";
-  List<SessionOn> selectedSessions =
-      []; // Inicializar la lista de sesiones seleccionadas
+  late int _currentIndex;
+  late List<SessionOn> selectedSessions;
+
+  @override
+  void initState() {
+    super.initState();
+    _currentIndex = widget.currentIndex;
+    selectedSessions = widget.selectedSessions;
+  }
 
   void _openFilterSheet(BuildContext context) {
     showModalBottomSheet(

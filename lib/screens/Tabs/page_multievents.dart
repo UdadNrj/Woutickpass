@@ -1,14 +1,17 @@
 import 'package:flutter/material.dart';
-import 'package:woutickpass/controllers/add_multi_events.dart';
+import 'package:woutickpass/models/Button_code_multi.dart';
+import 'package:woutickpass/src/widgets/Custom_Session.dart';
 
-class PageMultievents extends StatefulWidget {
-  const PageMultievents({super.key});
+class PageMultiEvents extends StatefulWidget {
+  final List<SessionOn> selectedSessions;
+
+  const PageMultiEvents({super.key, required this.selectedSessions});
 
   @override
-  State<StatefulWidget> createState() => _PageMultieventsState();
+  State<PageMultiEvents> createState() => _PageMultiEventsState();
 }
 
-class _PageMultieventsState extends State<PageMultievents> {
+class _PageMultiEventsState extends State<PageMultiEvents> {
   void _openIconButtonPressed(BuildContext context) {
     showModalBottomSheet(
       backgroundColor: Color.fromARGB(255, 255, 255, 255),
@@ -20,7 +23,7 @@ class _PageMultieventsState extends State<PageMultievents> {
           padding: EdgeInsets.only(
             bottom: MediaQuery.of(context).viewInsets.bottom,
           ),
-          child: addMultiEvents(),
+          child: CodePageMulti(),
         ),
       ),
     );

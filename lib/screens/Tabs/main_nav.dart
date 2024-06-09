@@ -89,7 +89,7 @@ class _MainPageState extends State<MainPage> {
         },
       ),
       body: Container(
-        color: Color(0xFFdddddd),
+        color: Colors.grey[200],
         padding: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
         child: Column(
           children: [

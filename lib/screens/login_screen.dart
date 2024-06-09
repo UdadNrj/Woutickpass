@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:woutickpass/screens/Tabs/main_nav.dart';
-import 'package:woutickpass/screens/password_reset.dart';
+import 'package:woutickpass/screens/password_screen.dart';
 import 'package:woutickpass/src/widgets/custom_button.dart';
 
 class LoginPage extends StatelessWidget {

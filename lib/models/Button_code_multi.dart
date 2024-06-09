@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:woutickpass/screens/List_screnn.dart';
 
-class CodePage extends StatefulWidget {
-  const CodePage({Key? key}) : super(key: key);
+class CodePageMulti extends StatefulWidget {
+  const CodePageMulti({Key? key}) : super(key: key);
 
   @override
-  _CodePageState createState() => _CodePageState();
+  _CodePageMultiState createState() => _CodePageMultiState();
 }
 
-class _CodePageState extends State<CodePage> {
+class _CodePageMultiState extends State<CodePageMulti> {
   bool _isScrollControlled = false;
 
   void _updateIsNumberValid(bool isValid, String code) {
@@ -27,7 +27,7 @@ class _CodePageState extends State<CodePage> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
               const Text(
-                'Introducir código de evento',
+                'Introducir código de multi-evento',
                 style: TextStyle(
                   fontWeight: FontWeight.w700,
                   fontSize: 20,
@@ -35,7 +35,7 @@ class _CodePageState extends State<CodePage> {
               ),
               const SizedBox(height: 10),
               const Text(
-                "Necesitamos la clave de ocho dígitos de tu evento para sincronizarlo con el controlador de accesos.",
+                "Escoge un nombre para tu evento que te permita recordarlo en un futuro.",
                 style: TextStyle(
                   color: Color.fromRGBO(113, 113, 133, 1),
                   fontSize: 14,
@@ -44,30 +44,6 @@ class _CodePageState extends State<CodePage> {
               ),
               const SizedBox(height: 10),
               TextFieldValided(updateIsNumberValid: _updateIsNumberValid),
-              const SizedBox(height: 10),
-              RichText(
-                text: const TextSpan(
-                  children: <TextSpan>[
-                    TextSpan(
-                      text: "Al registrar tu evento aceptas nuestros ",
-                      style: TextStyle(
-                        color: Color.fromRGBO(113, 113, 133, 1),
-                        fontSize: 14,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                    TextSpan(
-                      text: "Términos de Servicio y Política de Privacidad",
-                      style: TextStyle(
-                        color: Colors.black,
-                        fontSize: 14,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(height: 20),
               // ButtonCode(isNumberValid: _isNumberValid, eventCode: _eventCode)
             ],
           ),
@@ -100,7 +76,7 @@ class _TextFieldValidedState extends State<TextFieldValided> {
           controller: _controller,
           keyboardType: TextInputType.number,
           decoration: InputDecoration(
-            labelText: 'ej. 12345678',
+            labelText: 'Gira LDS 2023',
             contentPadding:
                 const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
             border: OutlineInputBorder(
@@ -157,7 +133,7 @@ class _TextFieldValidedState extends State<TextFieldValided> {
                 }
               },
               child: const Text(
-                'REGISTRAR EVENTO',
+                'CONFIRMAR',
                 style: TextStyle(color: Colors.white),
               ),
             ),
@@ -167,42 +143,3 @@ class _TextFieldValidedState extends State<TextFieldValided> {
     );
   }
 }
-
-// class ButtonCode extends StatelessWidget {
-//   final bool isNumberValid;
-//   final String eventCode;
-
-//   const ButtonCode({
-//     Key? key,
-//     required this.isNumberValid,
-//     required this.eventCode,
-//   }) : super(key: key);
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return Column(
-//       children: [
-//         SizedBox(
-//           width: 200,
-//           child: Container(
-//             height: 50,
-//             child: CustomValidadButton(
-//               text: "REGISTRAR EVENTO",
-//               isNumberValid: true,
-//               onPressed: isNumberValid
-//                   ? () {
-//                       Navigator.push(
-//                         context,
-//                         MaterialPageRoute(
-//                           builder: (context) => BoxPage(eventCode: eventCode),
-//                         ),
-//                       );
-//                     }
-//                   : null,
-//             ),
-//           ),
-//         ),
-//       ],
-//     );
-//   }
-// }

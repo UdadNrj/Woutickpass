@@ -9,7 +9,10 @@ class SessionConfigurationPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.grey[200],
       appBar: AppBar(
+        centerTitle: true,
+        backgroundColor: Colors.white,
         title: Text(session.title),
       ),
       body: SingleChildScrollView(

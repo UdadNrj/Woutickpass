@@ -1,10 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:woutickpass/models/Button_configuration.dart';
 import 'package:woutickpass/src/widgets/Custom_Session.dart';
+import 'package:woutickpass/src/widgets/custom_Ticket.dart';
+import 'package:woutickpass/src/widgets/list_tile.dart';
 
 class SessionConfigurationPage extends StatelessWidget {
   final SessionOn session;
 
-  const SessionConfigurationPage({super.key, required this.session});
+  const SessionConfigurationPage({Key? key, required this.session})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -15,77 +19,100 @@ class SessionConfigurationPage extends StatelessWidget {
         backgroundColor: Colors.white,
         title: Text(session.title),
       ),
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: EdgeInsets.all(16.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: <Widget>[
-              ListTile(
-                leading: Icon(Icons.people),
-                title: Text('Lista de asistentes'),
-                subtitle: Text(
-                    'Revisa la lista de asistentes totales a tu evento y edita los estados de las entradas de forma manual.'),
-                onTap: () {
-                  // Navigate to Lista de asistentes screen
-                },
+      body: Stack(
+        children: [
+          SingleChildScrollView(
+            child: Padding(
+              padding: EdgeInsets.all(16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: <Widget>[
+                  buildListTile(
+                    leadingIcon: Icons.people,
+                    title: 'Lista de asistentes',
+                    subtitle:
+                        'Revisa la lista de asistentes totales a tu evento y edita los estados de las entradas de forma manual.',
+                    onTap: () {
+                      // Navigate to Lista de asistentes screen
+                    },
+                  ),
+                  const SizedBox(height: 16),
+                  buildListTile(
+                    leadingIcon: Icons.settings,
+                    title: 'Configuración de entradas',
+                    subtitle:
+                        'Edita qué entradas quieres que se sincronicen con el escáner para esta sesión.',
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => TicketTypeConfigurationPage(),
+                        ),
+                      ).then((result) {
+                        // Here you can handle the result returned by the input type configuration page if necessary
+                        if (result != null && result is TicketType) {
+                          // Do something with the saved input type, such as display it in the UI or save it to a list.
+                        }
+                      });
+                    },
+                  ),
+                  const SizedBox(height: 16),
+                  buildListTile(
+                    leadingIcon: Icons.bar_chart,
+                    title: 'Estadísticas de aforo',
+                    subtitle:
+                        'Accede a la información detallada y actualizada de los asistentes a esta sesión.',
+                    onTap: () {
+                      // Navigate to Estadísticas de aforo screen
+                    },
+                  ),
+                  const SizedBox(height: 16),
+                  buildListTile(
+                    leadingIcon: Icons.upload,
+                    title: 'Finalizar sesión',
+                    subtitle:
+                        'Subir la información al servidor y borrar todas las entradas descargadas en el dispositivo.',
+                    onTap: () {
+                      // Navigate to Finalizar sesión screen
+                    },
+                  ),
+                  const SizedBox(height: 16),
+                  buildListTile(
+                    leadingIcon: Icons.upload,
+                    title: 'Vaciar Aforo ',
+                    subtitle:
+                        'Subir la información al servidor y borrar todas las entradas descargadas en el dispositivo.',
+                    onTap: () {
+                      // Navigate to Finalizar sesión screen
+                    },
+                  ),
+                ],
               ),
-              Divider(),
-              ListTile(
-                leading: Icon(Icons.settings),
-                title: Text('Configuración de entradas'),
-                subtitle: Text(
-                    'Edita qué entradas quieres que se sincronicen con el escáner para esta sesión.'),
-                onTap: () {
-                  // Navigate to Configuración de entradas screen
-                },
-              ),
-              Divider(),
-              ListTile(
-                leading: Icon(Icons.bar_chart),
-                title: Text('Estadísticas de aforo'),
-                subtitle: Text(
-                    'Accede a la información detallada y actualizada de los asistentes a esta sesión.'),
-                onTap: () {
-                  // Navigate to Estadísticas de aforo screen
-                },
-              ),
-              Divider(),
-              ListTile(
-                leading: Icon(Icons.upload),
-                title: Text('Finalizar sesión'),
-                subtitle: Text(
-                    'Subir la información al servidor y borrar todas las entradas descargadas en el dispositivo.'),
-                onTap: () {
-                  // Navigate to Finalizar sesión screen
-                },
-              ),
-              Divider(),
-              ListTile(
-                leading: Icon(Icons.upload),
-                title: Text('Vaciar Aforo '),
-                subtitle: Text(
-                    'Subir la información al servidor y borrar todas las entradas descargadas en el dispositivo.'),
-                onTap: () {
-                  // Navigate to Finalizar sesión screen
-                },
-              ),
-              Divider(),
-              SizedBox(height: 200),
-              ElevatedButton.icon(
-                icon: Icon(Icons.camera_alt),
-                label: Text('ESCANEAR ENTRADAS'),
-                onPressed: () {
-                  // Navigate to Escanear entradas screen
-                },
-                style: ElevatedButton.styleFrom(
-                  padding: EdgeInsets.symmetric(vertical: 15.0),
-                  backgroundColor: Colors.pink, // Color of the button
-                ),
-              ),
-            ],
+            ),
           ),
-        ),
+          Positioned(
+            left: 8,
+            right: 8,
+            bottom: 16,
+            child: ElevatedButton.icon(
+              icon: const Icon(
+                Icons.camera_alt,
+                color: Colors.white,
+              ),
+              label: const Text(
+                'ESCANEAR ENTRADAS',
+                style: TextStyle(color: Colors.white),
+              ),
+              onPressed: () {
+                // Navigate to Escanear entradas screen
+              },
+              style: ElevatedButton.styleFrom(
+                padding: EdgeInsets.all(16),
+                backgroundColor: Colors.pink, // Color of the button
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:woutickpass/src/widgets/custom_Ticket.dart';
+import 'package:woutickpass/models/custom_Ticket.dart';
 
 class TicketTypeConfigurationPage extends StatefulWidget {
   @override

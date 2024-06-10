@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:woutickpass/screens/Tabs/main_nav.dart';
-import 'package:woutickpass/src/widgets/Custom_Session.dart';
+import 'package:woutickpass/models/Custom_Session.dart';
 
 class EventSessionsPage extends StatefulWidget {
   @override

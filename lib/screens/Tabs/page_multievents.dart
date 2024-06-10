@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:woutickpass/models/Button_code_multi.dart';
-import 'package:woutickpass/src/widgets/Custom_Session.dart';
+import 'package:woutickpass/models/Custom_Session.dart';
 
 class PageMultiEvents extends StatefulWidget {
   final List<SessionOn> selectedSessions;

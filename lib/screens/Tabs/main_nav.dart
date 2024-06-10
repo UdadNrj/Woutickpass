@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:woutickpass/controllers/filter.dart';
-import 'package:woutickpass/controllers/route.dart';
+import 'package:woutickpass/services/controllers/filter.dart';
+import 'package:woutickpass/services/controllers/route.dart';
 import 'package:woutickpass/screens/Tabs/button_nav.dart';
-import 'package:woutickpass/src/widgets/Custom_Session.dart';
+import 'package:woutickpass/models/Custom_Session.dart';
 
 class MainPage extends StatefulWidget {
   final int currentIndex;

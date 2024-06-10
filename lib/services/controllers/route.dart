@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:woutickpass/prueba.dart';
 import 'package:woutickpass/screens/Tabs/page_multievents.dart';
 import 'package:woutickpass/screens/Tabs/page_events.dart';
 import 'package:woutickpass/screens/Tabs/page_settings.dart';
-import 'package:woutickpass/src/widgets/Custom_Session.dart';
+import 'package:woutickpass/models/Custom_Session.dart';
 
 class Routes extends StatelessWidget {
   final int index;

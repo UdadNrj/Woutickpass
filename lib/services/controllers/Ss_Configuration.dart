@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:woutickpass/models/Button_configuration.dart';
-import 'package:woutickpass/src/widgets/Custom_Session.dart';
-import 'package:woutickpass/src/widgets/custom_Ticket.dart';
+import 'package:woutickpass/models/Custom_Session.dart';
+import 'package:woutickpass/models/custom_Ticket.dart';
 import 'package:woutickpass/src/widgets/list_tile.dart';
 
 class SessionConfigurationPage extends StatelessWidget {

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:woutickpass/controllers/Ss_Configuration.dart';
-import 'package:woutickpass/src/widgets/Custom_Session.dart';
+import 'package:woutickpass/services/controllers/Ss_Configuration.dart';
+import 'package:woutickpass/models/Custom_Session.dart';
 
 class PageEvents extends StatefulWidget {
   final List<SessionOn> selectedSessions;

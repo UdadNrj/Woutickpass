@@ -1,4 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'dart:convert';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:http/http.dart' as http;
+import 'package:woutickpass/providers/token_login.dart';
+import 'package:woutickpass/screens/Tabs/main_nav.dart';
 import 'package:woutickpass/screens/password_screen.dart';
 
 class LoginPage extends StatelessWidget {
@@ -11,7 +17,7 @@ class LoginPage extends StatelessWidget {
       appBar: AppBar(
         backgroundColor: Colors.white,
         leading: IconButton(
-          icon: Icon(Icons.close),
+          icon: const Icon(Icons.close, color: Colors.black),
           onPressed: () {
             Navigator.of(context).pop();
           },
@@ -25,8 +31,31 @@ class LoginPage extends StatelessWidget {
   }
 }
 
-class LoginForm extends StatelessWidget {
+class LoginForm extends StatefulWidget {
   const LoginForm({Key? key}) : super(key: key);
+
+  @override
+  _LoginFormState createState() => _LoginFormState();
+}
+
+class _LoginFormState extends State<LoginForm> {
+  final TextEditingController _gmailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+
+  Future<String> askToken() async {
+    const String url = "https://api-dev.woutick.com/back/v1/account/login/";
+    final response = await http.post(Uri.parse(url), body: {
+      'email': _gmailController.text,
+      'password': _passwordController.text,
+    });
+    if (response.statusCode == 200) {
+      String body = utf8.decode(response.bodyBytes);
+      final jsonData = jsonDecode(body);
+      return jsonData["access"];
+    } else {
+      throw Exception("Failed to request data");
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -35,48 +64,82 @@ class LoginForm extends StatelessWidget {
       children: <Widget>[
         titleBar(),
         const SizedBox(height: 20),
-        TextField(
-          decoration: InputDecoration(
-            hintText: 'Usuario',
-            contentPadding:
-                const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(4),
-              borderSide:
-                  const BorderSide(color: Color.fromRGBO(172, 172, 172, 1)),
+        Container(
+          margin: const EdgeInsets.only(bottom: 20.0),
+          child: TextField(
+            controller: _gmailController,
+            decoration: const InputDecoration(
+              labelText: '@ woutick!',
+              labelStyle: TextStyle(color: Colors.black),
+              hintText: '@ woutick',
+              hintStyle: TextStyle(color: Colors.black),
+              border: OutlineInputBorder(
+                borderSide: BorderSide(color: Colors.black),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderSide: BorderSide(color: Colors.black),
+              ),
+              enabledBorder: OutlineInputBorder(
+                borderSide: BorderSide(color: Colors.black),
+              ),
             ),
-            fillColor: Color.fromRGBO(252, 252, 253, 1),
-            filled: true,
           ),
         ),
-        const SizedBox(height: 40),
-        TextField(
-          obscureText: true,
-          decoration: InputDecoration(
-            hintText: 'Contraseña',
-            contentPadding:
-                const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(4),
-              borderSide:
-                  const BorderSide(color: Color.fromRGBO(172, 172, 172, 1)),
+        Container(
+          margin: const EdgeInsets.only(bottom: 20.0),
+          child: TextField(
+            obscureText: true,
+            controller: _passwordController,
+            decoration: const InputDecoration(
+              labelText: 'Password',
+              labelStyle: TextStyle(color: Colors.black),
+              hintText: 'Password',
+              hintStyle: TextStyle(color: Colors.black),
+              border: OutlineInputBorder(
+                borderSide: BorderSide(color: Colors.black),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderSide: BorderSide(color: Colors.black),
+              ),
+              enabledBorder: OutlineInputBorder(
+                borderSide: BorderSide(color: Colors.black),
+              ),
             ),
-            fillColor: Color.fromRGBO(252, 252, 253, 1),
-            filled: true,
           ),
         ),
         const SizedBox(height: 30),
         TextPassword(context),
         const SizedBox(height: 70),
-        // CustomIconButton(
-        //   text: "INICIAR SESION",
-        //   onPressed: () {
-        //     Navigator.push(
-        //         context, MaterialPageRoute(builder: (context) => MainPage()));
-        //   },
-        //   showIcon: false,
-        //   padding: EdgeInsets.symmetric(horizontal: 110, vertical: 16),
-        // ),
+        ElevatedButton(
+          style: ButtonStyle(
+            backgroundColor: MaterialStateProperty.all(Colors.pinkAccent),
+            foregroundColor: MaterialStateProperty.all(Colors.white),
+            padding: MaterialStateProperty.all(
+                const EdgeInsets.symmetric(vertical: 16, horizontal: 100)),
+            shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+              RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10),
+              ),
+            ),
+          ),
+          onPressed: () async {
+            final token = await askToken();
+            SharedPreferences prefs = await SharedPreferences.getInstance();
+            if (token.isNotEmpty) {
+              debugPrint(token);
+              prefs.setString('token', token);
+              context.read<TokenProvider>().change(token);
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => MainPage(
+                            currentIndex: 0,
+                            selectedSessions: [],
+                          )));
+            }
+          },
+          child: const Text('INICIAR SESION'),
+        ),
         const SizedBox(height: 40),
         register(),
       ],
@@ -88,7 +151,7 @@ Widget titleBar() {
   return Row(
     children: <Widget>[
       Container(
-        padding: EdgeInsets.only(top: 0),
+        padding: const EdgeInsets.only(top: 0),
         child: const Text(
           "Iniciar Sesión",
           style: TextStyle(
@@ -109,7 +172,7 @@ Widget TextPassword(BuildContext context) {
         onPressed: () {
           Navigator.push(
             context,
-            MaterialPageRoute(builder: (context) => passwordPage()),
+            MaterialPageRoute(builder: (context) => const passwordPage()),
           );
         },
         child: const Text(

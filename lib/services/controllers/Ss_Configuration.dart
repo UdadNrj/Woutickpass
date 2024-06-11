@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:woutickpass/models/Button_configuration.dart';
 import 'package:woutickpass/models/Custom_Session.dart';
 import 'package:woutickpass/models/custom_Ticket.dart';
+import 'package:woutickpass/services/controllers/asistentes_page.dart';
 import 'package:woutickpass/src/widgets/list_tile.dart';
 
 class SessionConfigurationPage extends StatelessWidget {
@@ -33,7 +34,10 @@ class SessionConfigurationPage extends StatelessWidget {
                     subtitle:
                         'Revisa la lista de asistentes totales a tu evento y edita los estados de las entradas de forma manual.',
                     onTap: () {
-                      // Navigate to Lista de asistentes screen
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => AsistentesPage()));
                     },
                   ),
                   const SizedBox(height: 16),

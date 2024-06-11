@@ -16,40 +16,6 @@ class _PageSettingState extends State<PageSetting> {
         padding: const EdgeInsets.all(-0),
         child: Column(
           children: <Widget>[
-            const Card(
-              child: ListTile(
-                title: Text("Manuel Naranjo"),
-                leading: CircleAvatar(),
-                trailing: Icon(Icons.edit),
-              ),
-            ),
-            const Card(
-              margin: EdgeInsets.fromLTRB(32.0, 8.0, 32.0, 8.0),
-              child: Padding(
-                padding: EdgeInsets.all(8.0),
-                child: Column(
-                  children: <Widget>[
-                    ListTile(
-                      leading: Icon(
-                        Icons.lock_outline_sharp,
-                      ),
-                      title: Text("Change Password"),
-                      trailing: Icon(Icons.keyboard_arrow_right),
-                    ),
-                    ListTile(
-                      leading: Icon(
-                        Icons.lock_outline_sharp,
-                      ),
-                      title: Text("Change Lenguage"),
-                      trailing: Icon(Icons.keyboard_arrow_right),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-            const SizedBox(
-              height: 10.0,
-            ),
             const Text(
               "CONTROL DE ACCESOS",
               style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
@@ -63,7 +29,7 @@ class _PageSettingState extends State<PageSetting> {
               child: SwitchListTile(
                 activeColor: const Color(0xFFCC3366),
                 value: true,
-                title: const Text("Received notification"),
+                title: const Text("Activar modo offline"),
                 onChanged: (bool value) {
                   // handle onChanged
                 },
@@ -72,7 +38,7 @@ class _PageSettingState extends State<PageSetting> {
             SwitchListTile(
               activeColor: const Color(0xFFCC3366),
               value: true,
-              title: const Text("Received notification"),
+              title: const Text("Mostrar contador de assitentes"),
               onChanged: (bool value) {
                 // handle onChanged
               },
@@ -80,7 +46,7 @@ class _PageSettingState extends State<PageSetting> {
             const SwitchListTile(
               activeColor: const Color(0xFFCC3366),
               value: true,
-              title: Text("Received notification"),
+              title: Text("Vibracion e"),
               onChanged: null,
             ),
             const SwitchListTile(

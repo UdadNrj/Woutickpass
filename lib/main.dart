@@ -19,6 +19,10 @@ import 'package:woutickpass/screens/home_screen.dart';
 //   // SettingsView.
 //   runApp(MyApp(settingsController: settingsController));
 //
+import 'package:provider/provider.dart';
+import 'package:woutickpass/providers/token_login.dart';
+import 'package:woutickpass/screens/login_screen.dart';
+
 void main() {
   runApp(const MyApp());
 }
@@ -28,13 +32,18 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      title: '  ',
-      routes: {
-        '/': (context) => const HomeScreen(),
-        // '/second': (context) => MyHomePage(),
-      },
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => TokenProvider()),
+      ],
+      child: MaterialApp(
+        debugShowCheckedModeBanner: false,
+        title: 'WoutickPass',
+        routes: {
+          '/': (context) => const HomeScreen(),
+          '/login': (context) => const LoginPage(),
+        },
+      ),
     );
   }
 }

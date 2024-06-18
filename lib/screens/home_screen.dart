@@ -70,7 +70,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     Navigator.push(
                         context,
                         _createRoute(
-                          const LoginPage(),
+                          LoginPage(),
                         ));
                   },
                   child: const Text(
@@ -92,7 +92,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
 Route _createRoute(Widget child) {
   return PageRouteBuilder(
-    pageBuilder: (context, animation, secondaryAnimation) => const LoginPage(),
+    pageBuilder: (context, animation, secondaryAnimation) => LoginPage(),
     transitionsBuilder: (context, animation, secondaryAnimation, child) {
       const begin = Offset(0.0, 1.0);
       const end = Offset.zero;

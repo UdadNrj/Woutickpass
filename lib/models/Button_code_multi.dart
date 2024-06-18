@@ -106,12 +106,12 @@ class _TextFieldValidedState extends State<TextFieldValided> {
               ),
               onPressed: () {
                 if (enteredCode.length == 8) {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => EventSessionsPage(),
-                    ),
-                  );
+                  // Navigator.push(
+                  //   context,
+                  //   MaterialPageRoute(
+                  //     builder: (context) => EventSessionsPage(),
+                  //   ),
+                  // );
                 } else {
                   showDialog(
                     context: context,

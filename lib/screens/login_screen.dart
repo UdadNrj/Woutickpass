@@ -1,31 +1,21 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
+import 'package:provider/provider.dart';
 import 'package:woutickpass/providers/token_login.dart';
 import 'package:woutickpass/screens/List_screnn.dart';
 import 'package:woutickpass/screens/password_screen.dart';
 
 class LoginPage extends StatelessWidget {
-  const LoginPage({Key? key}) : super(key: key);
+  const LoginPage({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-        leading: IconButton(
-          icon: const Icon(Icons.close, color: Colors.black),
-          onPressed: () {
-            Navigator.of(context).pop();
-          },
-        ),
-      ),
-      body: const SingleChildScrollView(
-        padding: EdgeInsets.symmetric(horizontal: 16, vertical: 50),
-        child: LoginForm(),
+      appBar: AppBar(),
+      body: Stack(
+        children: <Widget>[LoginForm()],
       ),
     );
   }
@@ -48,7 +38,7 @@ class _LoginFormState extends State<LoginForm> {
     try {
       final response = await http.post(
         Uri.parse(url),
-        body: {'email': 'alan.naranjo@woutick.es', 'password': 'Lamjo303030'},
+        body: {'email': gmail, 'password': password},
       );
 
       debugPrint('Response status: ${response.statusCode}');
@@ -65,6 +55,30 @@ class _LoginFormState extends State<LoginForm> {
     } catch (e) {
       debugPrint('Error al pedir el token: $e');
       throw Exception("Fallo a la hora de pedir los datos. Detalles: $e");
+    }
+  }
+
+  Future<List<dynamic>> getEvents(String token) async {
+    const String url = "https://api-dev.woutick.com/back/v1/event/";
+    try {
+      final headers = {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      };
+      final response = await http.get(
+        Uri.parse(url),
+        headers: headers,
+      );
+      if (response.statusCode == 200) {
+        List<dynamic> events = json.decode(response.body);
+        debugPrint('Response body: ${response.body}');
+        return events;
+      } else {
+        throw Exception('Failed to load events');
+      }
+    } catch (e) {
+      debugPrint('Error: $e');
+      return [];
     }
   }
 
@@ -86,7 +100,7 @@ class _LoginFormState extends State<LoginForm> {
             decoration: const InputDecoration(
               labelText: 'Usuario',
               labelStyle: TextStyle(color: Color(0XFFCED2DA)),
-              hintText: 'Usurio',
+              hintText: 'Usuario',
               hintStyle: TextStyle(color: Color(0XFFCED2DA)),
               border: OutlineInputBorder(
                 borderSide: BorderSide(color: Colors.black),
@@ -139,7 +153,6 @@ class _LoginFormState extends State<LoginForm> {
         ),
         const SizedBox(height: 30),
         TextPassword(context),
-        const SizedBox(height: 70),
         ElevatedButton(
           style: ButtonStyle(
             backgroundColor: MaterialStateProperty.all(Color(0xFF202B37)),
@@ -160,12 +173,16 @@ class _LoginFormState extends State<LoginForm> {
                 debugPrint(token);
                 prefs.setString('token', token);
                 context.read<TokenProvider>().change(token);
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => EventSessionsPage(),
-                  ),
-                );
+
+                final events = await getEvents(token);
+                if (events.isNotEmpty) {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => EventSessionsPage(events: events),
+                    ),
+                  );
+                }
               }
             } catch (e) {
               ScaffoldMessenger.of(context).showSnackBar(
@@ -239,169 +256,3 @@ Widget register() {
     ],
   );
 }
-
-
-// import 'dart:async';
-// import 'package:flutter/material.dart';
-// import 'package:flutter_svg/flutter_svg.dart';
-// import 'package:provider/provider.dart';
-// import 'dart:convert';
-// import 'package:shared_preferences/shared_preferences.dart';
-// import 'package:http/http.dart' as http;
-// import 'package:woutickpass/providers/token_login.dart';
-// import 'package:woutickpass/screens/Tabs/main_nav.dart';
-
-// class LoginPage extends StatefulWidget {
-//   const LoginPage({super.key});
-
-//   @override
-//   State<StatefulWidget> createState() => _LoginPageState();
-// }
-
-// class _LoginPageState extends State<LoginPage> {
-//   String gmail = '';
-//   String password = '';
-
-//   Future<String> askToken() async {
-//     const String url = "https://api-dev.woutick.com/back/v1/account/login/";
-//     final response = await http
-//         .post(Uri.parse(url), body: {'email': gmail, 'password': password});
-//     if (response.statusCode == 200) {
-//       String body = utf8.decode(response.bodyBytes);
-//       final jsonData = jsonDecode(body);
-//       return jsonData["access"];
-//     } else {
-//       throw Exception("Fallo a la hora de pedir los datos");
-//     }
-//   }
-
-//   @override
-//   void initState() {
-//     debugPrint('Estamos en login');
-//     super.initState();
-//   }
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return Scaffold(
-//       appBar: AppBar(
-//         title: Padding(
-//           padding: const EdgeInsets.all(8.0),
-//           child: SvgPicture.asset(
-//             'assets/icons/woutick_w.svg',
-//             width: 30,
-//             height: 30,
-//           ),
-//         ),
-//         centerTitle: true,
-//         backgroundColor: Colors.black,
-//       ),
-//       body: Center(
-//         child: Padding(
-//           padding: const EdgeInsets.all(20.0),
-//           child: Row(
-//             children: [
-//               Expanded(
-//                 child: Column(
-//                   children: [
-//                     Container(
-//                       margin: const EdgeInsets.only(bottom: 20.0),
-//                       child: TextField(
-//                         onChanged: (value) {
-//                           setState(() {
-//                             gmail = value;
-//                           });
-//                         },
-//                         decoration: const InputDecoration(
-//                           labelText: '@ woutick!',
-//                           labelStyle: TextStyle(color: Colors.black),
-//                           hintText: '@ woutick',
-//                           hintStyle: TextStyle(color: Colors.black),
-//                           border: OutlineInputBorder(
-//                             borderSide: BorderSide(color: Colors.black),
-//                           ),
-//                           focusedBorder: OutlineInputBorder(
-//                             borderSide: BorderSide(color: Colors.black),
-//                           ),
-//                           enabledBorder: OutlineInputBorder(
-//                             borderSide: BorderSide(color: Colors.black),
-//                           ),
-//                         ),
-//                       ),
-//                     ),
-//                     Container(
-//                       margin: const EdgeInsets.only(bottom: 20.0),
-//                       child: TextField(
-//                         onChanged: (value) {
-//                           setState(() {
-//                             password = value;
-//                           });
-//                         },
-//                         decoration: const InputDecoration(
-//                           labelText: 'Password',
-//                           labelStyle: TextStyle(color: Colors.black),
-//                           hintText: 'Password',
-//                           hintStyle: TextStyle(color: Colors.black),
-//                           border: OutlineInputBorder(
-//                             borderSide: BorderSide(color: Colors.black),
-//                           ),
-//                           focusedBorder: OutlineInputBorder(
-//                             borderSide: BorderSide(color: Colors.black),
-//                           ),
-//                           enabledBorder: OutlineInputBorder(
-//                             borderSide: BorderSide(color: Colors.black),
-//                           ),
-//                         ),
-//                       ),
-//                     ),
-//                     Container(
-//                       margin: const EdgeInsets.only(bottom: 20.0),
-//                       child: ElevatedButton(
-//                           style: ButtonStyle(
-//                             backgroundColor:
-//                                 MaterialStateProperty.all(Colors.pinkAccent),
-//                             foregroundColor:
-//                                 MaterialStateProperty.all(Colors.white),
-//                             padding: MaterialStateProperty.all(
-//                                 const EdgeInsets.symmetric(
-//                                     vertical: 16, horizontal: 100)),
-//                             shape: MaterialStateProperty.all<
-//                                 RoundedRectangleBorder>(
-//                               RoundedRectangleBorder(
-//                                 borderRadius: BorderRadius.circular(10),
-//                               ),
-//                             ),
-//                           ),
-//                           onPressed: () async {
-//                             final token = await askToken();
-//                             SharedPreferences prefs =
-//                                 await SharedPreferences.getInstance();
-//                             if (token != "") {
-//                               debugPrint(token);
-//                               setState(() {
-//                                 prefs.setString('token', token);
-//                                 context.read<TokenProvider>().change(token);
-//                                 Navigator.push(
-//                                     context,
-//                                     MaterialPageRoute(
-//                                         builder: (context) => MainPage(
-//                                               currentIndex: 0,
-//                                               selectedSessions: [],
-//                                             )));
-//                               });
-//                             }
-//                           },
-//                           child: const Text(
-//                             'Login',
-//                           )),
-//                     )
-//                   ],
-//                 ),
-//               ),
-//             ],
-//           ),
-//         ),
-//       ),
-//     );
-//   }
-// }

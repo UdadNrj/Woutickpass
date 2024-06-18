@@ -41,7 +41,7 @@ class MyApp extends StatelessWidget {
         title: 'WoutickPass',
         routes: {
           '/': (context) => const HomeScreen(),
-          '/login': (context) => const LoginPage(),
+          '/login': (context) => LoginPage(),
         },
       ),
     );

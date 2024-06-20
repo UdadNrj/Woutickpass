@@ -187,27 +187,62 @@
 //     );
 //   }
 // }
-
 import 'package:flutter/material.dart';
+import 'package:woutickpass/services/Api/auth_events.dart';
+import 'package:woutickpass/src/widgets/custom_Events.dart';
 
-class EventSessionsPage extends StatelessWidget {
-  final List<dynamic> events;
+class EventsPage extends StatefulWidget {
+  final String token;
 
-  const EventSessionsPage({Key? key, required this.events}) : super(key: key);
+  EventsPage({Key? key, required this.token}) : super(key: key);
+
+  @override
+  _EventsPageState createState() => _EventsPageState();
+}
+
+class _EventsPageState extends State<EventsPage> {
+  List<EventS> events = [];
+
+  @override
+  void initState() {
+    super.initState();
+    _loadEvents();
+  }
+
+  Future<void> _loadEvents() async {
+    try {
+      final fetchedEvents = await EventService.getEvents(widget.token);
+      setState(() {
+        events = fetchedEvents;
+      });
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Error al cargar eventos: $e'),
+        ),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Eventos'),
+        title: Text('Eventos'),
       ),
-      body: ListView.builder(
-        itemCount: events.length,
-        itemBuilder: (context, index) {
-          return ListTile(
-            title: Text(events[index]['name'] ?? 'Evento sin nombre'),
-          );
-        },
+      body: Center(
+        child: events.isEmpty
+            ? CircularProgressIndicator()
+            : ListView.builder(
+                itemCount: events.length,
+                itemBuilder: (context, index) {
+                  final event = events[index];
+                  return ListTile(
+                    title: Text(event.name),
+                    subtitle: Text(event.publicStartAt.toString()),
+                  );
+                },
+              ),
       ),
     );
   }

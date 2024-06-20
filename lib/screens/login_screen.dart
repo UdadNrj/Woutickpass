@@ -13,7 +13,14 @@ class LoginPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(),
+      appBar: AppBar(
+        leading: IconButton(
+          icon: Icon(Icons.close),
+          onPressed: () {
+            Navigator.of(context).pop();
+          },
+        ),
+      ),
       body: Stack(
         children: <Widget>[LoginForm()],
       ),
@@ -55,30 +62,6 @@ class _LoginFormState extends State<LoginForm> {
     } catch (e) {
       debugPrint('Error al pedir el token: $e');
       throw Exception("Fallo a la hora de pedir los datos. Detalles: $e");
-    }
-  }
-
-  Future<List<dynamic>> getEvents(String token) async {
-    const String url = "https://api-dev.woutick.com/back/v1/event/";
-    try {
-      final headers = {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer $token',
-      };
-      final response = await http.get(
-        Uri.parse(url),
-        headers: headers,
-      );
-      if (response.statusCode == 200) {
-        List<dynamic> events = json.decode(response.body);
-        debugPrint('Response body: ${response.body}');
-        return events;
-      } else {
-        throw Exception('Failed to load events');
-      }
-    } catch (e) {
-      debugPrint('Error: $e');
-      return [];
     }
   }
 
@@ -173,16 +156,12 @@ class _LoginFormState extends State<LoginForm> {
                 debugPrint(token);
                 prefs.setString('token', token);
                 context.read<TokenProvider>().change(token);
-
-                final events = await getEvents(token);
-                if (events.isNotEmpty) {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => EventSessionsPage(events: events),
-                    ),
-                  );
-                }
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => EventsPage(token: token),
+                  ),
+                );
               }
             } catch (e) {
               ScaffoldMessenger.of(context).showSnackBar(

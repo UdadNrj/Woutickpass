@@ -15,21 +15,39 @@ class EventService {
         Uri.parse(url),
         headers: headers,
       );
+
+      debugPrint('Response status: ${response.statusCode}');
+      debugPrint('Response body: ${response.body}');
+
       if (response.statusCode == 200) {
-        List<dynamic> jsonResponse = json.decode(response.body);
-        debugPrint('Response body: ${response.body}');
+        Map<String, dynamic> jsonResponse;
+        try {
+          jsonResponse = json.decode(response.body);
+        } catch (e) {
+          throw Exception('Failed to decode JSON: $e');
+        }
 
-        List<EventS> events =
-            jsonResponse.map((json) => EventS.fromJson(json)).toList();
+        debugPrint('Decoded JSON: $jsonResponse');
 
-        return events;
+        if (jsonResponse.containsKey('results')) {
+          var eventsData = jsonResponse['results'];
+          if (eventsData is List) {
+            List<EventS> events =
+                eventsData.map((json) => EventS.fromJson(json)).toList();
+            return events;
+          } else {
+            throw Exception('Expected a list of events but found: $eventsData');
+          }
+        } else {
+          throw Exception(
+              'Key "results" not found in the response. Full response: $jsonResponse');
+        }
       } else {
         throw Exception(
-            'Failed to load events. Status code: ${response.statusCode}');
+            'Failed to load events. Status code: ${response.statusCode}. Response body: ${response.body}');
       }
     } catch (e) {
-      debugPrint(
-          'Error: $e'); // Asegúrate de que debugPrint esté bien utilizado
+      debugPrint('Error: $e');
       throw Exception('Failed to load events. Error: $e');
     }
   }

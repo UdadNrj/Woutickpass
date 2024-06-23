@@ -4,7 +4,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
 import 'package:woutickpass/providers/token_login.dart';
-import 'package:woutickpass/screens/List_screnn.dart';
+import 'package:woutickpass/screens/Events_screnn.dart';
 import 'package:woutickpass/screens/password_screen.dart';
 
 class LoginPage extends StatelessWidget {
@@ -13,7 +13,9 @@ class LoginPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
+        backgroundColor: Colors.white,
         leading: IconButton(
           icon: Icon(Icons.close),
           onPressed: () {
@@ -159,7 +161,7 @@ class _LoginFormState extends State<LoginForm> {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => EventsPage(token: token),
+                    builder: (context) => EventsScreen(token: token),
                   ),
                 );
               }

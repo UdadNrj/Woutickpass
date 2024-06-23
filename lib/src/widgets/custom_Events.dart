@@ -4,7 +4,7 @@ class EventS {
   final String imageUrl;
   final int status;
   final String wpassCode;
-  final DateTime publicStartAt;
+  final DateTime? publicStartAt;
   final bool isOwner;
   final bool isEditor;
   final bool isAnalyst;
@@ -16,7 +16,7 @@ class EventS {
     required this.imageUrl,
     required this.status,
     required this.wpassCode,
-    required this.publicStartAt,
+    this.publicStartAt,
     required this.isOwner,
     required this.isEditor,
     required this.isAnalyst,
@@ -24,17 +24,19 @@ class EventS {
   });
 
   factory EventS.fromJson(Map<String, dynamic> json) {
-    print('JSON received: $json');
+    print('JSON received for EventS: $json');
     return EventS(
-      uuid: json['uuid'],
-      name: json['name'],
-      imageUrl: json['image'],
-      status: json['status'],
-      wpassCode: json['wpass_code'],
-      publicStartAt: DateTime.parse(json['public_start_at']),
-      isOwner: json['is_owner'],
-      isEditor: json['is_editor'],
-      isAnalyst: json['is_analyst'],
+      uuid: json['uuid'] ?? '',
+      name: json['name'] ?? '',
+      imageUrl: json['image'] ?? '',
+      status: json['status'] ?? 0,
+      wpassCode: json['wpass_code'] ?? '',
+      publicStartAt: json['public_start_at'] != null
+          ? DateTime.parse(json['public_start_at'])
+          : null,
+      isOwner: json['is_owner'] ?? false,
+      isEditor: json['is_editor'] ?? false,
+      isAnalyst: json['is_analyst'] ?? false,
     );
   }
 
@@ -45,7 +47,7 @@ class EventS {
       'image': imageUrl,
       'status': status,
       'wpass_code': wpassCode,
-      'public_start_at': publicStartAt.toIso8601String(),
+      'public_start_at': publicStartAt?.toIso8601String(),
       'is_owner': isOwner,
       'is_editor': isEditor,
       'is_analyst': isAnalyst,

@@ -24,7 +24,12 @@ class LoginPage extends StatelessWidget {
         ),
       ),
       body: Stack(
-        children: <Widget>[LoginForm()],
+        children: <Widget>[
+          Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: LoginForm(),
+          ),
+        ],
       ),
     );
   }
@@ -138,6 +143,7 @@ class _LoginFormState extends State<LoginForm> {
         ),
         const SizedBox(height: 30),
         TextPassword(context),
+        const SizedBox(height: 70),
         ElevatedButton(
           style: ButtonStyle(
             backgroundColor: MaterialStateProperty.all(Color(0xFF202B37)),

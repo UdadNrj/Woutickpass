@@ -13,8 +13,9 @@ class EventsScreen extends StatefulWidget {
 }
 
 class _EventsScreenState extends State<EventsScreen> {
-  late Future<List<EventS>> futureEvents;
-  List<EventS> events = [];
+  late Future<List<Event2>> futureEvents;
+  List<Event2> events = [];
+  Map<String, bool> checkedEvents = {};
 
   @override
   void initState() {
@@ -28,9 +29,9 @@ class _EventsScreenState extends State<EventsScreen> {
       backgroundColor: Colors.white,
       appBar: AppBar(
         backgroundColor: Colors.white,
-        title: Text('Events'),
+        title: Text('Eventos'),
       ),
-      body: FutureBuilder<List<EventS>>(
+      body: FutureBuilder<List<Event2>>(
         future: futureEvents,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
@@ -42,37 +43,34 @@ class _EventsScreenState extends State<EventsScreen> {
           }
 
           events = snapshot.data!;
+          for (var event in events) {
+            if (!checkedEvents.containsKey(event.uuid)) {
+              checkedEvents[event.uuid] = false;
+            }
+          }
 
           return ListView.builder(
             itemCount: events.length,
             itemBuilder: (context, index) {
-              EventS event = events[index];
+              Event2 event = events[index];
               return CheckboxListTile(
                 title: Text(event.name),
-                subtitle: Text(event.publicStartAt.toString()),
-                value: event.isSelected,
+                subtitle: Text(event.startAt.toString()),
+                value: checkedEvents[event.uuid],
                 onChanged: (bool? value) {
                   setState(() {
-                    event.isSelected = value ?? false;
+                    checkedEvents[event.uuid] = value ?? false;
                   });
                 },
                 secondary: IconButton(
-                  icon: Icon(Icons.arrow_forward),
+                  icon: Icon(Icons.info),
                   onPressed: () {
-                    if (event.isSelected) {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) =>
-                              EventDetailsScreen(event: event),
-                        ),
-                      );
-                    } else {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                            content: Text('Please select the event first.')),
-                      );
-                    }
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => EventDetailsScreen(event: event),
+                      ),
+                    );
                   },
                 ),
               );

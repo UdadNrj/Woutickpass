@@ -2,16 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:woutickpass/src/widgets/custom_Events.dart';
 
 class EventDetailsScreen extends StatelessWidget {
-  final EventS event;
+  final Event2 event;
 
   EventDetailsScreen({required this.event});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
       appBar: AppBar(
-        backgroundColor: Colors.white,
         title: Text(event.name),
       ),
       body: Padding(
@@ -23,9 +21,9 @@ class EventDetailsScreen extends StatelessWidget {
               event.name,
               style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
             ),
-            SizedBox(height: 16),
-            Text('Start Date: ${event.publicStartAt}'),
-            // Agrega más detalles del evento aquí
+            SizedBox(height: 8),
+            Text('Start at: ${event.startAt.toString()}'),
+            // Agrega aquí más detalles del evento según sea necesario
           ],
         ),
       ),

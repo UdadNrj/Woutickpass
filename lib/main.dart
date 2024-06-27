@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:woutickpass/providers/token_login.dart';
 import 'package:woutickpass/screens/home_screen.dart';
+import 'package:woutickpass/screens/login_screen.dart';
 
 // import 'src/app.dart';
 // import 'src/settings/settings_controller.dart';
@@ -19,9 +22,6 @@ import 'package:woutickpass/screens/home_screen.dart';
 //   // SettingsView.
 //   runApp(MyApp(settingsController: settingsController));
 //
-import 'package:provider/provider.dart';
-import 'package:woutickpass/providers/token_login.dart';
-import 'package:woutickpass/screens/login_screen.dart';
 
 void main() {
   runApp(const MyApp());
@@ -47,3 +47,51 @@ class MyApp extends StatelessWidget {
     );
   }
 }
+
+//Progresss mientras eduardo me envia endpoints
+
+// import 'package:provider/provider.dart';
+// import 'package:woutickpass/providers/token_login.dart';
+// import 'package:woutickpass/screens/login_screen.dart';
+
+// import 'package:woutickpass/models/Custom_Session.dart';
+
+// void main() {
+//   runApp(const MyApp());
+// }
+
+// class MyApp extends StatelessWidget {
+//   const MyApp({Key? key}) : super(key: key);
+
+//   @override
+//   Widget build(BuildContext context) {
+//     return MultiProvider(
+//       providers: [
+//         ChangeNotifierProvider(create: (_) => TokenProvider()),
+//       ],
+//       child: MaterialApp(
+//         debugShowCheckedModeBanner: false,
+//         title: 'WoutickPass',
+//         initialRoute: '/',
+//         onGenerateRoute: (settings) {
+//           if (settings.name == '/') {
+//             // Define the initial parameters here
+//             final int initialIndex = 0;
+//             final List<SessionOn> initialSelectedSessions = [];
+
+//             return MaterialPageRoute(
+//               builder: (context) => MainPage(
+//                 currentIndex: initialIndex,
+//                 selectedSessions: initialSelectedSessions,
+//               ),
+//             );
+//           } else if (settings.name == '/login') {
+//             return MaterialPageRoute(builder: (context) => LoginPage());
+//           }
+//           // Handle other routes if necessary
+//           return null;
+//         },
+//       ),
+//     );
+//   }
+// }

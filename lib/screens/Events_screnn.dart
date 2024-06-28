@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:woutickpass/screens/Events_details_screnn.dart';
 import 'package:woutickpass/screens/Tabs/main_nav.dart';
 import 'package:woutickpass/services/Api/auth_events.dart';
 import 'package:woutickpass/src/widgets/custom_Events.dart';
@@ -43,95 +42,88 @@ class _EventsScreenState extends State<EventsScreen> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
+        centerTitle: true,
         backgroundColor: Colors.white,
-        title: Text('Eventos'),
+        title: const Text('Eventos'),
       ),
-      body: FutureBuilder<List<Event2>>(
-        future: futureEvents,
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(child: CircularProgressIndicator());
-          } else if (snapshot.hasError) {
-            return Center(child: Text('Error: ${snapshot.error}'));
-          } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-            return Center(child: Text('No events found'));
-          }
+      body: Stack(
+        children: [
+          FutureBuilder<List<Event2>>(
+            future: futureEvents,
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return Center(child: CircularProgressIndicator());
+              } else if (snapshot.hasError) {
+                return Center(child: Text('Error: ${snapshot.error}'));
+              } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                return Center(child: Text('No events found'));
+              }
 
-          events = snapshot.data!;
-          for (var event in events) {
-            if (!checkedEvents.containsKey(event.uuid)) {
-              checkedEvents[event.uuid] = false;
-            }
-          }
+              events = snapshot.data!;
+              for (var event in events) {
+                if (!checkedEvents.containsKey(event.uuid)) {
+                  checkedEvents[event.uuid] = false;
+                }
+              }
 
-          return Column(
-            children: [
-              Expanded(
-                child: ListView.builder(
-                  itemCount: events.length,
-                  itemBuilder: (context, index) {
-                    Event2 event = events[index];
-                    return Padding(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 16.0, vertical: 8.0),
-                      child: Container(
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(8.0),
-                          border: Border.all(color: Colors.grey),
-                        ),
-                        child: CheckboxListTile(
-                          title: Text(event.name),
-                          subtitle: Text(event.startAt.toString()),
-                          value: checkedEvents[event.uuid],
-                          onChanged: (bool? value) {
-                            handleCheckboxChange(event.uuid, value);
-                          },
-                          secondary: IconButton(
-                            icon: Icon(Icons.info),
-                            onPressed: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) =>
-                                      EventDetailsScreen(event: event),
-                                ),
-                              );
-                            },
-                          ),
-                          activeColor: Colors.green,
-                        ),
+              return ListView.builder(
+                padding: const EdgeInsets.only(bottom: 80.0),
+                itemCount: events.length,
+                itemBuilder: (context, index) {
+                  Event2 event = events[index];
+                  return Padding(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 16.0, vertical: 8.0),
+                    child: Container(
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(8),
+                        border: Border.all(color: Color(0xFFE4E7EC)),
                       ),
-                    );
-                  },
-                ),
+                      child: CheckboxListTile(
+                        title: Text(event.name),
+                        subtitle: Text(event.startAt.toString()),
+                        value: checkedEvents[event.uuid],
+                        onChanged: (bool? value) {
+                          handleCheckboxChange(event.uuid, value);
+                        },
+                        activeColor: Colors.green,
+                      ),
+                    ),
+                  );
+                },
+              );
+            },
+          ),
+          Positioned(
+            bottom: 16.0,
+            left: 16.0,
+            right: 16.0,
+            child: ElevatedButton(
+              onPressed: isButtonActive
+                  ? () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => MainPage(
+                            currentIndex: 0,
+                            selectedEvents: getSelectedEvents(),
+                          ),
+                        ),
+                      );
+                    }
+                  : null,
+              child: Text(
+                'DESCARGAR ENTRADAS',
+                style: TextStyle(color: Colors.white),
               ),
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: ElevatedButton(
-                  onPressed: isButtonActive
-                      ? () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => MainPage(
-                                currentIndex: 0,
-                                selectedEvents: getSelectedEvents(),
-                              ),
-                            ),
-                          );
-                        }
-                      : null,
-                  child: Text('DESCARGAR ENTRADAS'),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.white,
-                    disabledBackgroundColor:
-                        isButtonActive ? Colors.blue : Colors.grey,
-                  ),
-                ),
+              style: ElevatedButton.styleFrom(
+                padding: EdgeInsets.symmetric(horizontal: 30, vertical: 16),
+                backgroundColor: Color(0xFF141C24),
+                disabledBackgroundColor: Colors.grey,
               ),
-            ],
-          );
-        },
+            ),
+          ),
+        ],
       ),
     );
   }

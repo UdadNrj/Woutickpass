@@ -79,6 +79,32 @@
 //   }
 // }
 
+// import 'package:flutter/material.dart';
+// import 'package:woutickpass/src/widgets/custom_Events.dart';
+
+// class PageEvents extends StatelessWidget {
+//   final List<Event2> selectedEvents;
+
+//   const PageEvents({
+//     Key? key,
+//     required this.selectedEvents,
+//   }) : super(key: key);
+
+//   @override
+//   Widget build(BuildContext context) {
+//     return ListView.builder(
+//       itemCount: selectedEvents.length,
+//       itemBuilder: (context, index) {
+//         Event2 event = selectedEvents[index];
+//         return ListTile(
+//           title: Text(event.name),
+//           subtitle: Text(event.startAt.toString()),
+//         );
+//       },
+//     );
+//   }
+// }
+
 import 'package:flutter/material.dart';
 import 'package:woutickpass/src/widgets/custom_Events.dart';
 
@@ -92,15 +118,79 @@ class PageEvents extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ListView.builder(
-      itemCount: selectedEvents.length,
-      itemBuilder: (context, index) {
-        Event2 event = selectedEvents[index];
-        return ListTile(
-          title: Text(event.name),
-          subtitle: Text(event.startAt.toString()),
-        );
-      },
+    return Scaffold(
+      body: Container(
+        color: Colors.grey[200],
+        child: ListView.builder(
+          itemCount: selectedEvents.length,
+          itemBuilder: (context, index) {
+            Event2 event = selectedEvents[index];
+            return GestureDetector(
+              onTap: () {
+                // Navega a la página de detalles del evento
+                // Navigator.push(
+                //   context,
+                //   MaterialPageRoute(
+                //     builder: (context) => EventDetailsPage(event: event),
+                //   ),
+                // );
+              },
+              child: Container(
+                margin: EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+                padding: EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(8),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.grey.withOpacity(0.2),
+                      spreadRadius: 2,
+                      blurRadius: 5,
+                      offset: Offset(0, 3),
+                    ),
+                  ],
+                ),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            event.name,
+                            style: TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          SizedBox(height: 8),
+                          Text(
+                            '${event.startAt} - Ubicación',
+                            style: TextStyle(
+                              color: Colors.grey,
+                            ),
+                          ),
+                          SizedBox(height: 8),
+                          Text(
+                            '0/200 entradas validadas',
+                            style: TextStyle(
+                              color: Colors.grey,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    Icon(
+                      Icons.arrow_forward_ios,
+                      color: Colors.grey,
+                    ),
+                  ],
+                ),
+              ),
+            );
+          },
+        ),
+      ),
     );
   }
 }

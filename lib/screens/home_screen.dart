@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
+import 'package:provider/provider.dart';
 import 'package:woutickpass/models/Button_code.dart';
+import 'package:woutickpass/providers/token_login.dart';
 import 'package:woutickpass/screens/login_screen.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -12,22 +13,25 @@ class HomeScreen extends StatefulWidget {
 
 void _openIconButtonPressed(BuildContext context) {
   showModalBottomSheet(
-      backgroundColor: Colors.white,
-      isScrollControlled: true,
-      context: context,
-      builder: (ctx) => SingleChildScrollView(
-            child: Container(
-              padding: EdgeInsets.only(
-                bottom: MediaQuery.of(context).viewInsets.bottom,
-              ),
-              child: CodePage(),
-            ),
-          ));
+    backgroundColor: Colors.white,
+    isScrollControlled: true,
+    context: context,
+    builder: (ctx) => SingleChildScrollView(
+      child: Container(
+        padding: EdgeInsets.only(
+          bottom: MediaQuery.of(context).viewInsets.bottom,
+        ),
+        child: CodePage(),
+      ),
+    ),
+  );
 }
 
 class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
+    var tokenProvider = context.watch<TokenProvider>();
+
     return Scaffold(
       resizeToAvoidBottomInset: false,
       body: Stack(
@@ -49,37 +53,52 @@ class _HomeScreenState extends State<HomeScreen> {
                 TitleFeaturedWidget(),
                 const SizedBox(height: 50),
                 ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      padding:
-                          EdgeInsets.symmetric(horizontal: 70, vertical: 16),
-                      backgroundColor: Color(0xFFCC3364),
-                    ),
-                    onPressed: () => _openIconButtonPressed(context),
-                    child: const Text(
-                      "INTRODUCIR CODIGO DE EVENTO",
-                      style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 13,
-                          fontWeight: FontWeight.w700),
-                    )),
-                const SizedBox(height: 20),
-                ButtonHeader(),
-                TextButton(
-                  onPressed: () {
-                    Navigator.push(
-                        context,
-                        _createRoute(
-                          LoginPage(),
-                        ));
-                  },
+                  style: ElevatedButton.styleFrom(
+                    padding: EdgeInsets.symmetric(horizontal: 70, vertical: 16),
+                    backgroundColor: Color(0xFFCC3364),
+                  ),
+                  onPressed: () => _openIconButtonPressed(context),
                   child: const Text(
-                    'Iniciar Sesión',
+                    "INTRODUCIR CODIGO DE EVENTO",
                     style: TextStyle(
-                        color: Color(0xFFCC3364),
-                        fontSize: 14,
-                        fontWeight: FontWeight.w500),
+                      color: Colors.white,
+                      fontSize: 13,
+                      fontWeight: FontWeight.w700,
+                    ),
                   ),
                 ),
+                const SizedBox(height: 20),
+                ButtonHeader(),
+                if (tokenProvider.token.isEmpty)
+                  TextButton(
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        _createRoute(LoginPage()),
+                      );
+                    },
+                    child: const Text(
+                      'Iniciar Sesión',
+                      style: TextStyle(
+                        color: Color(0xFFCC3364),
+                        fontSize: 14,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  )
+                else
+                  Column(
+                    children: [
+                      ElevatedButton(
+                        onPressed: () {
+                          tokenProvider.clearToken();
+                        },
+                        child: const Text('Cerrar Sesión'),
+                      ),
+                      const SizedBox(height: 20),
+                      // Aquí puedes agregar la lógica para mostrar los eventos cargados
+                    ],
+                  ),
               ],
             ),
           ),
@@ -91,13 +110,13 @@ class _HomeScreenState extends State<HomeScreen> {
 
 Route _createRoute(Widget child) {
   return PageRouteBuilder(
-    pageBuilder: (context, animation, secondaryAnimation) => LoginPage(),
+    pageBuilder: (context, animation, secondaryAnimation) => child,
     transitionsBuilder: (context, animation, secondaryAnimation, child) {
       const begin = Offset(0.0, 1.0);
       const end = Offset.zero;
-      const Curve = Curves.easeInOutCirc;
+      const curve = Curves.easeInOutCirc;
 
-      var tween = Tween(begin: begin, end: end).chain(CurveTween(curve: Curve));
+      var tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
 
       return SlideTransition(
         position: animation.drive(tween),
@@ -117,10 +136,10 @@ class TitleUpWidget extends StatelessWidget {
           height: 500,
           color: Colors.transparent,
         ),
-        Positioned(
-          top: 20,
-          child: SvgPicture.asset("assets/icons/Logo-Div.svg"),
-        ),
+        // Positioned(
+        //   top: 20,
+        //   child: Svgpicture.asset("assets/icons/Logo-Div.svg"),
+        // ),
       ],
     );
   }

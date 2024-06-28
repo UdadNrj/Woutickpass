@@ -3,31 +3,33 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:woutickpass/services/controllers/filter.dart';
 import 'package:woutickpass/services/controllers/route.dart';
 import 'package:woutickpass/screens/Tabs/button_nav.dart';
-import 'package:woutickpass/src/widgets/custom_Events.dart';
+import 'package:woutickpass/src/widgets/custom_events.dart';
 
 class MainPage extends StatefulWidget {
+  final String token;
   final int currentIndex;
   final List<Event2> selectedEvents;
 
   const MainPage({
     Key? key,
+    required this.token,
     required this.currentIndex,
     required this.selectedEvents,
   }) : super(key: key);
 
   @override
-  State<StatefulWidget> createState() => _MainPageState();
+  _MainPageState createState() => _MainPageState();
 }
 
 class _MainPageState extends State<MainPage> {
   late int _currentIndex;
-  late List<Event2> selectedEvents;
+  late List<Event2> _selectedEvents;
 
   @override
   void initState() {
     super.initState();
-    _currentIndex = widget.currentIndex == 0 ? 1 : widget.currentIndex;
-    selectedEvents = widget.selectedEvents;
+    _currentIndex = widget.currentIndex;
+    _selectedEvents = widget.selectedEvents;
   }
 
   void _openFilterSheet(BuildContext context) {
@@ -93,11 +95,10 @@ class _MainPageState extends State<MainPage> {
         padding: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
         child: Column(
           children: [
-            Container(),
             Expanded(
               child: Routes(
                 index: _currentIndex,
-                selectedEvents: selectedEvents,
+                selectedEvents: _selectedEvents,
               ),
             ),
           ],

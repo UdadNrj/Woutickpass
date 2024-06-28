@@ -159,16 +159,14 @@ class _LoginFormState extends State<LoginForm> {
           onPressed: () async {
             try {
               final token = await askToken();
-              SharedPreferences prefs = await SharedPreferences.getInstance();
               if (token.isNotEmpty) {
-                debugPrint(token);
+                SharedPreferences prefs = await SharedPreferences.getInstance();
                 prefs.setString('token', token);
-                context.read<TokenProvider>().change(token);
-                Navigator.push(
+                context.read<TokenProvider>().changeToken(token);
+                Navigator.pushReplacement(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => EventsScreen(token: token),
-                  ),
+                      builder: (context) => EventsScreen(token: token)),
                 );
               }
             } catch (e) {

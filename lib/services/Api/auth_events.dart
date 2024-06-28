@@ -56,11 +56,11 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
-import 'package:woutickpass/src/widgets/custom_Events.dart';
+import 'package:woutickpass/src/widgets/custom_events.dart';
 
 class EventService {
   static Future<List<Event2>> getEvents(String token) async {
-    const String url = "https://api-dev.woutick.com/back/v1/session/get-wpass/";
+    const String url = 'https://api-dev.woutick.com/back/v1/session/get-wpass/';
     try {
       final headers = {
         'Content-Type': 'application/json',

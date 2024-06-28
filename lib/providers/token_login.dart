@@ -1,12 +1,33 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class TokenProvider with ChangeNotifier {
   String _token = "";
 
   String get token => _token;
 
-  void change(String newToken) {
+  TokenProvider() {
+    _loadToken();
+  }
+
+  Future<void> _loadToken() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    _token = prefs.getString('token') ?? "";
+    notifyListeners();
+  }
+
+  void changeToken(String newToken) async {
     _token = newToken;
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setString('token', newToken);
+    notifyListeners();
+  }
+
+  void clearToken() async {
+    _token = "";
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.remove('token');
+    notifyListeners();
   }
 }
 

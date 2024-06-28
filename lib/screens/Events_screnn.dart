@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:woutickpass/screens/Tabs/main_nav.dart';
 import 'package:woutickpass/services/Api/auth_events.dart';
-import 'package:woutickpass/src/widgets/custom_Events.dart';
+import 'package:woutickpass/src/widgets/custom_events.dart';
 
 class EventsScreen extends StatefulWidget {
   final String token;
@@ -44,7 +44,7 @@ class _EventsScreenState extends State<EventsScreen> {
       appBar: AppBar(
         centerTitle: true,
         backgroundColor: Colors.white,
-        title: const Text('Eventos'),
+        title: Text('Eventos'),
       ),
       body: Stack(
         children: [
@@ -56,7 +56,7 @@ class _EventsScreenState extends State<EventsScreen> {
               } else if (snapshot.hasError) {
                 return Center(child: Text('Error: ${snapshot.error}'));
               } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                return Center(child: Text('No events found'));
+                return Center(child: Text('No se encontraron eventos'));
               }
 
               events = snapshot.data!;
@@ -67,13 +67,14 @@ class _EventsScreenState extends State<EventsScreen> {
               }
 
               return ListView.builder(
-                padding: const EdgeInsets.only(bottom: 80.0),
                 itemCount: events.length,
                 itemBuilder: (context, index) {
                   Event2 event = events[index];
                   return Padding(
                     padding: const EdgeInsets.symmetric(
-                        horizontal: 16.0, vertical: 8.0),
+                      horizontal: 16.0,
+                      vertical: 8.0,
+                    ),
                     child: Container(
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(8),
@@ -101,12 +102,14 @@ class _EventsScreenState extends State<EventsScreen> {
             child: ElevatedButton(
               onPressed: isButtonActive
                   ? () {
+                      List<Event2> selectedEvents = getSelectedEvents();
                       Navigator.push(
                         context,
                         MaterialPageRoute(
                           builder: (context) => MainPage(
-                            currentIndex: 0,
-                            selectedEvents: getSelectedEvents(),
+                            token: widget.token,
+                            currentIndex: 1,
+                            selectedEvents: selectedEvents,
                           ),
                         ),
                       );

@@ -106,7 +106,7 @@
 // }
 
 import 'package:flutter/material.dart';
-import 'package:woutickpass/src/widgets/custom_Events.dart';
+import 'package:woutickpass/src/widgets/custom_events.dart';
 
 class PageEvents extends StatelessWidget {
   final List<Event2> selectedEvents;

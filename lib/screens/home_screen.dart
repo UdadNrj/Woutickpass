@@ -138,7 +138,7 @@ class TitleUpWidget extends StatelessWidget {
         ),
         // Positioned(
         //   top: 20,
-        //   child: Svgpicture.asset("assets/icons/Logo-Div.svg"),
+        //   child: SvgPicture.asset("assets/icons/Logo-Div.svg"),
         // ),
       ],
     );

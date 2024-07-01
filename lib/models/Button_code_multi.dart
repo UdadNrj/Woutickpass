@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:woutickpass/screens/Events_screnn.dart';
 
 class CodePageMulti extends StatefulWidget {
   const CodePageMulti({Key? key}) : super(key: key);

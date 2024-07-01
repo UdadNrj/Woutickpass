@@ -22,7 +22,46 @@ import 'package:woutickpass/screens/home_screen.dart';
 //   // SettingsView.
 //   runApp(MyApp(settingsController: settingsController));
 
+// void main() {
+//   runApp(MyApp());
+// }
+
+// class MyApp extends StatelessWidget {
+//   @override
+//   Widget build(BuildContext context) {
+//     return MultiProvider(
+//       providers: [
+//         ChangeNotifierProvider(create: (_) => TokenProvider()),
+//       ],
+//       child: MaterialApp(
+//         debugShowCheckedModeBanner: false,
+//         title: 'WoutickPass',
+//         theme: ThemeData(
+//           primarySwatch: Colors.blue,
+//         ),
+//         initialRoute: '/',
+//         routes: {
+//           '/': (context) => Consumer<TokenProvider>(
+//                 builder: (context, tokenProvider, _) {
+//                   if (tokenProvider.token.isEmpty) {
+//                     return HomeScreen();
+//                   } else {
+//                     return MainPage(
+//                       token: tokenProvider.token,
+//                       currentIndex: 1,
+//                       selectedEvents: [],
+//                     );
+//                   }
+//                 },
+//               ),
+//         },
+//       ),
+//     );
+//   }
+// }
+
 void main() {
+  WidgetsFlutterBinding.ensureInitialized();
   runApp(MyApp());
 }
 
@@ -39,9 +78,13 @@ class MyApp extends StatelessWidget {
         theme: ThemeData(
           primarySwatch: Colors.blue,
         ),
-        initialRoute: '/',
-        routes: {
-          '/': (context) => Consumer<TokenProvider>(
+        home: FutureBuilder(
+          future: _simulateStartup(),
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return SplashScreen();
+            } else {
+              return Consumer<TokenProvider>(
                 builder: (context, tokenProvider, _) {
                   if (tokenProvider.token.isEmpty) {
                     return HomeScreen();
@@ -53,12 +96,30 @@ class MyApp extends StatelessWidget {
                     );
                   }
                 },
-              ),
-        },
+              );
+            }
+          },
+        ),
+      ),
+    );
+  }
+
+  Future<void> _simulateStartup() async {
+    await Future.delayed(Duration(seconds: 3));
+  }
+}
+
+class SplashScreen extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: Center(
+        child: CircularProgressIndicator(),
       ),
     );
   }
 }
+
 
 
 //Progresss mientras eduardo me envia endpoints

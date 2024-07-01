@@ -16,20 +16,22 @@ class TokenProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  void changeToken(String newToken) async {
+  Future<void> changeToken(String newToken) async {
     _token = newToken;
     SharedPreferences prefs = await SharedPreferences.getInstance();
     await prefs.setString('token', newToken);
     notifyListeners();
   }
 
-  void clearToken() async {
+  Future<void> clearToken() async {
     _token = "";
     SharedPreferences prefs = await SharedPreferences.getInstance();
     await prefs.remove('token');
     notifyListeners();
   }
 }
+
+
 
 // import 'package:flutter/material.dart';
 

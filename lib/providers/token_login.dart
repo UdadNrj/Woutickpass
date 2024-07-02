@@ -1,11 +1,11 @@
-import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:woutickpass/models/events_objeto..dart';
+import 'package:woutickpass/services/database.dart';
 
 class TokenProvider with ChangeNotifier {
   String _token = '';
   List<Event> _selectedEvents = [];
+  final DatabaseHelper _dbHelper = DatabaseHelper();
 
   String get token => _token;
   List<Event> get selectedEvents => _selectedEvents;
@@ -16,55 +16,42 @@ class TokenProvider with ChangeNotifier {
   }
 
   Future<void> _loadToken() async {
-    final prefs = await SharedPreferences.getInstance();
-    _token = prefs.getString('token') ?? '';
+    _token = await _dbHelper.retrieveToken() ?? '';
     notifyListeners();
   }
 
   Future<void> _loadSelectedEvents() async {
-    final prefs = await SharedPreferences.getInstance();
-    final eventsJson = prefs.getStringList('selectedEvents') ?? [];
-    _selectedEvents = eventsJson.map((json) {
-      final eventMap = Map<String, dynamic>.from(jsonDecode(json));
-      return Event.fromJson(eventMap);
-    }).toList();
+    _selectedEvents = await _dbHelper.getSelectedEvents();
     notifyListeners();
   }
 
   Future<void> setToken(String token) async {
     _token = token;
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setString('token', token);
+    await _dbHelper.insertToken(token);
     notifyListeners();
   }
 
   Future<void> addEvent(Event event) async {
     _selectedEvents.add(event);
-    final prefs = await SharedPreferences.getInstance();
-    final eventsJson =
-        _selectedEvents.map((e) => jsonEncode(e.toJson())).toList();
-    await prefs.setStringList('selectedEvents', eventsJson);
+    await _dbHelper.addEvent(event);
     notifyListeners();
   }
 
   Future<void> removeEvent(Event event) async {
     _selectedEvents.removeWhere((e) => e.uuid == event.uuid);
-    final prefs = await SharedPreferences.getInstance();
-    final eventsJson =
-        _selectedEvents.map((e) => jsonEncode(e.toJson())).toList();
-    await prefs.setStringList('selectedEvents', eventsJson);
+    await _dbHelper.removeEvent(event.uuid);
     notifyListeners();
   }
 
   Future<void> clearToken() async {
     _token = '';
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.remove('token');
-    await prefs.remove('selectedEvents');
+    await _dbHelper.deleteToken();
     _selectedEvents.clear();
     notifyListeners();
   }
 }
+
+
 // import 'package:flutter/material.dart';
 
 // class TokenProvider with ChangeNotifier {

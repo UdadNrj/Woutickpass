@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:woutickpass/services/database.dart';
 
 class PageSetting extends StatefulWidget {
   const PageSetting({Key? key}) : super(key: key);
@@ -15,6 +15,8 @@ class _PageSettingState extends State<PageSetting> {
   bool receiveNotification = true;
   bool readModeNotification = true;
 
+  final DatabaseHelper _dbHelper = DatabaseHelper();
+
   @override
   void initState() {
     super.initState();
@@ -22,19 +24,19 @@ class _PageSettingState extends State<PageSetting> {
   }
 
   Future<void> _loadSettings() async {
-    final prefs = await SharedPreferences.getInstance();
-    setState(() {
-      offlineMode = prefs.getBool('offlineMode') ?? true;
-      showAttendeesCounter = prefs.getBool('showAttendeesCounter') ?? true;
-      vibration = prefs.getBool('vibration') ?? true;
-      receiveNotification = prefs.getBool('receiveNotification') ?? true;
-      readModeNotification = prefs.getBool('readModeNotification') ?? true;
-    });
+    offlineMode = await _dbHelper.loadSetting('offlineMode', true);
+    showAttendeesCounter =
+        await _dbHelper.loadSetting('showAttendeesCounter', true);
+    vibration = await _dbHelper.loadSetting('vibration', true);
+    receiveNotification =
+        await _dbHelper.loadSetting('receiveNotification', true);
+    readModeNotification =
+        await _dbHelper.loadSetting('readModeNotification', true);
+    setState(() {});
   }
 
   Future<void> _saveSetting(String key, bool value) async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setBool(key, value);
+    await _dbHelper.saveSetting(key, value);
   }
 
   @override

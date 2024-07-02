@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'dart:convert';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
 import 'package:woutickpass/providers/token_login.dart';
 import 'package:woutickpass/screens/Events_screnn.dart';
 import 'package:woutickpass/screens/password_screen.dart';
+import 'package:woutickpass/services/database.dart';
 
 class LoginPage extends StatelessWidget {
   const LoginPage({super.key});
@@ -160,8 +160,8 @@ class _LoginFormState extends State<LoginForm> {
             try {
               final token = await askToken();
               if (token.isNotEmpty) {
-                SharedPreferences prefs = await SharedPreferences.getInstance();
-                await prefs.setString('token', token);
+                final dbHelper = DatabaseHelper();
+                await dbHelper.insertToken(token);
                 context.read<TokenProvider>().setToken(token);
                 Navigator.pushReplacement(
                   context,
@@ -171,11 +171,8 @@ class _LoginFormState extends State<LoginForm> {
                 );
               }
             } catch (e) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text('Error: $e'),
-                ),
-              );
+              // Manejo de errores
+              print('Error al guardar el token: $e');
             }
           },
           child: const Text('INICIAR SESION'),

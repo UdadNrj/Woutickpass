@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:woutickpass/src/widgets/custom_Events.dart';
+import 'package:woutickpass/models/events_objeto..dart';
 
 class EventDetailsScreen extends StatelessWidget {
-  final Event2 event;
+  final Event event;
 
   EventDetailsScreen({required this.event});
 

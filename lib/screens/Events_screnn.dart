@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:woutickpass/models/events_objeto..dart';
 import 'package:woutickpass/screens/Tabs/main_nav.dart';
 import 'package:woutickpass/services/Api/auth_events.dart';
-import 'package:woutickpass/src/widgets/custom_events.dart';
 
 class EventsScreen extends StatefulWidget {
   final String token;
@@ -13,8 +13,8 @@ class EventsScreen extends StatefulWidget {
 }
 
 class _EventsScreenState extends State<EventsScreen> {
-  late Future<List<Event2>> futureEvents;
-  List<Event2> events = [];
+  late Future<List<Event>> futureEvents;
+  List<Event> events = [];
   Map<String, bool> checkedEvents = {};
 
   @override
@@ -33,7 +33,7 @@ class _EventsScreenState extends State<EventsScreen> {
     });
   }
 
-  List<Event2> getSelectedEvents() {
+  List<Event> getSelectedEvents() {
     return events.where((event) => checkedEvents[event.uuid] == true).toList();
   }
 
@@ -48,7 +48,7 @@ class _EventsScreenState extends State<EventsScreen> {
       ),
       body: Stack(
         children: [
-          FutureBuilder<List<Event2>>(
+          FutureBuilder<List<Event>>(
             future: futureEvents,
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
@@ -69,7 +69,7 @@ class _EventsScreenState extends State<EventsScreen> {
               return ListView.builder(
                 itemCount: events.length,
                 itemBuilder: (context, index) {
-                  Event2 event = events[index];
+                  Event event = events[index];
                   return Padding(
                     padding: const EdgeInsets.symmetric(
                       horizontal: 16.0,
@@ -102,7 +102,7 @@ class _EventsScreenState extends State<EventsScreen> {
             child: ElevatedButton(
               onPressed: isButtonActive
                   ? () {
-                      List<Event2> selectedEvents = getSelectedEvents();
+                      List<Event> selectedEvents = getSelectedEvents();
                       Navigator.push(
                         context,
                         MaterialPageRoute(

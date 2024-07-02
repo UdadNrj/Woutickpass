@@ -4,6 +4,77 @@ import 'package:woutickpass/providers/token_login.dart';
 import 'package:woutickpass/screens/Tabs/main_nav.dart';
 import 'package:woutickpass/screens/home_screen.dart';
 
+void main() {
+  WidgetsFlutterBinding.ensureInitialized();
+  runApp(MyApp());
+}
+
+class MyApp extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => TokenProvider()),
+      ],
+      child: MaterialApp(
+        debugShowCheckedModeBanner: false,
+        title: 'WoutickPass',
+        theme: ThemeData(
+          primarySwatch: Colors.blue,
+        ),
+        home: SplashScreen(),
+      ),
+    );
+  }
+}
+
+class SplashScreen extends StatefulWidget {
+  @override
+  _SplashScreenState createState() => _SplashScreenState();
+}
+
+class _SplashScreenState extends State<SplashScreen> {
+  @override
+  void initState() {
+    super.initState();
+    _simulateStartup();
+  }
+
+  Future<void> _simulateStartup() async {
+    await Future.delayed(Duration(seconds: 5));
+    Navigator.of(context).pushReplacement(
+      MaterialPageRoute(builder: (context) => MainPageOrHomeScreen()),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return WillPopScope(
+      onWillPop: () async => false,
+      child: Scaffold(
+        body: Center(
+          child: CircularProgressIndicator(),
+        ),
+      ),
+    );
+  }
+
+  Widget MainPageOrHomeScreen() {
+    return Consumer<TokenProvider>(
+      builder: (context, tokenProvider, _) {
+        if (tokenProvider.token.isEmpty) {
+          return HomeScreen();
+        } else {
+          return MainPage(
+            token: tokenProvider.token,
+            currentIndex: 1,
+            selectedEvents: tokenProvider.selectedEvents,
+          );
+        }
+      },
+    );
+  }
+}
 // import 'src/app.dart';
 // import 'src/settings/settings_controller.dart';
 // import 'src/settings/settings_service.dart';
@@ -59,67 +130,6 @@ import 'package:woutickpass/screens/home_screen.dart';
 //     );
 //   }
 // }
-
-void main() {
-  WidgetsFlutterBinding.ensureInitialized();
-  runApp(MyApp());
-}
-
-class MyApp extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return MultiProvider(
-      providers: [
-        ChangeNotifierProvider(create: (_) => TokenProvider()),
-      ],
-      child: MaterialApp(
-        debugShowCheckedModeBanner: false,
-        title: 'WoutickPass',
-        theme: ThemeData(
-          primarySwatch: Colors.blue,
-        ),
-        home: FutureBuilder(
-          future: _simulateStartup(),
-          builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return SplashScreen();
-            } else {
-              return Consumer<TokenProvider>(
-                builder: (context, tokenProvider, _) {
-                  if (tokenProvider.token.isEmpty) {
-                    return HomeScreen();
-                  } else {
-                    return MainPage(
-                      token: tokenProvider.token,
-                      currentIndex: 1,
-                      selectedEvents: [],
-                    );
-                  }
-                },
-              );
-            }
-          },
-        ),
-      ),
-    );
-  }
-
-  Future<void> _simulateStartup() async {
-    await Future.delayed(Duration(seconds: 3));
-  }
-}
-
-class SplashScreen extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      body: Center(
-        child: CircularProgressIndicator(),
-      ),
-    );
-  }
-}
-
 
 
 //Progresss mientras eduardo me envia endpoints

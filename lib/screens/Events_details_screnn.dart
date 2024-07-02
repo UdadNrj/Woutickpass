@@ -23,7 +23,6 @@ class EventDetailsScreen extends StatelessWidget {
             ),
             SizedBox(height: 8),
             Text('Start at: ${event.startAt.toString()}'),
-            // Agrega aquí más detalles del evento según sea necesario
           ],
         ),
       ),

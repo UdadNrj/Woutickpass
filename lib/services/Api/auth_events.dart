@@ -56,10 +56,10 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
-import 'package:woutickpass/src/widgets/custom_events.dart';
+import 'package:woutickpass/models/events_objeto..dart';
 
 class EventService {
-  static Future<List<Event2>> getEvents(String token) async {
+  static Future<List<Event>> getEvents(String token) async {
     const String url = 'https://api-dev.woutick.com/back/v1/session/get-wpass/';
     try {
       final headers = {
@@ -85,8 +85,8 @@ class EventService {
         debugPrint('Decoded JSON: $jsonResponse');
 
         if (jsonResponse is List) {
-          List<Event2> events =
-              jsonResponse.map((json) => Event2.fromJson(json)).toList();
+          List<Event> events =
+              jsonResponse.map((json) => Event.fromJson(json)).toList();
           return events;
         } else {
           throw Exception('Expected a list of events but found: $jsonResponse');

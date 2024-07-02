@@ -23,7 +23,7 @@ class LoginPage extends StatelessWidget {
           },
         ),
       ),
-      body: Stack(
+      body: const Stack(
         children: <Widget>[
           Padding(
             padding: const EdgeInsets.all(16.0),
@@ -161,12 +161,13 @@ class _LoginFormState extends State<LoginForm> {
               final token = await askToken();
               if (token.isNotEmpty) {
                 SharedPreferences prefs = await SharedPreferences.getInstance();
-                prefs.setString('token', token);
-                context.read<TokenProvider>().changeToken(token);
+                await prefs.setString('token', token);
+                context.read<TokenProvider>().setToken(token);
                 Navigator.pushReplacement(
                   context,
                   MaterialPageRoute(
-                      builder: (context) => EventsScreen(token: token)),
+                    builder: (context) => EventsScreen(token: token),
+                  ),
                 );
               }
             } catch (e) {

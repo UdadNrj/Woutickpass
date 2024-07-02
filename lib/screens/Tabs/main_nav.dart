@@ -1,14 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:provider/provider.dart';
+import 'package:woutickpass/models/events_objeto..dart';
+import 'package:woutickpass/providers/token_login.dart';
+import 'package:woutickpass/screens/Tabs/button_nav.dart';
 import 'package:woutickpass/services/controllers/filter.dart';
 import 'package:woutickpass/services/controllers/route.dart';
-import 'package:woutickpass/screens/Tabs/button_nav.dart';
-import 'package:woutickpass/src/widgets/custom_events.dart';
 
 class MainPage extends StatefulWidget {
   final String token;
   final int currentIndex;
-  final List<Event2> selectedEvents;
+  final List<Event> selectedEvents;
 
   const MainPage({
     Key? key,
@@ -23,7 +25,7 @@ class MainPage extends StatefulWidget {
 
 class _MainPageState extends State<MainPage> {
   late int _currentIndex;
-  late List<Event2> _selectedEvents;
+  late List<Event> _selectedEvents;
 
   @override
   void initState() {
@@ -62,48 +64,52 @@ class _MainPageState extends State<MainPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        automaticallyImplyLeading: false,
-        backgroundColor: Colors.white,
-        centerTitle: true,
-        title: _getAppBarTitle(_currentIndex),
-        leading: IconButton(
-          onPressed: () {},
-          icon: SvgPicture.asset(
-            "assets/icons/Modo_online.svg",
-          ),
-        ),
-        actions: <Widget>[
-          if (_currentIndex == 1)
-            IconButton(
-              icon: SvgPicture.asset("assets/icons/Filter.svg"),
-              onPressed: () => _openFilterSheet(context),
-            ),
-        ],
-      ),
-      bottomNavigationBar: BNavigator(
-        currentIndex: _currentIndex,
-        onIndexChanged: (index) {
-          setState(() {
-            _currentIndex = index;
-          });
-        },
-      ),
-      body: Container(
-        color: Colors.grey[200],
-        padding: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-        child: Column(
-          children: [
-            Expanded(
-              child: Routes(
-                index: _currentIndex,
-                selectedEvents: _selectedEvents,
+    return Consumer<TokenProvider>(
+      builder: (context, tokenProvider, child) {
+        return Scaffold(
+          appBar: AppBar(
+            automaticallyImplyLeading: false,
+            backgroundColor: Colors.white,
+            centerTitle: true,
+            title: _getAppBarTitle(_currentIndex),
+            leading: IconButton(
+              onPressed: () {},
+              icon: SvgPicture.asset(
+                "assets/icons/Modo_online.svg",
               ),
             ),
-          ],
-        ),
-      ),
+            actions: <Widget>[
+              if (_currentIndex == 1)
+                IconButton(
+                  icon: SvgPicture.asset("assets/icons/Filter.svg"),
+                  onPressed: () => _openFilterSheet(context),
+                ),
+            ],
+          ),
+          bottomNavigationBar: BNavigator(
+            currentIndex: _currentIndex,
+            onIndexChanged: (index) {
+              setState(() {
+                _currentIndex = index;
+              });
+            },
+          ),
+          body: Container(
+            color: Colors.grey[200],
+            padding: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+            child: Column(
+              children: [
+                Expanded(
+                  child: Routes(
+                    index: _currentIndex,
+                    selectedEvents: _selectedEvents,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
     );
   }
 }

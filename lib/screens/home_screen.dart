@@ -3,31 +3,11 @@ import 'package:provider/provider.dart';
 import 'package:woutickpass/models/Button_code.dart';
 import 'package:woutickpass/providers/token_login.dart';
 import 'package:woutickpass/screens/login_screen.dart';
+import 'package:flutter_svg/svg.dart';
 
-class HomeScreen extends StatefulWidget {
+class HomeScreen extends StatelessWidget {
   const HomeScreen({Key? key}) : super(key: key);
 
-  @override
-  State<HomeScreen> createState() => _HomeScreenState();
-}
-
-void _openIconButtonPressed(BuildContext context) {
-  showModalBottomSheet(
-    backgroundColor: Colors.white,
-    isScrollControlled: true,
-    context: context,
-    builder: (ctx) => SingleChildScrollView(
-      child: Container(
-        padding: EdgeInsets.only(
-          bottom: MediaQuery.of(context).viewInsets.bottom,
-        ),
-        child: CodePage(),
-      ),
-    ),
-  );
-}
-
-class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     var tokenProvider = context.watch<TokenProvider>();
@@ -96,7 +76,6 @@ class _HomeScreenState extends State<HomeScreen> {
                         child: const Text('Cerrar Sesión'),
                       ),
                       const SizedBox(height: 20),
-                      // Aquí puedes agregar la lógica para mostrar los eventos cargados
                     ],
                   ),
               ],
@@ -106,6 +85,22 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
     );
   }
+}
+
+void _openIconButtonPressed(BuildContext context) {
+  showModalBottomSheet(
+    backgroundColor: Colors.white,
+    isScrollControlled: true,
+    context: context,
+    builder: (ctx) => SingleChildScrollView(
+      child: Container(
+        padding: EdgeInsets.only(
+          bottom: MediaQuery.of(context).viewInsets.bottom,
+        ),
+        child: CodePage(),
+      ),
+    ),
+  );
 }
 
 Route _createRoute(Widget child) {
@@ -136,10 +131,10 @@ class TitleUpWidget extends StatelessWidget {
           height: 500,
           color: Colors.transparent,
         ),
-        // Positioned(
-        //   top: 20,
-        //   child: SvgPicture.asset("assets/icons/Logo-Div.svg"),
-        // ),
+        Positioned(
+          top: 20,
+          child: SvgPicture.asset("assets/icons/Logo-Div.svg"),
+        ),
       ],
     );
   }

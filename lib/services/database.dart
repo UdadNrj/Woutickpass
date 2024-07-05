@@ -137,4 +137,9 @@ class DatabaseHelper {
       whereArgs: [key],
     );
   }
+
+  // Logout Method
+  Future<void> logout() async {
+    await deleteToken();
+  }
 }

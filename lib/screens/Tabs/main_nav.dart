@@ -42,7 +42,7 @@ class _MainPageState extends State<MainPage> {
       builder: (ctx) => SingleChildScrollView(
         child: Container(
           height: MediaQuery.of(context).size.height * 0.8,
-          padding: EdgeInsets.all(16),
+          padding: EdgeInsets.all(18),
           child: addFilter(),
         ),
       ),
@@ -56,7 +56,7 @@ class _MainPageState extends State<MainPage> {
       case 1:
         return SvgPicture.asset('assets/icons/Logo-Div-black.svg');
       case 2:
-        return Text('Settings');
+        return Text('Ajustes');
       default:
         return Container();
     }
@@ -96,7 +96,6 @@ class _MainPageState extends State<MainPage> {
           ),
           body: Container(
             color: Colors.grey[200],
-            padding: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
             child: Column(
               children: [
                 Expanded(

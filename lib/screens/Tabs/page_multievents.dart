@@ -10,7 +10,6 @@ class _PageMultiEventsState extends State<PageMultiEvents> {
   void _openIconButtonPressed(BuildContext context) {
     showModalBottomSheet(
       backgroundColor: Color.fromARGB(255, 255, 255, 255),
-      isScrollControlled: true,
       context: context,
       builder: (ctx) => SingleChildScrollView(
         child: Container(

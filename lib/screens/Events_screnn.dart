@@ -44,7 +44,7 @@ class _EventsScreenState extends State<EventsScreen> {
       appBar: AppBar(
         centerTitle: true,
         backgroundColor: Colors.white,
-        title: Text('Eventos'),
+        title: const Text('Eventos'),
       ),
       body: Stack(
         children: [
@@ -56,7 +56,7 @@ class _EventsScreenState extends State<EventsScreen> {
               } else if (snapshot.hasError) {
                 return Center(child: Text('Error: ${snapshot.error}'));
               } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                return Center(child: Text('No se encontraron eventos'));
+                return Center(child: Text('No se encontraron Eventos'));
               }
 
               events = snapshot.data!;

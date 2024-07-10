@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
 import 'package:woutickpass/models/events_objeto..dart';
-import 'package:woutickpass/providers/token_login.dart';
+import 'package:woutickpass/providers/token_provider.dart';
 import 'package:woutickpass/screens/Tabs/button_nav.dart';
 import 'package:woutickpass/services/controllers/filter.dart';
 import 'package:woutickpass/services/controllers/route.dart';

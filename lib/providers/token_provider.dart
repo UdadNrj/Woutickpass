@@ -16,51 +16,64 @@ class TokenProvider with ChangeNotifier {
   }
 
   Future<void> _loadToken() async {
-    _token = await _dbHelper.retrieveToken() ?? '';
+    try {
+      _token = await _dbHelper.retrieveToken() ?? '';
+    } catch (e) {
+      print('Error loading token: $e');
+      _token = '';
+    }
     notifyListeners();
   }
 
   Future<void> _loadSelectedEvents() async {
-    _selectedEvents = await _dbHelper.getSelectedEvents();
+    try {
+      _selectedEvents = await _dbHelper.getSelectedEvents();
+    } catch (e) {
+      print('Error loading events: $e');
+      _selectedEvents = [];
+    }
     notifyListeners();
   }
 
   Future<void> setToken(String token) async {
     _token = token;
-    await _dbHelper.insertToken(token);
+    try {
+      await _dbHelper.insertToken(token);
+      print('Token guardado en TokenProvider: $_token');  
+    } catch (e) {
+      print('Error setting token: $e');
+    }
     notifyListeners();
   }
 
   Future<void> addEvent(Event event) async {
     _selectedEvents.add(event);
-    await _dbHelper.addEvent(event);
+    try {
+      await _dbHelper.addEvent(event);
+    } catch (e) {
+      print('Error adding event: $e');
+    }
     notifyListeners();
   }
 
   Future<void> removeEvent(Event event) async {
     _selectedEvents.removeWhere((e) => e.uuid == event.uuid);
-    await _dbHelper.removeEvent(event.uuid);
+    try {
+      await _dbHelper.removeEvent(event.uuid);
+    } catch (e) {
+      print('Error removing event: $e');
+    }
     notifyListeners();
   }
 
   Future<void> clearToken() async {
     _token = '';
-    await _dbHelper.deleteToken();
+    try {
+      await _dbHelper.deleteToken();
+    } catch (e) {
+      print('Error clearing token: $e');
+    }
     _selectedEvents.clear();
     notifyListeners();
   }
 }
-
-
-// import 'package:flutter/material.dart';
-
-// class TokenProvider with ChangeNotifier {
-//   String _token = "";
-
-//   String get token => _token;
-
-//   void change(String newToken) {
-//     _token = newToken;
-//     notifyListeners(); // Asegúrate de notificar a los listeners
-//   }
-// }

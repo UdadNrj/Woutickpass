@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
-import 'package:woutickpass/providers/token_login.dart';
+import 'package:connectivity_plus/connectivity_plus.dart';
+import 'package:woutickpass/providers/token_provider.dart';
 import 'package:woutickpass/screens/Events_screnn.dart';
 import 'package:woutickpass/screens/password_screen.dart';
 import 'package:woutickpass/services/database.dart';
@@ -72,6 +73,49 @@ class _LoginFormState extends State<LoginForm> {
     }
   }
 
+ void _login() async {
+  var connectivityResult = await (Connectivity().checkConnectivity());
+  if (connectivityResult == ConnectivityResult.none) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('No internet connection. Logging in offline.')),
+    );
+    String? token = await DatabaseHelper().retrieveToken();
+    if (token != null) {
+      print('Token retrieved for offline login: $token');  
+      context.read<TokenProvider>().setToken(token);
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (context) => EventsScreen(token: token),
+        ),
+      );
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+       const SnackBar(content: Text('No stored token available.')),
+      );
+    }
+  } else {
+    try {
+      final token = await askToken();
+      if (token.isNotEmpty) {
+        print('Inserting token into database: $token');  
+        await DatabaseHelper().insertToken(token);
+        context.read<TokenProvider>().setToken(token);
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (context) => EventsScreen(token: token),
+          ),
+        );
+      }
+    } catch (e) {
+      // Manejo de errores
+      print('Error al guardar el token: $e');
+    }
+  }
+}
+
+
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -134,7 +178,7 @@ class _LoginFormState extends State<LoginForm> {
                 ),
                 onPressed: () {
                   setState(() {
-                    _isPasswordVisible = !_isPasswordVisible;
+                    _isPasswordVisible = !_isPasswordVisible; 
                   });
                 },
               ),
@@ -156,25 +200,7 @@ class _LoginFormState extends State<LoginForm> {
               ),
             ),
           ),
-          onPressed: () async {
-            try {
-              final token = await askToken();
-              if (token.isNotEmpty) {
-                final dbHelper = DatabaseHelper();
-                await dbHelper.insertToken(token);
-                context.read<TokenProvider>().setToken(token);
-                Navigator.pushReplacement(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => EventsScreen(token: token),
-                  ),
-                );
-              }
-            } catch (e) {
-              // Manejo de errores
-              print('Error al guardar el token: $e');
-            }
-          },
+          onPressed: _login,
           child: const Text('INICIAR SESION'),
         ),
         const SizedBox(height: 40),
@@ -217,12 +243,11 @@ Widget TextPassword(BuildContext context) {
           style: TextStyle(
             color: Color.fromRGBO(20, 28, 36, 1),
             fontSize: 16,
-            fontWeight: FontWeight.w700,
+            fontWeight: FontWeight.w700),
           ),
         ),
-      ),
-    ],
-  );
+      ],
+    );
 }
 
 Widget register() {

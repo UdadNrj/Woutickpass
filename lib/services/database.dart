@@ -1,7 +1,7 @@
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
-import 'package:woutickpass/models/Sessions.objeto.dart';
 import 'package:woutickpass/models/events_objeto..dart';
+import 'package:woutickpass/models/Sessions.objeto.dart';  
 
 class DatabaseHelper {
   static final DatabaseHelper _instance = DatabaseHelper._internal();

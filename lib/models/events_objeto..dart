@@ -1,3 +1,6 @@
+import 'package:flutter/foundation.dart';  // Para el uso de `@immutable`
+
+@immutable
 class Event {
   final String uuid; // Identificador único del evento
   final String name; // Nombre del evento
@@ -5,7 +8,7 @@ class Event {
   final String eventStartAt; // Fecha de inicio del evento como cadena
   final DateTime startAt; // Fecha de inicio del evento como DateTime
 
-  Event({
+  const Event({
     required this.uuid,
     required this.name,
     required this.wpassCode,
@@ -33,7 +36,6 @@ class Event {
     };
   }
 }
-
 void main() {
   final jsonData = {
     'uuid': '12345',

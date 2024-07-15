@@ -5,11 +5,11 @@ import 'package:woutickpass/services/database.dart';
 class TokenProvider with ChangeNotifier {
   String _token = '';
   List<Event> _selectedEvents = [];
-  final DatabaseHelper _dbHelper = DatabaseHelper();
 
   String get token => _token;
   List<Event> get selectedEvents => _selectedEvents;
 
+  final DatabaseHelper _dbHelper = DatabaseHelper();
   TokenProvider() {
     _loadToken();
     _loadSelectedEvents();

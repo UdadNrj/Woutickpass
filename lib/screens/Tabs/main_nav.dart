@@ -6,7 +6,7 @@ import 'package:woutickpass/providers/token_provider.dart';
 import 'package:woutickpass/screens/Tabs/button_nav.dart';
 import 'package:woutickpass/services/controllers/filter.dart';
 import 'package:woutickpass/services/controllers/route.dart';
-
+import 'package:woutickpass/services/database.dart';
 class MainPage extends StatefulWidget {
   final String token;
   final int currentIndex;
@@ -62,10 +62,17 @@ class _MainPageState extends State<MainPage> {
     }
   }
 
+  Future<void> _loadSelectedEvents() async {
+    _selectedEvents = await DatabaseHelper().getSelectedEvents();
+    setState(() {});
+  }
+
   @override
   Widget build(BuildContext context) {
     return Consumer<TokenProvider>(
       builder: (context, tokenProvider, child) {
+        _loadSelectedEvents(); 
+
         return Scaffold(
           appBar: AppBar(
             automaticallyImplyLeading: false,
@@ -92,6 +99,9 @@ class _MainPageState extends State<MainPage> {
               setState(() {
                 _currentIndex = index;
               });
+              if (index == 1) {
+                _loadSelectedEvents();  
+              }
             },
           ),
           body: Container(

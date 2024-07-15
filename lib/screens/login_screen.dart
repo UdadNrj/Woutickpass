@@ -6,7 +6,9 @@ import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:woutickpass/providers/token_provider.dart';
 import 'package:woutickpass/screens/Events_screnn.dart';
 import 'package:woutickpass/screens/password_screen.dart';
+import 'package:woutickpass/services/Api/auth_events.dart';
 import 'package:woutickpass/services/database.dart';
+
 
 class LoginPage extends StatelessWidget {
   const LoginPage({super.key});
@@ -27,7 +29,7 @@ class LoginPage extends StatelessWidget {
       body: const Stack(
         children: <Widget>[
           Padding(
-            padding: const EdgeInsets.all(16.0),
+            padding: EdgeInsets.all(16.0),
             child: LoginForm(),
           ),
         ],
@@ -73,48 +75,53 @@ class _LoginFormState extends State<LoginForm> {
     }
   }
 
- void _login() async {
-  var connectivityResult = await (Connectivity().checkConnectivity());
-  if (connectivityResult == ConnectivityResult.none) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('No internet connection. Logging in offline.')),
-    );
-    String? token = await DatabaseHelper().retrieveToken();
-    if (token != null) {
-      print('Token retrieved for offline login: $token');  
-      context.read<TokenProvider>().setToken(token);
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(
-          builder: (context) => EventsScreen(token: token),
-        ),
-      );
-    } else {
+  void _login() async {
+    var connectivityResult = await (Connectivity().checkConnectivity());
+    if (connectivityResult == ConnectivityResult.none) {
       ScaffoldMessenger.of(context).showSnackBar(
-       const SnackBar(content: Text('No stored token available.')),
+        const SnackBar(content: Text('No internet connection. Logging in offline.')),
       );
-    }
-  } else {
-    try {
-      final token = await askToken();
-      if (token.isNotEmpty) {
-        print('Inserting token into database: $token');  
-        await DatabaseHelper().insertToken(token);
+      String? token = await DatabaseHelper().retrieveToken();
+      if (token != null) {
+        print('Token retrieved for offline login: $token');  
         context.read<TokenProvider>().setToken(token);
+
+        await EventService.fetchAndStoreEvents(token);
+
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(
             builder: (context) => EventsScreen(token: token),
           ),
         );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('No stored token available.')),
+        );
       }
-    } catch (e) {
-      // Manejo de errores
-      print('Error al guardar el token: $e');
+    } else {
+      try {
+        final token = await askToken();
+        if (token.isNotEmpty) {
+          print('Inserting token into database: $token');  
+          await DatabaseHelper().insertToken(token);
+
+          await EventService.updateEvents(token);
+
+          context.read<TokenProvider>().setToken(token);
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+              builder: (context) => EventsScreen(token: token),
+            ),
+          );
+        }
+      } catch (e) {
+
+        print('Error al guardar el token: $e');
+      }
     }
   }
-}
-
 
   @override
   Widget build(BuildContext context) {
@@ -243,11 +250,12 @@ Widget TextPassword(BuildContext context) {
           style: TextStyle(
             color: Color.fromRGBO(20, 28, 36, 1),
             fontSize: 16,
-            fontWeight: FontWeight.w700),
+            fontWeight: FontWeight.w700,
           ),
         ),
-      ],
-    );
+      ),
+    ],
+  );
 }
 
 Widget register() {

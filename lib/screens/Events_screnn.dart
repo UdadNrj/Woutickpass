@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:woutickpass/models/events_objeto..dart';
 import 'package:woutickpass/screens/Tabs/main_nav.dart';
 import 'package:woutickpass/services/Api/auth_events.dart';
+import 'package:woutickpass/services/database.dart';
 
 class EventsScreen extends StatefulWidget {
   final String token;
@@ -20,7 +21,30 @@ class _EventsScreenState extends State<EventsScreen> {
   @override
   void initState() {
     super.initState();
+    _loadEvents();
+  }
+
+  Future<void> _loadEvents() async {
     futureEvents = EventService.getEvents(widget.token);
+
+    try {
+      final apiEvents = await futureEvents;
+      events = apiEvents;
+
+      await DatabaseHelper().storeEvents(events);
+
+      final selectedEvents = await DatabaseHelper().retrieveSelectedEvents();
+      checkedEvents = {
+        for (var event in events) event.uuid: selectedEvents.contains(event.uuid),
+      };
+      setState(() {});
+    } catch (e) {
+      events = await DatabaseHelper().retrieveEvents();
+      checkedEvents = {
+        for (var event in events) event.uuid: false,
+      };
+      print('Error al cargar eventos desde la API: $e');
+    }
   }
 
   bool get isButtonActive {
@@ -31,6 +55,9 @@ class _EventsScreenState extends State<EventsScreen> {
     setState(() {
       checkedEvents[uuid] = value ?? false;
     });
+
+    final selectedEvents = getSelectedEvents();
+    DatabaseHelper().updateSelectedEvents(selectedEvents.map((e) => e.uuid).toList());
   }
 
   List<Event> getSelectedEvents() {
@@ -108,7 +135,7 @@ class _EventsScreenState extends State<EventsScreen> {
                         MaterialPageRoute(
                           builder: (context) => MainPage(
                             token: widget.token,
-                            currentIndex: 1,
+                            currentIndex: 1, 
                             selectedEvents: selectedEvents,
                           ),
                         ),

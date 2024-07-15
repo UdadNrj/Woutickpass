@@ -107,6 +107,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:woutickpass/models/events_objeto..dart';
+import 'package:woutickpass/screens/Events_details_screnn.dart';
 
 class PageEvents extends StatelessWidget {
   final List<Event> selectedEvents;
@@ -128,12 +129,12 @@ class PageEvents extends StatelessWidget {
             return GestureDetector(
               onTap: () {
                 // Navega a la página de detalles del evento
-                // Navigator.push(
-                //   context,
-                //   MaterialPageRoute(
-                //     builder: (context) => EventDetailsPage(event: event),
-                //   ),
-                // );
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => EventDetailsPage(event: event),
+                  ),
+                );
               },
               child: Container(
                 margin: EdgeInsets.symmetric(vertical: 8, horizontal: 16),

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:woutickpass/models/events_objeto..dart';
-import 'package:woutickpass/screens/Tabs/page_multievents.dart';
 import 'package:woutickpass/screens/Tabs/page_events.dart';
+import 'package:woutickpass/screens/Tabs/page_multievents.dart';
 import 'package:woutickpass/screens/Tabs/page_settings.dart';
 
 class Routes extends StatelessWidget {
@@ -16,14 +16,15 @@ class Routes extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    List<Widget> pages = [
-      PageMultiEvents(),
-      PageEvents(selectedEvents: selectedEvents),
-      const PageSetting(),
-    ];
-
-    assert(index >= 0 && index < pages.length);
-
-    return pages[index];
+    switch (index) {
+      case 0:
+        return PageMultiEvents(); 
+      case 1:
+        return PageEvents(selectedEvents: selectedEvents);
+      case 2:
+        return PageSetting(); 
+      default:
+        return Center(child: Text('Pantalla Desconocida'));
+    }
   }
 }

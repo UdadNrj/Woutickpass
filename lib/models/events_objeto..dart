@@ -4,7 +4,7 @@ import 'package:flutter/foundation.dart';  // Para el uso de `@immutable`
 class Event {
   final String uuid; // Identificador único del evento
   final String name; // Nombre del evento
-  final String wpassCode; // Código de pase del evento
+  final String? wpassCode; // Código de pase del evento
   final String eventStartAt; // Fecha de inicio del evento como cadena
   final DateTime startAt; // Fecha de inicio del evento como DateTime
 

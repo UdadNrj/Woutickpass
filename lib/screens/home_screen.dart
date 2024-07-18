@@ -54,7 +54,7 @@ class HomeScreen extends StatelessWidget {
                     onPressed: () {
                       Navigator.push(
                         context,
-                        _createRoute(LoginPage()),
+                        _createRoute(LoginScreen()),
                       );
                     },
                     child: const Text(

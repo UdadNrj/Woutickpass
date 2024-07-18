@@ -3,8 +3,8 @@ import 'package:woutickpass/screens/password_screen.dart';
 import 'package:woutickpass/services/Api/auth_login.dart';
 
 
-class LoginPage extends StatelessWidget {
-  const LoginPage({super.key});
+class LoginScreen extends StatelessWidget {
+  const LoginScreen({super.key});
 
   @override
   Widget build(BuildContext context) {

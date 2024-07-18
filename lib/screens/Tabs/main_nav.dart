@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:provider/provider.dart';
 import 'package:woutickpass/models/Sessions_objeto..dart';
-import 'package:woutickpass/providers/token_provider.dart';
 import 'package:woutickpass/screens/Tabs/button_nav.dart';
 import 'package:woutickpass/services/controllers/filter.dart';
 import 'package:woutickpass/services/controllers/route.dart';
 import 'package:woutickpass/services/database.dart';
+
 class MainPage extends StatefulWidget {
   final String token;
   final int currentIndex;
@@ -25,13 +24,17 @@ class MainPage extends StatefulWidget {
 
 class _MainPageState extends State<MainPage> {
   late int _currentIndex;
-  late List<Sessions> _selectedEvents;
+  late Future<List<Sessions>> _selectedEventsFuture;
 
   @override
   void initState() {
     super.initState();
     _currentIndex = widget.currentIndex;
-    _selectedEvents = widget.selectedEvents;
+    _selectedEventsFuture = _loadSelectedEvents();
+  }
+
+  Future<List<Sessions>> _loadSelectedEvents() async {
+    return await DatabaseHelper().getSelectedSessions();
   }
 
   void _openFilterSheet(BuildContext context) {
@@ -62,63 +65,63 @@ class _MainPageState extends State<MainPage> {
     }
   }
 
-  Future<void> _loadSelectedEvents() async {
-    _selectedEvents = await DatabaseHelper().getSelectedSessions();
-    setState(() {});
-  }
-
   @override
   Widget build(BuildContext context) {
-    return Consumer<TokenProvider>(
-      builder: (context, tokenProvider, child) {
-        _loadSelectedEvents(); 
-
-        return Scaffold(
-          appBar: AppBar(
-            automaticallyImplyLeading: false,
-            backgroundColor: Colors.white,
-            centerTitle: true,
-            title: _getAppBarTitle(_currentIndex),
-            leading: IconButton(
-              onPressed: () {},
-              icon: SvgPicture.asset(
-                "assets/icons/Modo_online.svg",
+    return Scaffold(
+      appBar: AppBar(
+        automaticallyImplyLeading: false,
+        backgroundColor: Colors.white,
+        centerTitle: true,
+        title: _getAppBarTitle(_currentIndex),
+        leading: IconButton(
+          onPressed: () {},
+          icon: SvgPicture.asset("assets/icons/Modo_online.svg"),
+        ),
+        actions: <Widget>[
+          if (_currentIndex == 1)
+            IconButton(
+              icon: SvgPicture.asset("assets/icons/Filter.svg"),
+              onPressed: () => _openFilterSheet(context),
+            ),
+        ],
+      ),
+      bottomNavigationBar: BNavigator(
+        currentIndex: _currentIndex,
+        onIndexChanged: (index) {
+          setState(() {
+            _currentIndex = index;
+            if (index == 1) {
+              _selectedEventsFuture = _loadSelectedEvents();
+            }
+          });
+        },
+      ),
+      body: Container(
+        color: Colors.grey[200],
+        child: Column(
+          children: [
+            Expanded(
+              child: FutureBuilder<List<Sessions>>(
+                future: _selectedEventsFuture,
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return Center(child: CircularProgressIndicator());
+                  } else if (snapshot.hasError) {
+                    return Center(child: Text('Error al cargar eventos.'));
+                  } else if (snapshot.hasData) {
+                    return Routes(
+                      index: _currentIndex,
+                      selectedEvents: snapshot.data!,
+                    );
+                  } else {
+                    return Center(child: Text('No hay eventos seleccionados.'));
+                  }
+                },
               ),
             ),
-            actions: <Widget>[
-              if (_currentIndex == 1)
-                IconButton(
-                  icon: SvgPicture.asset("assets/icons/Filter.svg"),
-                  onPressed: () => _openFilterSheet(context),
-                ),
-            ],
-          ),
-          bottomNavigationBar: BNavigator(
-            currentIndex: _currentIndex,
-            onIndexChanged: (index) {
-              setState(() {
-                _currentIndex = index;
-              });
-              if (index == 1) {
-                _loadSelectedEvents();  
-              }
-            },
-          ),
-          body: Container(
-            color: Colors.grey[200],
-            child: Column(
-              children: [
-                Expanded(
-                  child: Routes(
-                    index: _currentIndex,
-                    selectedEvents: _selectedEvents,
-                  ),
-                ),
-              ],
-            ),
-          ),
-        );
-      },
+          ],
+        ),
+      ),
     );
   }
 }

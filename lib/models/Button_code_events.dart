@@ -40,9 +40,11 @@ class _CodePageState extends State<CodePage> {
             TextButton(
               onPressed: () {
                 if (_isUserLoggedIn) {
+                  // Manejar agregar eventos
                   Navigator.of(context).pop();
                 } else {
-                  Navigator.of(context).pushNamed('/login');
+                  // Navegar a la página de inicio de sesión
+                  Navigator.of(context).pushNamed('/loginPage');
                 }
               },
               child: Text(_isUserLoggedIn ? 'Agregar Eventos' : 'Iniciar Sesión'),

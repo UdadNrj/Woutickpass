@@ -106,11 +106,11 @@
 // }
 
 import 'package:flutter/material.dart';
-import 'package:woutickpass/models/events_objeto..dart';
-import 'package:woutickpass/screens/Events_details_screnn.dart';
+import 'package:woutickpass/models/Sessions_objeto..dart';
+import 'package:woutickpass/screens/Sessions_details_screnn.dart';
 
 class PageEvents extends StatelessWidget {
-  final List<Event> selectedEvents;
+  final List<Sessions> selectedEvents;
 
   const PageEvents({
     Key? key,
@@ -125,7 +125,7 @@ class PageEvents extends StatelessWidget {
         child: ListView.builder(
           itemCount: selectedEvents.length,
           itemBuilder: (context, index) {
-            Event event = selectedEvents[index];
+            Sessions event = selectedEvents[index];
             return GestureDetector(
               onTap: () {
                 // Navega a la página de detalles del evento

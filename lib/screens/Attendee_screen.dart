@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:woutickpass/models/attendee.objeto.dart';
-import 'package:woutickpass/models/events_objeto..dart';
+import 'package:woutickpass/models/Sessions_objeto..dart';
 
 class AttendeesListScreen extends StatelessWidget {
-  final Event event;
+  final Sessions event;
   final List<Attendee> attendees;
 
   const AttendeesListScreen({

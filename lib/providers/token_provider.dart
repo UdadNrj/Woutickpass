@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:woutickpass/models/events_objeto..dart';
+import 'package:woutickpass/models/Sessions_objeto..dart';
 import 'package:woutickpass/services/database.dart';
 
 class TokenProvider with ChangeNotifier {
   String _token = '';
-  List<Event> _selectedEvents = [];
+  List<Sessions> _selectedEvents = [];
 
   String get token => _token;
-  List<Event> get selectedEvents => _selectedEvents;
+  List<Sessions> get selectedEvents => _selectedEvents;
 
   final DatabaseHelper _dbHelper = DatabaseHelper();
   TokenProvider() {
@@ -27,7 +27,7 @@ class TokenProvider with ChangeNotifier {
 
   Future<void> _loadSelectedEvents() async {
     try {
-      _selectedEvents = await _dbHelper.getSelectedEvents();
+      _selectedEvents = await _dbHelper.getSelectedSessions();
     } catch (e) {
       print('Error loading events: $e');
       _selectedEvents = [];
@@ -46,20 +46,20 @@ class TokenProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> addEvent(Event event) async {
+  Future<void> addEvent(Sessions event) async {
     _selectedEvents.add(event);
     try {
-      await _dbHelper.addEvent(event);
+      await _dbHelper.addSession(event);
     } catch (e) {
       print('Error adding event: $e');
     }
     notifyListeners();
   }
 
-  Future<void> removeEvent(Event event) async {
+  Future<void> removeEvent(Sessions event) async {
     _selectedEvents.removeWhere((e) => e.uuid == event.uuid);
     try {
-      await _dbHelper.removeEvent(event.uuid);
+      await _dbHelper.removeSession(event.uuid);
     } catch (e) {
       print('Error removing event: $e');
     }

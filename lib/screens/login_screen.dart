@@ -4,7 +4,7 @@ import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:woutickpass/providers/token_provider.dart';
-import 'package:woutickpass/screens/Events_screnn.dart';
+import 'package:woutickpass/screens/Sessions_screnn.dart';
 import 'package:woutickpass/screens/password_screen.dart';
 import 'package:woutickpass/services/Api/auth_events.dart';
 import 'package:woutickpass/services/database.dart';

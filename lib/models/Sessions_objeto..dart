@@ -1,14 +1,15 @@
-import 'package:flutter/foundation.dart';  // Para el uso de `@immutable`
+import 'package:flutter/foundation.dart';
+import 'package:woutickpass/models/Sessions.objeto.dart';  // Para el uso de `@immutable`
 
 @immutable
-class Event {
+class Sessions {
   final String uuid; // Identificador único del evento
   final String name; // Nombre del evento
   final String? wpassCode; // Código de pase del evento
   final String eventStartAt; // Fecha de inicio del evento como cadena
   final DateTime startAt; // Fecha de inicio del evento como DateTime
 
-  const Event({
+  const Sessions({
     required this.uuid,
     required this.name,
     required this.wpassCode,
@@ -16,8 +17,8 @@ class Event {
     required this.startAt,
   });
 
-  factory Event.fromJson(Map<String, dynamic> json) {
-    return Event(
+  factory Sessions.fromJson(Map<String, dynamic> json) {
+    return Sessions(
       uuid: json['uuid'],
       name: json['name'],
       wpassCode: json['wpass_code'],
@@ -46,7 +47,7 @@ void main() {
   };
 
   // Test de fromJson
-  final event = Event.fromJson(jsonData);
+  final event = Sessions.fromJson(jsonData);
   assert(event.uuid == '12345');
   assert(event.name == 'Event Name');
   assert(event.wpassCode == 'ABC123');

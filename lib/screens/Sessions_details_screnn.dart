@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:woutickpass/models/Sessions_objeto..dart';
 import 'package:woutickpass/models/attendee.objeto.dart';
-import 'package:woutickpass/models/events_objeto..dart';
 import 'package:woutickpass/screens/Attendee_screen.dart';
 
 class EventDetailsPage extends StatelessWidget {
-  final Event event;
+  final Sessions event;
 
   const EventDetailsPage({
     Key? key,

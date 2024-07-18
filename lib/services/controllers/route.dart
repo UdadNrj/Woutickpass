@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:woutickpass/models/events_objeto..dart';
+import 'package:woutickpass/models/Sessions_objeto..dart';
 import 'package:woutickpass/screens/Tabs/page_events.dart';
 import 'package:woutickpass/screens/Tabs/page_multievents.dart';
 import 'package:woutickpass/screens/Tabs/page_settings.dart';
 
 class Routes extends StatelessWidget {
   final int index;
-  final List<Event> selectedEvents;
+  final List<Sessions> selectedEvents;
 
   const Routes({
     Key? key,

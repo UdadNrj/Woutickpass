@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
-import 'package:woutickpass/models/events_objeto..dart';
+import 'package:woutickpass/models/Sessions_objeto..dart';
 import 'package:woutickpass/providers/token_provider.dart';
 import 'package:woutickpass/screens/Tabs/button_nav.dart';
 import 'package:woutickpass/services/controllers/filter.dart';
@@ -10,7 +10,7 @@ import 'package:woutickpass/services/database.dart';
 class MainPage extends StatefulWidget {
   final String token;
   final int currentIndex;
-  final List<Event> selectedEvents;
+  final List<Sessions> selectedEvents;
 
   const MainPage({
     Key? key,
@@ -25,7 +25,7 @@ class MainPage extends StatefulWidget {
 
 class _MainPageState extends State<MainPage> {
   late int _currentIndex;
-  late List<Event> _selectedEvents;
+  late List<Sessions> _selectedEvents;
 
   @override
   void initState() {
@@ -63,7 +63,7 @@ class _MainPageState extends State<MainPage> {
   }
 
   Future<void> _loadSelectedEvents() async {
-    _selectedEvents = await DatabaseHelper().getSelectedEvents();
+    _selectedEvents = await DatabaseHelper().getSelectedSessions();
     setState(() {});
   }
 

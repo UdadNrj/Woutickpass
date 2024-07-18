@@ -2,8 +2,6 @@ import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 import 'package:woutickpass/models/Sessions_objeto..dart';
 
-
-
 class DatabaseHelper {
   static final DatabaseHelper _instance = DatabaseHelper._internal();
   factory DatabaseHelper() => _instance;
@@ -22,10 +20,9 @@ class DatabaseHelper {
     final path = join(dbPath, 'app_database.db');
 
     return await openDatabase(path,
-        version: 3, 
+        version: 1, 
         onCreate: _onCreate,
-        onUpgrade: _onUpgrade,
-        onDowngrade: onDatabaseDowngradeDelete  
+        onDowngrade: onDatabaseDowngradeDelete 
     );
   }
 
@@ -110,23 +107,7 @@ class DatabaseHelper {
     ''');
   }
 
-
-  void _onUpgrade(Database db, int oldVersion, int newVersion) async {
-    if (oldVersion < 2) {
-      await db.execute('''
-        CREATE TABLE selected_events (
-          uuid TEXT PRIMARY KEY
-        )
-      ''');
-    }
-    if (oldVersion < 3) {
-      await db.execute('''
-        ALTER TABLE events ADD COLUMN wpass_code TEXT;
-      ''');
-    }
-  }
-
-  // Methods  token
+  // Methods for token
   Future<void> insertToken(String token) async {
     final db = await database;
     await db.insert('token', {'token': token},
@@ -147,7 +128,7 @@ class DatabaseHelper {
     await db.delete('token');
   }
 
-  // Methods Settings
+  // Methods for settings
   Future<void> saveSetting(String key, bool value) async {
     final db = await database;
     await db.insert(
@@ -179,141 +160,110 @@ class DatabaseHelper {
     );
   }
 
-  // Methods Sessions
-Future<void> addSession(Sessions session) async {
-  final db = await database;
-  await db.insert(
-    'sessions',
-    session.toJson(),
-    conflictAlgorithm: ConflictAlgorithm.replace,  
-  );
-}
-
-Future<void> removeSession(String uuid) async {
-  final db = await database;
-  await db.delete(
-    'sessions',
-    where: 'uuid = ?',
-    whereArgs: [uuid],
-  );
-}
-
-Future<void> clearSessions() async {
-  final db = await database;
-  await db.delete('sessions');
-}
-
-Future<List<Sessions>> getSelectedSessions() async {
-  final db = await database;
-  final List<String> selectedUuids = await retrieveSelectedSessions();
-  final List<Map<String, dynamic>> maps = await db.query(
-    'sessions',
-    where: 'uuid IN (${selectedUuids.map((_) => '?').join(',')})',
-    whereArgs: selectedUuids,
-  );
-  return List.generate(maps.length, (i) {
-    return Sessions.fromJson(maps[i]);
-  });
-}
-
-Future<void> storeSessions(List<Sessions> sessions) async {
-  final db = await database;
-  await db.delete('sessions');
-  for (var session in sessions) {
+  // Methods for sessions
+  Future<void> addSession(Sessions session) async {
+    final db = await database;
     await db.insert(
       'sessions',
       session.toJson(),
-      conflictAlgorithm: ConflictAlgorithm.replace,
+      conflictAlgorithm: ConflictAlgorithm.replace,  
     );
   }
-}
 
-Future<List<Sessions>> retrieveSessions() async {
-  final db = await database;
-  final List<Map<String, dynamic>> maps = await db.query('sessions');
-  return List.generate(maps.length, (i) {
-    return Sessions.fromJson(maps[i]);
-  });
-}
+  Future<void> removeSession(String uuid) async {
+    final db = await database;
+    await db.delete(
+      'sessions',
+      where: 'uuid = ?',
+      whereArgs: [uuid],
+    );
+  }
 
-Future<void> updateSelectedSessions(List<String> sessionUuids) async {
-  final db = await database;
-  await db.delete('selected_sessions');
-  for (var uuid in sessionUuids) {
+  Future<void> clearSessions() async {
+    final db = await database;
+    await db.delete('sessions');
+  }
+
+  Future<List<Sessions>> getSelectedSessions() async {
+    final db = await database;
+    final List<String> selectedUuids = await retrieveSelectedSessions();
+    final List<Map<String, dynamic>> maps = await db.query(
+      'sessions',
+      where: 'uuid IN (${selectedUuids.map((_) => '?').join(',')})',
+      whereArgs: selectedUuids,
+    );
+    return List.generate(maps.length, (i) {
+      return Sessions.fromJson(maps[i]);
+    });
+  }
+
+  Future<void> storeSessions(List<Sessions> sessions) async {
+    final db = await database;
+    await db.delete('sessions');
+    for (var session in sessions) {
+      await db.insert(
+        'sessions',
+        session.toJson(),
+        conflictAlgorithm: ConflictAlgorithm.replace,
+      );
+    }
+  }
+
+  Future<List<Sessions>> retrieveSessions() async {
+    final db = await database;
+    final List<Map<String, dynamic>> maps = await db.query('sessions');
+    return List.generate(maps.length, (i) {
+      return Sessions.fromJson(maps[i]);
+    });
+  }
+
+  Future<void> updateSelectedSessions(List<String> sessionUuids) async {
+    final db = await database;
+    await db.delete('selected_sessions');
+    for (var uuid in sessionUuids) {
+      await db.insert(
+        'selected_sessions',
+        {'uuid': uuid},
+        conflictAlgorithm: ConflictAlgorithm.ignore,
+      );
+    }
+  }
+
+  Future<List<String>> retrieveSelectedSessions() async {
+    final db = await database;
+    final List<Map<String, dynamic>> maps = await db.query('selected_sessions');
+    return List.generate(maps.length, (i) {
+      return maps[i]['uuid'] as String;
+    });
+  }
+
+  Future<void> addSessionToSelectedSessions(String uuid) async {
+    final db = await database;
     await db.insert(
       'selected_sessions',
       {'uuid': uuid},
       conflictAlgorithm: ConflictAlgorithm.ignore,
     );
   }
-}
 
-Future<List<String>> retrieveSelectedSessions() async {
-  final db = await database;
-  final List<Map<String, dynamic>> maps = await db.query('selected_sessions');
-  return List.generate(maps.length, (i) {
-    return maps[i]['uuid'] as String;
-  });
-}
+  Future<void> removeSessionFromSelectedSessions(String uuid) async {
+    final db = await database;
+    await db.delete(
+      'selected_sessions',
+      where: 'uuid = ?',
+      whereArgs: [uuid],
+    );
+  }
 
-Future<void> addSessionToSelectedSessions(String uuid) async {
-  final db = await database;
-  await db.insert(
-    'selected_sessions',
-    {'uuid': uuid},
-    conflictAlgorithm: ConflictAlgorithm.ignore,
-  );
-}
+  Future<void> clearSelectedSessions() async {
+    final db = await database;
+    await db.delete('selected_sessions');
+  }
 
-Future<void> removeSessionFromSelectedSessions(String uuid) async {
-  final db = await database;
-  await db.delete(
-    'selected_sessions',
-    where: 'uuid = ?',
-    whereArgs: [uuid],
-  );
-}
+  // Methods for tickets (unchanged)
+  // Add your existing ticket methods here...
 
-Future<void> clearSelectedSessions() async {
-  final db = await database;
-  await db.delete('selected_sessions');
-}
-
-
-  // // Methods sessions
-  // Future<void> insertSession(Session session) async {
-  //   final db = await database;
-  //   await db.insert('sessions', session.toJson(), conflictAlgorithm: ConflictAlgorithm.replace);
-  // }
-
-  // Future<Session?> getSessionByUuid(String uuid) async {
-  //   final db = await database;
-  //   final result = await db.query('sessions', where: 'uuid = ?', whereArgs: [uuid]);
-  //   if (result.isNotEmpty) {
-  //     return Session.fromJson(result.first);
-  //   }
-  //   return null;
-  // }
-
-  // Future<List<Session>> getAllSessions() async {
-  //   final db = await database;
-  //   final List<Map<String, dynamic>> maps = await db.query('sessions');
-  //   return List.generate(maps.length, (i) {
-  //     return Session.fromJson(maps[i]);
-  //   });
-  // }
-
-  // Future<void> updateSession(Session session) async {
-  //   final db = await database;
-  //   await db.update('sessions', session.toJson(), where: 'uuid = ?', whereArgs: [session.uuid]);
-  // }
-
-  // Future<void> deleteSession(String uuid) async {
-  //   final db = await database;
-  //   await db.delete('sessions', where: 'uuid = ?', whereArgs: [uuid]);
-  // }
-
-  // Methods out sesión
+  // Logout method
   Future<void> logout() async {
     await deleteToken();
   }

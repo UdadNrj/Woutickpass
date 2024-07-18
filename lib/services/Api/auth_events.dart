@@ -1,3 +1,4 @@
+// auth_service.dart
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
@@ -68,13 +69,13 @@ class EventService {
   static Future<void> fetchAndUpdateSelectedEvents(String token) async {
     final events = await getEvents(token);
     final dbHelper = DatabaseHelper();
-    final selectedUuids = await dbHelper.retrieveSelectedSessions(); // Obtener UUIDs de eventos seleccionados
+    final selectedEvents = await dbHelper.getSelectedSessions(); 
 
-    // Filtrar eventos seleccionados
-    final selectedEvents = events.where((event) => selectedUuids.contains(event.uuid)).toList();
+    final selectedUuids = selectedEvents.map((event) => event.uuid).toList();
+    final filteredEvents = events.where((event) => selectedUuids.contains(event.uuid)).toList();
 
-    // Actualizar eventos seleccionados en la base de datos
-    await dbHelper.storeSessions(selectedEvents);
+
+    await dbHelper.storeSessions(filteredEvents);
 
     debugPrint('Selected events have been updated.');
   }

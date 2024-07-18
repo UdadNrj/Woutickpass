@@ -1,13 +1,6 @@
 import 'package:flutter/material.dart';
-import 'dart:convert';
-import 'package:http/http.dart' as http;
-import 'package:provider/provider.dart';
-import 'package:connectivity_plus/connectivity_plus.dart';
-import 'package:woutickpass/providers/token_provider.dart';
-import 'package:woutickpass/screens/Sessions_screnn.dart';
 import 'package:woutickpass/screens/password_screen.dart';
-import 'package:woutickpass/services/Api/auth_events.dart';
-import 'package:woutickpass/services/database.dart';
+import 'package:woutickpass/services/Api/auth_login.dart';
 
 
 class LoginPage extends StatelessWidget {
@@ -49,78 +42,10 @@ class _LoginFormState extends State<LoginForm> {
   String gmail = '';
   String password = '';
   bool _isPasswordVisible = false;
-
-  Future<String> askToken() async {
-    const String url = "https://api-dev.woutick.com/back/v1/account/login/";
-    try {
-      final response = await http.post(
-        Uri.parse(url),
-        body: {'email': gmail, 'password': password},
-      );
-
-      debugPrint('Response status: ${response.statusCode}');
-      debugPrint('Response body: ${response.body}');
-
-      if (response.statusCode == 200) {
-        String body = utf8.decode(response.bodyBytes);
-        final jsonData = jsonDecode(body);
-        return jsonData["access"];
-      } else {
-        throw Exception(
-            "Fallo a la hora de pedir los datos. Código de estado: ${response.statusCode}");
-      }
-    } catch (e) {
-      debugPrint('Error al pedir el token: $e');
-      throw Exception("Fallo a la hora de pedir los datos. Detalles: $e");
-    }
-  }
+  final LoginService _authService = LoginService();
 
   void _login() async {
-    var connectivityResult = await (Connectivity().checkConnectivity());
-    if (connectivityResult == ConnectivityResult.none) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('No internet connection. Logging in offline.')),
-      );
-      String? token = await DatabaseHelper().retrieveToken();
-      if (token != null) {
-        print('Token retrieved for offline login: $token');  
-        context.read<TokenProvider>().setToken(token);
-
-        await EventService.fetchAndStoreEvents(token);
-
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(
-            builder: (context) => EventsScreen(token: token),
-          ),
-        );
-      } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('No stored token available.')),
-        );
-      }
-    } else {
-      try {
-        final token = await askToken();
-        if (token.isNotEmpty) {
-          print('Inserting token into database: $token');  
-          await DatabaseHelper().insertToken(token);
-
-          await EventService.updateEvents(token);
-
-          context.read<TokenProvider>().setToken(token);
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(
-              builder: (context) => EventsScreen(token: token),
-            ),
-          );
-        }
-      } catch (e) {
-
-        print('Error al guardar el token: $e');
-      }
-    }
+    await _authService.login(context, gmail, password);
   }
 
   @override

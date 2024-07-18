@@ -41,13 +41,8 @@ class DatabaseHelper {
         name TEXT,
         wpass_code TEXT, 
         event_start_at TEXT,
-        start_at TEXT
-      )
-    ''');
-
-    await db.execute('''
-      CREATE TABLE selected_sessions (
-        uuid TEXT PRIMARY KEY
+        start_at TEXT,
+        is_selected INTEGER DEFAULT 0  
       )
     ''');
 
@@ -186,11 +181,9 @@ class DatabaseHelper {
 
   Future<List<Sessions>> getSelectedSessions() async {
     final db = await database;
-    final List<String> selectedUuids = await retrieveSelectedSessions();
     final List<Map<String, dynamic>> maps = await db.query(
       'sessions',
-      where: 'uuid IN (${selectedUuids.map((_) => '?').join(',')})',
-      whereArgs: selectedUuids,
+      where: 'is_selected = 1', 
     );
     return List.generate(maps.length, (i) {
       return Sessions.fromJson(maps[i]);
@@ -219,37 +212,35 @@ class DatabaseHelper {
 
   Future<void> updateSelectedSessions(List<String> sessionUuids) async {
     final db = await database;
-    await db.delete('selected_sessions');
+    await db.update(
+      'sessions',
+      {'is_selected': 0}, 
+    );
     for (var uuid in sessionUuids) {
-      await db.insert(
-        'selected_sessions',
-        {'uuid': uuid},
-        conflictAlgorithm: ConflictAlgorithm.ignore,
+      await db.update(
+        'sessions',
+        {'is_selected': 1},
+        where: 'uuid = ?',
+        whereArgs: [uuid],
       );
     }
   }
 
-  Future<List<String>> retrieveSelectedSessions() async {
-    final db = await database;
-    final List<Map<String, dynamic>> maps = await db.query('selected_sessions');
-    return List.generate(maps.length, (i) {
-      return maps[i]['uuid'] as String;
-    });
-  }
-
   Future<void> addSessionToSelectedSessions(String uuid) async {
     final db = await database;
-    await db.insert(
-      'selected_sessions',
-      {'uuid': uuid},
-      conflictAlgorithm: ConflictAlgorithm.ignore,
+    await db.update(
+      'sessions',
+      {'is_selected': 1}, 
+      where: 'uuid = ?',
+      whereArgs: [uuid],
     );
   }
 
   Future<void> removeSessionFromSelectedSessions(String uuid) async {
     final db = await database;
-    await db.delete(
-      'selected_sessions',
+    await db.update(
+      'sessions',
+      {'is_selected': 0}, 
       where: 'uuid = ?',
       whereArgs: [uuid],
     );
@@ -257,7 +248,10 @@ class DatabaseHelper {
 
   Future<void> clearSelectedSessions() async {
     final db = await database;
-    await db.delete('selected_sessions');
+    await db.update(
+      'sessions',
+      {'is_selected': 0}, 
+    );
   }
 
   // Methods for tickets (unchanged)

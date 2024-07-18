@@ -33,7 +33,7 @@ class _EventsScreenState extends State<EventsScreen> {
 
       await DatabaseHelper().storeSessions(events);
 
-      final selectedEvents = await DatabaseHelper().retrieveSelectedSessions();
+      final selectedEvents = await DatabaseHelper().getSelectedSessions();
       checkedEvents = {
         for (var event in events) event.uuid: selectedEvents.contains(event.uuid),
       };

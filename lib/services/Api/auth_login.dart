@@ -2,11 +2,11 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
-import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:provider/provider.dart';
-import 'package:woutickpass/providers/token_provider.dart';
+import 'package:woutickpass/services/token_dao.dart';
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:woutickpass/screens/Sessions_screnn.dart';
-import 'package:woutickpass/services/database.dart';
+import 'package:woutickpass/providers/token_provider.dart';
 import 'package:woutickpass/services/api/auth_events.dart';
 
 class LoginService {
@@ -41,7 +41,7 @@ class LoginService {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('No internet connection. Logging in offline.')),
       );
-      String? token = await DatabaseHelper().retrieveToken();
+      String? token = await TokenDao().retrieveToken();
       if (token != null) {
         context.read<TokenProvider>().setToken(token);
 
@@ -62,7 +62,7 @@ class LoginService {
       try {
         final token = await askToken(gmail, password);
         if (token.isNotEmpty) {
-          await DatabaseHelper().insertToken(token);
+          await TokenDao().insertToken(token);
 
           await EventService.updateEvents(token);
 

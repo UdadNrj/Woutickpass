@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:woutickpass/services/database.dart';
 import 'package:woutickpass/screens/home_screen.dart';
+import 'package:woutickpass/services/settings_dao.dart';
 
 class PageSetting extends StatefulWidget {
   const PageSetting({Key? key}) : super(key: key);
@@ -20,7 +20,7 @@ class _PageSettingState extends State<PageSetting> {
   bool additionalSetting2 = true;
   bool additionalSetting3 = true;
 
-  final DatabaseHelper _dbHelper = DatabaseHelper();
+  final SettingsDao _dbHelper = SettingsDao();
 
   @override
   void initState() {

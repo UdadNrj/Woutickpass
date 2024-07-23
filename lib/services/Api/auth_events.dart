@@ -2,8 +2,8 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
+import 'package:woutickpass/services/sessions_dao.dart';
 import 'package:woutickpass/models/Sessions_objeto..dart';
-import 'package:woutickpass/services/database.dart';
 
 class EventService {
   static Future<List<Sessions>> getEvents(String token) async {
@@ -50,7 +50,7 @@ class EventService {
 
   static Future<void> updateEvents(String token) async {
     final events = await getEvents(token);
-    final dbHelper = DatabaseHelper();
+    final dbHelper = SessionsDao();
 
     await dbHelper.storeSessions(events);
 
@@ -59,7 +59,7 @@ class EventService {
 
   static Future<void> fetchAndStoreEvents(String token) async {
     final events = await getEvents(token);
-    final dbHelper = DatabaseHelper();
+    final dbHelper = SessionsDao();
 
     await dbHelper.storeSessions(events);
 
@@ -68,7 +68,7 @@ class EventService {
 
   static Future<void> fetchAndUpdateSelectedEvents(String token) async {
     final events = await getEvents(token);
-    final dbHelper = DatabaseHelper();
+    final dbHelper = SessionsDao();
     final selectedEvents = await dbHelper.getSelectedSessions(); 
 
     final selectedUuids = selectedEvents.map((event) => event.uuid).toList();

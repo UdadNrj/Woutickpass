@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:woutickpass/services/database.dart';
+import 'package:woutickpass/services/token_dao.dart';
 
 class CodePage extends StatefulWidget {
   const CodePage({Key? key}) : super(key: key);
@@ -10,7 +10,7 @@ class CodePage extends StatefulWidget {
 
 class _CodePageState extends State<CodePage> {
   bool _isScrollControlled = false;
-  bool _isUserLoggedIn = false; 
+  bool _isUserLoggedIn = false;
 
   @override
   void initState() {
@@ -19,7 +19,7 @@ class _CodePageState extends State<CodePage> {
   }
 
   Future<void> _checkUserLoginStatus() async {
-    String? token = await DatabaseHelper().retrieveToken(); 
+    String? token = await TokenDao().retrieveToken();
     setState(() {
       _isUserLoggedIn = token != null && token.isNotEmpty;
     });
@@ -30,9 +30,8 @@ class _CodePageState extends State<CodePage> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text(_isUserLoggedIn
-              ? 'Agregar Otros Eventos'
-              : 'Iniciar Sesión'),
+          title: Text(
+              _isUserLoggedIn ? 'Agregar Otros Eventos' : 'Iniciar Sesión'),
           content: Text(_isUserLoggedIn
               ? '¿Deseas agregar más eventos?'
               : '¿Deseas iniciar sesión para agregar eventos?'),
@@ -40,21 +39,20 @@ class _CodePageState extends State<CodePage> {
             TextButton(
               onPressed: () {
                 if (_isUserLoggedIn) {
-                  // Manejar agregar eventos
                   Navigator.of(context).pop();
                 } else {
-                  // Navegar a la página de inicio de sesión
                   Navigator.of(context).pushNamed('/loginPage');
                 }
               },
-              child: Text(_isUserLoggedIn ? 'Agregar Eventos' : 'Iniciar Sesión'),
+              child:
+                  Text(_isUserLoggedIn ? 'Agregar Eventos' : 'Iniciar Sesión'),
             ),
             if (_isUserLoggedIn)
               TextButton(
                 onPressed: () {
                   Navigator.of(context).pop();
                 },
-                child: Text('Cancelar'),
+                child: const Text('Cancelar'),
               ),
           ],
         );
@@ -156,7 +154,7 @@ class _TextFieldValidedState extends State<TextFieldValided> {
               borderSide:
                   const BorderSide(color: Color.fromRGBO(172, 172, 172, 1)),
             ),
-            fillColor: Color.fromRGBO(252, 252, 253, 1),
+            fillColor: const Color.fromRGBO(252, 252, 253, 1),
             filled: true,
           ),
           onChanged: (value) {
@@ -178,20 +176,20 @@ class _TextFieldValidedState extends State<TextFieldValided> {
               ),
               onPressed: () {
                 if (enteredCode.length == 8) {
-                  // Manejar la lógica de registro de eventos aquí
                 } else {
                   showDialog(
                     context: context,
                     builder: (BuildContext context) {
                       return AlertDialog(
-                        title: Text('Código Inválido'),
-                        content: Text('Por favor, ingresa un código de 8 dígitos válido.'),
+                        title: const Text('Código Inválido'),
+                        content: const Text(
+                            'Por favor, ingresa un código de 8 dígitos válido.'),
                         actions: <Widget>[
                           TextButton(
                             onPressed: () {
                               Navigator.of(context).pop();
                             },
-                            child: Text('OK'),
+                            child: const Text('OK'),
                           ),
                         ],
                       );

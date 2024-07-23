@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:woutickpass/services/sessions_dao.dart';
 import 'package:woutickpass/models/Sessions_objeto..dart';
 import 'package:woutickpass/screens/Tabs/button_nav.dart';
-import 'package:woutickpass/services/controllers/filter.dart';
 import 'package:woutickpass/services/controllers/route.dart';
-import 'package:woutickpass/services/database.dart';
+import 'package:woutickpass/services/controllers/filter.dart';
 
 class MainPage extends StatefulWidget {
   final String token;
@@ -34,7 +34,7 @@ class _MainPageState extends State<MainPage> {
   }
 
   Future<List<Sessions>> _loadSelectedEvents() async {
-    return await DatabaseHelper().getSelectedSessions();
+    return await SessionsDao().getSelectedSessions();
   }
 
   void _openFilterSheet(BuildContext context) {

@@ -1,5 +1,4 @@
-import 'package:flutter/foundation.dart';
-import 'package:woutickpass/models/Sessions.objeto.dart';  // Para el uso de `@immutable`
+import 'package:flutter/foundation.dart';// Para el uso de `@immutable`
 
 @immutable
 class Sessions {

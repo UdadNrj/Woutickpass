@@ -2,12 +2,11 @@ import 'package:sqflite/sqflite.dart';
 
 import 'package:woutickpass/services/database.dart';
 
-
-
 class TokenDao {
   Future<void> insertToken(String token) async {
     final db = await DatabaseHelper().database;
-    await db.insert('token', {'token': token}, conflictAlgorithm: ConflictAlgorithm.replace);
+    await db.insert('token', {'token': token},
+        conflictAlgorithm: ConflictAlgorithm.replace);
   }
 
   Future<String?> retrieveToken() async {

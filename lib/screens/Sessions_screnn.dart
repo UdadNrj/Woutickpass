@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:woutickpass/models/Sessions_objeto..dart';
-import 'package:woutickpass/screens/Tabs/main_nav.dart';
-import 'package:woutickpass/services/Api/auth_events.dart';
-import 'package:woutickpass/services/sessions_dao.dart';
+import 'package:woutickpass/models/objects/session.dart';
 
+import 'package:woutickpass/screens/Tabs/main_nav.dart';
+import 'package:woutickpass/services/Api/api_auth_sessions.dart';
+
+import 'package:woutickpass/services/sessions_dao.dart';
 
 class EventsScreen extends StatefulWidget {
   final String token;
@@ -15,8 +16,8 @@ class EventsScreen extends StatefulWidget {
 }
 
 class _EventsScreenState extends State<EventsScreen> {
-  late Future<List<Sessions>> futureEvents;
-  List<Sessions> events = [];
+  late Future<List<Session>> futureEvents;
+  List<Session> events = [];
   Map<String, bool> checkedEvents = {};
 
   @override
@@ -36,7 +37,8 @@ class _EventsScreenState extends State<EventsScreen> {
 
       final selectedEvents = await SessionsDao().getSelectedSessions();
       checkedEvents = {
-        for (var event in events) event.uuid: selectedEvents.contains(event.uuid),
+        for (var event in events)
+          event.uuid: selectedEvents.contains(event.uuid),
       };
       setState(() {});
     } catch (e) {
@@ -58,10 +60,11 @@ class _EventsScreenState extends State<EventsScreen> {
     });
 
     final selectedEvents = getSelectedEvents();
-    SessionsDao().updateSelectedSessions(selectedEvents.map((e) => e.uuid).toList());
+    SessionsDao()
+        .updateSelectedSessions(selectedEvents.map((e) => e.uuid).toList());
   }
 
-  List<Sessions> getSelectedEvents() {
+  List<Session> getSelectedEvents() {
     return events.where((event) => checkedEvents[event.uuid] == true).toList();
   }
 
@@ -76,7 +79,7 @@ class _EventsScreenState extends State<EventsScreen> {
       ),
       body: Stack(
         children: [
-          FutureBuilder<List<Sessions>>(
+          FutureBuilder<List<Session>>(
             future: futureEvents,
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
@@ -97,7 +100,7 @@ class _EventsScreenState extends State<EventsScreen> {
               return ListView.builder(
                 itemCount: events.length,
                 itemBuilder: (context, index) {
-                 Sessions event = events[index];
+                  Session event = events[index];
                   return Padding(
                     padding: const EdgeInsets.symmetric(
                       horizontal: 16.0,
@@ -130,13 +133,13 @@ class _EventsScreenState extends State<EventsScreen> {
             child: ElevatedButton(
               onPressed: isButtonActive
                   ? () {
-                      List<Sessions> selectedEvents = getSelectedEvents();
+                      List<Session> selectedEvents = getSelectedEvents();
                       Navigator.push(
                         context,
                         MaterialPageRoute(
                           builder: (context) => MainPage(
                             token: widget.token,
-                            currentIndex: 1, 
+                            currentIndex: 1,
                             selectedEvents: selectedEvents,
                           ),
                         ),

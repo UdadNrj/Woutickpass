@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:woutickpass/models/Sessions_objeto..dart';
+import 'package:woutickpass/models/objects/session.dart';
 
 class EventDetailsPage extends StatelessWidget {
-  final Sessions event;
+  final Session event;
 
   const EventDetailsPage({
     Key? key,
@@ -69,8 +69,7 @@ class EventDetailsPage extends StatelessWidget {
               subtitle: Text(
                   'Edita qué entradas quieres que se sincronicen con el escáner para esta sesión.'),
               leading: Icon(Icons.settings),
-              onTap: () { 
-               },
+              onTap: () {},
             ),
             Divider(),
             ListTile(
@@ -78,8 +77,7 @@ class EventDetailsPage extends StatelessWidget {
               subtitle: Text(
                   'Accede a la información detallada y actualizada de los asistentes a esta sesión.'),
               leading: Icon(Icons.show_chart),
-              onTap: () {
-              },
+              onTap: () {},
             ),
             Divider(),
             ListTile(
@@ -87,17 +85,15 @@ class EventDetailsPage extends StatelessWidget {
               subtitle: Text(
                   'Subir la información al servidor y borrar todas las entradas descargadas en el dispositivo.'),
               leading: Icon(Icons.exit_to_app),
-              onTap: () {
-              },
+              onTap: () {},
             ),
-             Divider(),
+            Divider(),
             ListTile(
               title: Text('Vaciar Aforo'),
               subtitle: Text(
                   'Reiniciar la lista de entrads validadas para esta sesion'),
               leading: Icon(Icons.restore),
-              onTap: () {
-              },
+              onTap: () {},
             ),
           ],
         ),

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:woutickpass/models/Button_code_multi.dart';
+import 'package:woutickpass/models/logic/qr_scanner.dart';
 
 class PageMultiEvents extends StatefulWidget {
   @override
@@ -17,7 +17,7 @@ class _PageMultiEventsState extends State<PageMultiEvents> {
           padding: EdgeInsets.only(
             bottom: MediaQuery.of(context).viewInsets.bottom,
           ),
-          child: CodePageMulti(),
+          child: QrScanner(),
         ),
       ),
     );

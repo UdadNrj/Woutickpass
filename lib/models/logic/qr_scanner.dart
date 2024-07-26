@@ -2,16 +2,16 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:sunmi_scanner/sunmi_scanner.dart';
 import 'package:qr_code_scanner/qr_code_scanner.dart';
-import 'package:woutickpass/models/qr_validation.dart';
+import 'package:woutickpass/models/logic/qr_validation.dart';
 
-class PageQR extends StatefulWidget {
-  const PageQR({Key? key}) : super(key: key);
+class QrScanner extends StatefulWidget {
+  const QrScanner({Key? key}) : super(key: key);
 
   @override
-  State<StatefulWidget> createState() => _PageQRState();
+  State<StatefulWidget> createState() => QrScannerState();
 }
 
-class _PageQRState extends State<PageQR> {
+class QrScannerState extends State<QrScanner> {
   bool qRCamare = false;
   final GlobalKey qrKey = GlobalKey(debugLabel: 'QR');
   Barcode? result;
@@ -94,7 +94,7 @@ class _PageQRState extends State<PageQR> {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => const QrValidation(),
+                          builder: (context) => QRValidation(),
                         ),
                       );
                     },

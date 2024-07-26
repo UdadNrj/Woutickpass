@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:woutickpass/models/attendee.objeto.dart';
-import 'package:woutickpass/models/Sessions_objeto..dart';
+import 'package:woutickpass/models/objects/session.dart';
+import 'package:woutickpass/models/objects/attendee.dart';
 
 class AttendeesListScreen extends StatelessWidget {
-  final Sessions event;
+  final Session event;
   final List<Attendee> attendees;
 
   const AttendeesListScreen({
@@ -35,7 +35,7 @@ class AttendeesListScreen extends StatelessWidget {
             ),
             SizedBox(height: 8),
             Text(
-              '${event.startAt} - ${event.startAt}', 
+              '${event.startAt} - ${event.startAt}',
               style: TextStyle(
                 fontSize: 16,
                 color: Colors.grey,

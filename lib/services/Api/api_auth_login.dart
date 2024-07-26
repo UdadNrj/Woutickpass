@@ -3,11 +3,11 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:woutickpass/services/Api/api_auth_sessions.dart';
 import 'package:woutickpass/services/token_dao.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:woutickpass/screens/Sessions_screnn.dart';
 import 'package:woutickpass/providers/token_provider.dart';
-import 'package:woutickpass/services/api/auth_events.dart';
 
 class LoginService {
   Future<String> askToken(String gmail, String password) async {
@@ -35,11 +35,13 @@ class LoginService {
     }
   }
 
-  Future<void> login(BuildContext context, String gmail, String password) async {
+  Future<void> login(
+      BuildContext context, String gmail, String password) async {
     var connectivityResult = await (Connectivity().checkConnectivity());
     if (connectivityResult == ConnectivityResult.none) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('No internet connection. Logging in offline.')),
+        const SnackBar(
+            content: Text('No internet connection. Logging in offline.')),
       );
       String? token = await TokenDao().retrieveToken();
       if (token != null) {

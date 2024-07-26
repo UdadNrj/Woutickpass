@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:woutickpass/models/objects/session.dart';
 import 'package:woutickpass/services/sessions_dao.dart';
-import 'package:woutickpass/models/Sessions_objeto..dart';
 import 'package:woutickpass/screens/Tabs/button_nav.dart';
 import 'package:woutickpass/services/controllers/route.dart';
 import 'package:woutickpass/services/controllers/filter.dart';
@@ -9,7 +9,7 @@ import 'package:woutickpass/services/controllers/filter.dart';
 class MainPage extends StatefulWidget {
   final String token;
   final int currentIndex;
-  final List<Sessions> selectedEvents;
+  final List<Session> selectedEvents;
 
   const MainPage({
     Key? key,
@@ -24,7 +24,7 @@ class MainPage extends StatefulWidget {
 
 class _MainPageState extends State<MainPage> {
   late int _currentIndex;
-  late Future<List<Sessions>> _selectedEventsFuture;
+  late Future<List<Session>> _selectedEventsFuture;
 
   @override
   void initState() {
@@ -33,7 +33,7 @@ class _MainPageState extends State<MainPage> {
     _selectedEventsFuture = _loadSelectedEvents();
   }
 
-  Future<List<Sessions>> _loadSelectedEvents() async {
+  Future<List<Session>> _loadSelectedEvents() async {
     return await SessionsDao().getSelectedSessions();
   }
 
@@ -101,7 +101,7 @@ class _MainPageState extends State<MainPage> {
         child: Column(
           children: [
             Expanded(
-              child: FutureBuilder<List<Sessions>>(
+              child: FutureBuilder<List<Session>>(
                 future: _selectedEventsFuture,
                 builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {

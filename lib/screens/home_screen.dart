@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:provider/provider.dart';
-import 'package:woutickpass/models/Button_code_events.dart';
+import 'package:woutickpass/models/logic/qr_scanner.dart';
 import 'package:woutickpass/providers/token_provider.dart';
 import 'package:woutickpass/screens/login_screen.dart';
-import 'package:flutter_svg/svg.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -97,7 +97,7 @@ void _openIconButtonPressed(BuildContext context) {
         padding: EdgeInsets.only(
           bottom: MediaQuery.of(context).viewInsets.bottom,
         ),
-        child: CodePage(),
+        child: QrScanner(),
       ),
     ),
   );

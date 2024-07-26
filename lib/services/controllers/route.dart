@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:woutickpass/models/Sessions_objeto..dart';
+import 'package:woutickpass/models/objects/session.dart';
 import 'package:woutickpass/screens/Tabs/page_events.dart';
-import 'package:woutickpass/screens/Tabs/page_multievents.dart';
 import 'package:woutickpass/screens/Tabs/page_settings.dart';
+import 'package:woutickpass/screens/Tabs/page_multievents.dart';
 
 class Routes extends StatelessWidget {
   final int index;
-  final List<Sessions> selectedEvents;
+  final List<Session> selectedEvents;
 
   const Routes({
     Key? key,
@@ -18,11 +18,11 @@ class Routes extends StatelessWidget {
   Widget build(BuildContext context) {
     switch (index) {
       case 0:
-        return PageMultiEvents(); 
+        return PageMultiEvents();
       case 1:
         return PageEvents(selectedEvents: selectedEvents);
       case 2:
-        return PageSetting(); 
+        return PageSetting();
       default:
         return Center(child: Text('Pantalla Desconocida'));
     }

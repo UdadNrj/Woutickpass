@@ -2,11 +2,11 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
+import 'package:woutickpass/models/objects/session.dart';
 import 'package:woutickpass/services/sessions_dao.dart';
-import 'package:woutickpass/models/Sessions_objeto..dart';
 
 class EventService {
-  static Future<List<Sessions>> getEvents(String token) async {
+  static Future<List<Session>> getEvents(String token) async {
     const String url = 'https://api-dev.woutick.com/back/v1/session/get-wpass/';
     try {
       final headers = {
@@ -32,8 +32,8 @@ class EventService {
         debugPrint('Decoded JSON: $jsonResponse');
 
         if (jsonResponse is List) {
-          List<Sessions> events =
-              jsonResponse.map((json) => Sessions.fromJson(json)).toList();
+          List<Session> events =
+              jsonResponse.map((json) => Session.fromJson(json)).toList();
           return events;
         } else {
           throw Exception('Expected a list of events but found: $jsonResponse');
@@ -69,11 +69,11 @@ class EventService {
   static Future<void> fetchAndUpdateSelectedEvents(String token) async {
     final events = await getEvents(token);
     final dbHelper = SessionsDao();
-    final selectedEvents = await dbHelper.getSelectedSessions(); 
+    final selectedEvents = await dbHelper.getSelectedSessions();
 
     final selectedUuids = selectedEvents.map((event) => event.uuid).toList();
-    final filteredEvents = events.where((event) => selectedUuids.contains(event.uuid)).toList();
-
+    final filteredEvents =
+        events.where((event) => selectedUuids.contains(event.uuid)).toList();
 
     await dbHelper.storeSessions(filteredEvents);
 

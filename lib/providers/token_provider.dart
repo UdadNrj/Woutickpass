@@ -1,17 +1,17 @@
 import 'package:flutter/material.dart';
-import 'package:woutickpass/models/Sessions_objeto..dart';
+import 'package:woutickpass/models/objects/session.dart';
 import 'package:woutickpass/services/token_dao.dart';
-import 'package:woutickpass/services/sessions_dao.dart'; 
+import 'package:woutickpass/services/sessions_dao.dart';
 
 class TokenProvider with ChangeNotifier {
   String _token = '';
-  List<Sessions> _selectedEvents = [];
+  List<Session> _selectedEvents = [];
 
   String get token => _token;
-  List<Sessions> get selectedEvents => _selectedEvents;
+  List<Session> get selectedEvents => _selectedEvents;
 
   final TokenDao _tokenDao = TokenDao();
-  final SessionsDao _sessionsDao = SessionsDao(); 
+  final SessionsDao _sessionsDao = SessionsDao();
 
   TokenProvider() {
     _loadToken();
@@ -42,14 +42,14 @@ class TokenProvider with ChangeNotifier {
     _token = token;
     try {
       await _tokenDao.insertToken(token);
-      print('Token guardado en TokenProvider: $_token');  
+      print('Token guardado en TokenProvider: $_token');
     } catch (e) {
       print('Error setting token: $e');
     }
     notifyListeners();
   }
 
-  Future<void> addEvent(Sessions event) async {
+  Future<void> addEvent(Session event) async {
     _selectedEvents.add(event);
     try {
       await _sessionsDao.addSession(event);
@@ -59,7 +59,7 @@ class TokenProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> removeEvent(Sessions event) async {
+  Future<void> removeEvent(Session event) async {
     _selectedEvents.removeWhere((e) => e.uuid == event.uuid);
     try {
       await _sessionsDao.removeSession(event.uuid);

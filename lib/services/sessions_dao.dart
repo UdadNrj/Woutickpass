@@ -1,10 +1,10 @@
 import 'package:sqflite/sqflite.dart';
+import 'package:woutickpass/models/objects/session.dart';
 
 import 'package:woutickpass/services/database.dart';
-import 'package:woutickpass/models/Sessions_objeto..dart';
 
 class SessionsDao {
-  Future<void> addSession(Sessions session) async {
+  Future<void> addSession(Session session) async {
     final db = await DatabaseHelper().database;
     await db.insert(
       'sessions',
@@ -27,18 +27,18 @@ class SessionsDao {
     await db.delete('sessions');
   }
 
-  Future<List<Sessions>> getSelectedSessions() async {
+  Future<List<Session>> getSelectedSessions() async {
     final db = await DatabaseHelper().database;
     final List<Map<String, dynamic>> maps = await db.query(
       'sessions',
       where: 'is_selected = 1',
     );
     return List.generate(maps.length, (i) {
-      return Sessions.fromJson(maps[i]);
+      return Session.fromJson(maps[i]);
     });
   }
 
-  Future<void> storeSessions(List<Sessions> sessions) async {
+  Future<void> storeSessions(List<Session> sessions) async {
     final db = await DatabaseHelper().database;
     await db.delete('sessions');
     for (var session in sessions) {
@@ -50,11 +50,11 @@ class SessionsDao {
     }
   }
 
-  Future<List<Sessions>> retrieveSessions() async {
+  Future<List<Session>> retrieveSessions() async {
     final db = await DatabaseHelper().database;
     final List<Map<String, dynamic>> maps = await db.query('sessions');
     return List.generate(maps.length, (i) {
-      return Sessions.fromJson(maps[i]);
+      return Session.fromJson(maps[i]);
     });
   }
 

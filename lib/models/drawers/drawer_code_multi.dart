@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 
-class CodePageMulti extends StatefulWidget {
-  const CodePageMulti({Key? key}) : super(key: key);
+class DrawerCodeMulti extends StatefulWidget {
+  const DrawerCodeMulti({Key? key}) : super(key: key);
 
   @override
-  _CodePageMultiState createState() => _CodePageMultiState();
+  _CodeMultiState createState() => _CodeMultiState();
 }
 
-class _CodePageMultiState extends State<CodePageMulti> {
+class _CodeMultiState extends State<DrawerCodeMulti> {
   bool _isScrollControlled = false;
 
   void _updateIsNumberValid(bool isValid, String code) {

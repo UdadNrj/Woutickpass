@@ -35,6 +35,7 @@ class DatabaseHelper {
     await db.execute('''
       CREATE TABLE sessions (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
+        is_uploaded BOOLEAN DEFAULT 0,
         uuid TEXT UNIQUE,
         name TEXT,
         wpass_code TEXT, 

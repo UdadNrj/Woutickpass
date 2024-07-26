@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:woutickpass/models/Button_code_events.dart';
-import 'package:woutickpass/models/Sessions_objeto..dart';
+import 'package:woutickpass/models/logic/qr_scanner.dart';
+import 'package:woutickpass/models/objects/session.dart';
 import 'package:woutickpass/screens/Sessions_details_screnn.dart';
 
 class PageEvents extends StatefulWidget {
-  final List<Sessions> selectedEvents;
+  final List<Session> selectedEvents;
 
   const PageEvents({
     Key? key,
@@ -26,7 +26,7 @@ class _PageMultiEventsState extends State<PageEvents> {
           padding: EdgeInsets.only(
             bottom: MediaQuery.of(context).viewInsets.bottom,
           ),
-          child: CodePage(),
+          child: QrScanner(),
         ),
       ),
     );
@@ -40,11 +40,11 @@ class _PageMultiEventsState extends State<PageEvents> {
         children: [
           Container(
             color: Colors.white,
-            margin: EdgeInsets.only(bottom: 50), 
+            margin: EdgeInsets.only(bottom: 50),
             child: ListView.builder(
               itemCount: widget.selectedEvents.length,
               itemBuilder: (context, index) {
-                Sessions event = widget.selectedEvents[index];
+                Session event = widget.selectedEvents[index];
                 return GestureDetector(
                   onTap: () {
                     Navigator.push(
@@ -77,12 +77,12 @@ class _PageMultiEventsState extends State<PageEvents> {
                             children: [
                               Text(
                                 event.name,
-                                style:const TextStyle(
+                                style: const TextStyle(
                                   fontSize: 18,
                                   fontWeight: FontWeight.bold,
                                 ),
                               ),
-                             const SizedBox(height: 8),
+                              const SizedBox(height: 8),
                               Text(
                                 '${event.startAt} - Ubicación',
                                 style: TextStyle(
@@ -90,7 +90,7 @@ class _PageMultiEventsState extends State<PageEvents> {
                                 ),
                               ),
                               const SizedBox(height: 8),
-                             const  Text(
+                              const Text(
                                 '0/200 entradas validadas',
                                 style: TextStyle(
                                   color: Colors.grey,
@@ -117,7 +117,8 @@ class _PageMultiEventsState extends State<PageEvents> {
               padding: const EdgeInsets.symmetric(vertical: 8),
               child: ElevatedButton(
                 style: ElevatedButton.styleFrom(
-                    padding: const EdgeInsets.symmetric(horizontal: 80, vertical: 16),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 80, vertical: 16),
                     backgroundColor: Color(0xFF202B37)),
                 onPressed: () => _openIconButtonPressed(context),
                 child: const Text(

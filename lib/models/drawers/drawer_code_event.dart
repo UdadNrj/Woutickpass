@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:woutickpass/services/token_dao.dart';
 
-class CodePage extends StatefulWidget {
-  const CodePage({Key? key}) : super(key: key);
+class DrawerCodeEvent extends StatefulWidget {
+  const DrawerCodeEvent({Key? key}) : super(key: key);
 
   @override
-  _CodePageState createState() => _CodePageState();
+  DrawerCodeEventState createState() => DrawerCodeEventState();
 }
 
-class _CodePageState extends State<CodePage> {
+class DrawerCodeEventState extends State<DrawerCodeEvent> {
   bool _isScrollControlled = false;
   bool _isUserLoggedIn = false;
 

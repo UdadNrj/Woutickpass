@@ -1,10 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+<<<<<<< HEAD
 import 'package:woutickpass/models/objects/session.dart';
 import 'package:woutickpass/services/sessions_dao.dart';
+=======
+import 'package:woutickpass/models/Sessions_objeto..dart';
+>>>>>>> parent of dc54c47 (Cambios grandes !)
 import 'package:woutickpass/screens/Tabs/button_nav.dart';
-import 'package:woutickpass/services/controllers/route.dart';
 import 'package:woutickpass/services/controllers/filter.dart';
+import 'package:woutickpass/services/controllers/route.dart';
+import 'package:woutickpass/services/database.dart';
 
 class MainPage extends StatefulWidget {
   final String token;
@@ -33,8 +38,13 @@ class _MainPageState extends State<MainPage> {
     _selectedEventsFuture = _loadSelectedEvents();
   }
 
+<<<<<<< HEAD
   Future<List<Session>> _loadSelectedEvents() async {
     return await SessionsDao().getSelectedSessions();
+=======
+  Future<List<Sessions>> _loadSelectedEvents() async {
+    return await DatabaseHelper().getSelectedSessions();
+>>>>>>> parent of dc54c47 (Cambios grandes !)
   }
 
   void _openFilterSheet(BuildContext context) {

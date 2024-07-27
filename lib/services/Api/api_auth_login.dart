@@ -2,12 +2,21 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
+<<<<<<< HEAD:lib/services/Api/api_auth_login.dart
 import 'package:provider/provider.dart';
 import 'package:woutickpass/services/Api/api_auth_sessions.dart';
 import 'package:woutickpass/services/token_dao.dart';
+=======
+>>>>>>> parent of dc54c47 (Cambios grandes !):lib/services/Api/auth_login.dart
 import 'package:connectivity_plus/connectivity_plus.dart';
-import 'package:woutickpass/screens/Sessions_screnn.dart';
+import 'package:provider/provider.dart';
 import 'package:woutickpass/providers/token_provider.dart';
+<<<<<<< HEAD:lib/services/Api/api_auth_login.dart
+=======
+import 'package:woutickpass/screens/Sessions_screnn.dart';
+import 'package:woutickpass/services/database.dart';
+import 'package:woutickpass/services/api/auth_events.dart';
+>>>>>>> parent of dc54c47 (Cambios grandes !):lib/services/Api/auth_login.dart
 
 class LoginService {
   Future<String> askToken(String gmail, String password) async {
@@ -43,7 +52,7 @@ class LoginService {
         const SnackBar(
             content: Text('No internet connection. Logging in offline.')),
       );
-      String? token = await TokenDao().retrieveToken();
+      String? token = await DatabaseHelper().retrieveToken();
       if (token != null) {
         context.read<TokenProvider>().setToken(token);
 
@@ -64,7 +73,7 @@ class LoginService {
       try {
         final token = await askToken(gmail, password);
         if (token.isNotEmpty) {
-          await TokenDao().insertToken(token);
+          await DatabaseHelper().insertToken(token);
 
           await EventService.updateEvents(token);
 

@@ -1,4 +1,9 @@
+<<<<<<< HEAD:lib/models/objects/session.dart
 import 'package:flutter/foundation.dart'; // Para el uso de `@immutable`
+=======
+import 'package:flutter/foundation.dart';
+import 'package:woutickpass/models/Sessions.objeto.dart';  // Para el uso de `@immutable`
+>>>>>>> parent of dc54c47 (Cambios grandes !):lib/models/Sessions_objeto..dart
 
 @immutable
 class Session {

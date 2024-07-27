@@ -1,5 +1,11 @@
 import 'package:flutter/material.dart';
+<<<<<<< HEAD
 import 'package:woutickpass/models/objects/session.dart';
+=======
+import 'package:woutickpass/models/Sessions_objeto..dart';
+import 'package:woutickpass/models/attendee.objeto.dart';
+import 'package:woutickpass/screens/Attendee_screen.dart';
+>>>>>>> parent of dc54c47 (Cambios grandes !)
 
 class EventDetailsPage extends StatelessWidget {
   final Session event;
@@ -11,6 +17,21 @@ class EventDetailsPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    List<Attendee> attendees = [
+      Attendee(
+        name: "Nombre Apellido Apellido",
+        ticketType: "Tipo Entrada",
+        ticketCode: "DNG72YB1",
+        status: "DENTRO",
+      ),
+      Attendee(
+        name: "Nombre Apellido Apellido",
+        ticketType: "Tipo Entrada",
+        ticketCode: "DNG72YB2",
+        status: "SIN REGISTRO",
+      ),
+    ];
+
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
@@ -52,15 +73,15 @@ class EventDetailsPage extends StatelessWidget {
                   'Revisa la lista de asistentes totales a tu evento y edita los estados de las entradas de forma manual.'),
               leading: Icon(Icons.people),
               onTap: () {
-                // Navigator.push(
-                //   context,
-                //   MaterialPageRoute(
-                //     builder: (context) => AttendeesListScreen(
-                //       event: event,
-                //       attendees: attendees,
-                //     ),
-                //   ),
-                // );
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => AttendeesListScreen(
+                      event: event,
+                      attendees: attendees,
+                    ),
+                  ),
+                );
               },
             ),
             Divider(),

@@ -1,10 +1,17 @@
 import 'package:flutter/material.dart';
+<<<<<<< HEAD
 import 'package:woutickpass/models/objects/session.dart';
 
 import 'package:woutickpass/screens/Tabs/main_nav.dart';
 import 'package:woutickpass/services/Api/api_auth_sessions.dart';
 
 import 'package:woutickpass/services/sessions_dao.dart';
+=======
+import 'package:woutickpass/models/Sessions_objeto..dart';
+import 'package:woutickpass/screens/Tabs/main_nav.dart';
+import 'package:woutickpass/services/Api/auth_events.dart';
+import 'package:woutickpass/services/database.dart';
+>>>>>>> parent of dc54c47 (Cambios grandes !)
 
 class EventsScreen extends StatefulWidget {
   final String token;
@@ -33,16 +40,16 @@ class _EventsScreenState extends State<EventsScreen> {
       final apiEvents = await futureEvents;
       events = apiEvents;
 
-      await SessionsDao().storeSessions(events);
+      await DatabaseHelper().storeSessions(events);
 
-      final selectedEvents = await SessionsDao().getSelectedSessions();
+      final selectedEvents = await DatabaseHelper().getSelectedSessions();
       checkedEvents = {
         for (var event in events)
           event.uuid: selectedEvents.contains(event.uuid),
       };
       setState(() {});
     } catch (e) {
-      events = await SessionsDao().retrieveSessions();
+      events = await DatabaseHelper().retrieveSessions();
       checkedEvents = {
         for (var event in events) event.uuid: false,
       };
@@ -60,8 +67,12 @@ class _EventsScreenState extends State<EventsScreen> {
     });
 
     final selectedEvents = getSelectedEvents();
+<<<<<<< HEAD
     SessionsDao()
         .updateSelectedSessions(selectedEvents.map((e) => e.uuid).toList());
+=======
+    DatabaseHelper().updateSelectedSessions(selectedEvents.map((e) => e.uuid).toList());
+>>>>>>> parent of dc54c47 (Cambios grandes !)
   }
 
   List<Session> getSelectedEvents() {

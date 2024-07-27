@@ -1,3 +1,4 @@
+<<<<<<< HEAD:lib/models/objects/ticket.dart
 class Ticket {
   final String uuid;
   final String user;
@@ -186,4 +187,18 @@ class Ticket {
       placeAddress: map['place_address'],
     );
   }
+=======
+class Attendee {
+  final String name;
+  final String ticketType;
+  final String ticketCode;
+  final String status;
+
+  Attendee({
+    required this.name,
+    required this.ticketType,
+    required this.ticketCode,
+    required this.status,
+  });
+>>>>>>> parent of dc54c47 (Cambios grandes !):lib/models/attendee.objeto.dart
 }

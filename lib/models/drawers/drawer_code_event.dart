@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:woutickpass/services/token_dao.dart';
+import 'package:woutickpass/services/database.dart';
 
 class DrawerCodeEvent extends StatefulWidget {
   const DrawerCodeEvent({Key? key}) : super(key: key);
@@ -10,7 +10,7 @@ class DrawerCodeEvent extends StatefulWidget {
 
 class DrawerCodeEventState extends State<DrawerCodeEvent> {
   bool _isScrollControlled = false;
-  bool _isUserLoggedIn = false;
+  bool _isUserLoggedIn = false; 
 
   @override
   void initState() {
@@ -19,7 +19,7 @@ class DrawerCodeEventState extends State<DrawerCodeEvent> {
   }
 
   Future<void> _checkUserLoginStatus() async {
-    String? token = await TokenDao().retrieveToken();
+    String? token = await DatabaseHelper().retrieveToken(); 
     setState(() {
       _isUserLoggedIn = token != null && token.isNotEmpty;
     });
@@ -30,8 +30,9 @@ class DrawerCodeEventState extends State<DrawerCodeEvent> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text(
-              _isUserLoggedIn ? 'Agregar Otros Eventos' : 'Iniciar Sesión'),
+          title: Text(_isUserLoggedIn
+              ? 'Agregar Otros Eventos'
+              : 'Iniciar Sesión'),
           content: Text(_isUserLoggedIn
               ? '¿Deseas agregar más eventos?'
               : '¿Deseas iniciar sesión para agregar eventos?'),
@@ -39,20 +40,21 @@ class DrawerCodeEventState extends State<DrawerCodeEvent> {
             TextButton(
               onPressed: () {
                 if (_isUserLoggedIn) {
+                  // Manejar agregar eventos
                   Navigator.of(context).pop();
                 } else {
+                  // Navegar a la página de inicio de sesión
                   Navigator.of(context).pushNamed('/loginPage');
                 }
               },
-              child:
-                  Text(_isUserLoggedIn ? 'Agregar Eventos' : 'Iniciar Sesión'),
+              child: Text(_isUserLoggedIn ? 'Agregar Eventos' : 'Iniciar Sesión'),
             ),
             if (_isUserLoggedIn)
               TextButton(
                 onPressed: () {
                   Navigator.of(context).pop();
                 },
-                child: const Text('Cancelar'),
+                child: Text('Cancelar'),
               ),
           ],
         );
@@ -154,7 +156,7 @@ class _TextFieldValidedState extends State<TextFieldValided> {
               borderSide:
                   const BorderSide(color: Color.fromRGBO(172, 172, 172, 1)),
             ),
-            fillColor: const Color.fromRGBO(252, 252, 253, 1),
+            fillColor: Color.fromRGBO(252, 252, 253, 1),
             filled: true,
           ),
           onChanged: (value) {
@@ -176,20 +178,20 @@ class _TextFieldValidedState extends State<TextFieldValided> {
               ),
               onPressed: () {
                 if (enteredCode.length == 8) {
+                  // Manejar la lógica de registro de eventos aquí
                 } else {
                   showDialog(
                     context: context,
                     builder: (BuildContext context) {
                       return AlertDialog(
-                        title: const Text('Código Inválido'),
-                        content: const Text(
-                            'Por favor, ingresa un código de 8 dígitos válido.'),
+                        title: Text('Código Inválido'),
+                        content: Text('Por favor, ingresa un código de 8 dígitos válido.'),
                         actions: <Widget>[
                           TextButton(
                             onPressed: () {
                               Navigator.of(context).pop();
                             },
-                            child: const Text('OK'),
+                            child: Text('OK'),
                           ),
                         ],
                       );

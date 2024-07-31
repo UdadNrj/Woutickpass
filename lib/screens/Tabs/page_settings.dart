@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:woutickpass/services/database.dart';
 import 'package:woutickpass/screens/home_screen.dart';
+import 'package:woutickpass/services/settings_dao.dart';
 
 class PageSetting extends StatefulWidget {
   const PageSetting({Key? key}) : super(key: key);
@@ -20,35 +21,36 @@ class _PageSettingState extends State<PageSetting> {
   bool additionalSetting2 = true;
   bool additionalSetting3 = true;
 
-  final DatabaseHelper _dbHelper = DatabaseHelper();
+  late SettingDao _settingDao;
 
   @override
   void initState() {
     super.initState();
+    _settingDao = SettingDao(DatabaseHelper());
     _loadSettings();
   }
 
   Future<void> _loadSettings() async {
-    offlineMode = await _dbHelper.loadSetting('offlineMode', true);
+    offlineMode = await _settingDao.loadSetting('offlineMode', true);
     showAttendeesCounter =
-        await _dbHelper.loadSetting('showAttendeesCounter', true);
-    vibration = await _dbHelper.loadSetting('vibration', true);
+        await _settingDao.loadSetting('showAttendeesCounter', true);
+    vibration = await _settingDao.loadSetting('vibration', true);
     receiveNotification =
-        await _dbHelper.loadSetting('receiveNotification', true);
+        await _settingDao.loadSetting('receiveNotification', true);
     readModeNotification =
-        await _dbHelper.loadSetting('readModeNotification', true);
-    salida = await _dbHelper.loadSetting('salida', true);
+        await _settingDao.loadSetting('readModeNotification', true);
+    salida = await _settingDao.loadSetting('salida', true);
     additionalSetting1 =
-        await _dbHelper.loadSetting('additionalSetting1', true);
+        await _settingDao.loadSetting('additionalSetting1', true);
     additionalSetting2 =
-        await _dbHelper.loadSetting('additionalSetting2', true);
+        await _settingDao.loadSetting('additionalSetting2', true);
     additionalSetting3 =
-        await _dbHelper.loadSetting('additionalSetting3', true);
+        await _settingDao.loadSetting('additionalSetting3', true);
     setState(() {});
   }
 
   Future<void> _saveSetting(String key, bool value) async {
-    await _dbHelper.saveSetting(key, value);
+    await _settingDao.saveSetting(key, value);
   }
 
   Future<void> _logout(BuildContext context) async {
@@ -62,7 +64,7 @@ class _PageSettingState extends State<PageSetting> {
     await _saveSetting('additionalSetting2', additionalSetting2);
     await _saveSetting('additionalSetting3', additionalSetting3);
 
-    await _dbHelper.logout();
+    await _settingDao.logout();
 
     Navigator.pushReplacement(
       context,
@@ -98,10 +100,7 @@ class _PageSettingState extends State<PageSetting> {
             "CONTROL DE ACCESOS",
             style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
           ),
-          const SizedBox(
-            height: 10.0,
-          ),
-          const SizedBox(height: 1),
+          const SizedBox(height: 10),
           _buildSwitchListTile(
             title: "Activar modo offline",
             value: offlineMode,
@@ -113,7 +112,6 @@ class _PageSettingState extends State<PageSetting> {
             },
             backgroundColor: Colors.white,
           ),
-          const SizedBox(height: 1),
           _buildSwitchListTile(
             title: "Mostrar contador de asistentes",
             value: showAttendeesCounter,
@@ -125,7 +123,6 @@ class _PageSettingState extends State<PageSetting> {
             },
             backgroundColor: Colors.white,
           ),
-          const SizedBox(height: 1),
           _buildSwitchListTile(
             title: "Vibración",
             value: vibration,
@@ -137,7 +134,6 @@ class _PageSettingState extends State<PageSetting> {
             },
             backgroundColor: Colors.white,
           ),
-          const SizedBox(height: 1),
           _buildSwitchListTile(
             title: "Sonido al Escaneo",
             value: receiveNotification,
@@ -149,7 +145,6 @@ class _PageSettingState extends State<PageSetting> {
             },
             backgroundColor: Colors.white,
           ),
-          const SizedBox(height: 1),
           _buildSwitchListTile(
             title: "Utilizar escáner láser en lugar de cámara",
             value: additionalSetting1,
@@ -161,9 +156,9 @@ class _PageSettingState extends State<PageSetting> {
             },
             backgroundColor: Colors.white,
           ),
-          const SizedBox(height: 1),
           _buildSwitchListTile(
-            title: "Utilizar escáner láser en lugar de cámara",
+            title:
+                "Utilizar escáner láser en lugar de cámara (opción repetida)",
             value: additionalSetting2,
             onChanged: (bool value) {
               setState(() {
@@ -173,7 +168,6 @@ class _PageSettingState extends State<PageSetting> {
             },
             backgroundColor: Colors.white,
           ),
-          const SizedBox(height: 1),
           _buildSwitchListTile(
             title: "Priorizar cámara para escanear",
             value: additionalSetting3,
@@ -190,7 +184,6 @@ class _PageSettingState extends State<PageSetting> {
             "MODO DE LECTURA",
             style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
           ),
-          const SizedBox(height: 1),
           _buildSwitchListTile(
             title: "Entradas",
             value: readModeNotification,
@@ -202,7 +195,6 @@ class _PageSettingState extends State<PageSetting> {
             },
             backgroundColor: Colors.white,
           ),
-          const SizedBox(height: 1),
           _buildSwitchListTile(
             title: "Salidas",
             value: salida,
@@ -219,7 +211,7 @@ class _PageSettingState extends State<PageSetting> {
             onPressed: () {
               _logout(context);
             },
-            child: const Text("CERRAR SESION"),
+            child: const Text("CERRAR SESIÓN"),
           ),
         ],
       ),

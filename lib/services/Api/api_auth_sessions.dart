@@ -1,23 +1,21 @@
-// auth_service.dart
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
-<<<<<<< HEAD:lib/services/Api/api_auth_sessions.dart
-import 'package:woutickpass/models/objects/session.dart';
 import 'package:woutickpass/services/sessions_dao.dart';
-=======
-import 'package:woutickpass/models/Sessions_objeto..dart';
-import 'package:woutickpass/services/database.dart';
->>>>>>> parent of dc54c47 (Cambios grandes !):lib/services/Api/auth_events.dart
+import 'package:woutickpass/models/objects/session.dart';
 
 class EventService {
   static Future<List<Session>> getEvents(String token) async {
+    if (token.isEmpty) {
+      throw Exception('El token está vacío al obtener eventos');
+    }
     const String url = 'https://api-dev.woutick.com/back/v1/session/get-wpass/';
+    final headers = {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer $token',
+    };
+
     try {
-      final headers = {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer $token',
-      };
       final response = await http.get(
         Uri.parse(url),
         headers: headers,
@@ -37,9 +35,7 @@ class EventService {
         debugPrint('Decoded JSON: $jsonResponse');
 
         if (jsonResponse is List) {
-          List<Session> events =
-              jsonResponse.map((json) => Session.fromJson(json)).toList();
-          return events;
+          return jsonResponse.map((json) => Session.fromJson(json)).toList();
         } else {
           throw Exception('Expected a list of events but found: $jsonResponse');
         }
@@ -53,9 +49,13 @@ class EventService {
     }
   }
 
-  static Future<void> updateEvents(String token) async {
+  static Future<void> uapdteEvents(String token) async {
+    print('Updating events with token: $token');
+    if (token.isEmpty) {
+      throw Exception('El token está vacío al actualizar eventos');
+    }
     final events = await getEvents(token);
-    final dbHelper = DatabaseHelper();
+    final dbHelper = SessionsDao();
 
     await dbHelper.storeSessions(events);
 
@@ -63,8 +63,12 @@ class EventService {
   }
 
   static Future<void> fetchAndStoreEvents(String token) async {
+    print('Fetching and storing events with token: $token');
+    if (token.isEmpty) {
+      throw Exception('El token está vacío al obtener y almacenar eventos');
+    }
     final events = await getEvents(token);
-    final dbHelper = DatabaseHelper();
+    final dbHelper = SessionsDao();
 
     await dbHelper.storeSessions(events);
 
@@ -72,14 +76,14 @@ class EventService {
   }
 
   static Future<void> fetchAndUpdateSelectedEvents(String token) async {
+    print('Fetching and updating selected events with token: $token');
+    if (token.isEmpty) {
+      throw Exception(
+          'El token está vacío al obtener y actualizar eventos seleccionados');
+    }
     final events = await getEvents(token);
-<<<<<<< HEAD:lib/services/Api/api_auth_sessions.dart
     final dbHelper = SessionsDao();
     final selectedEvents = await dbHelper.getSelectedSessions();
-=======
-    final dbHelper = DatabaseHelper();
-    final selectedEvents = await dbHelper.getSelectedSessions(); 
->>>>>>> parent of dc54c47 (Cambios grandes !):lib/services/Api/auth_events.dart
 
     final selectedUuids = selectedEvents.map((event) => event.uuid).toList();
     final filteredEvents =

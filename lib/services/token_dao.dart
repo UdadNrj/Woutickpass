@@ -1,25 +1,33 @@
-import 'package:sqflite/sqflite.dart';
-
+import 'package:sqflite/sql.dart';
 import 'package:woutickpass/services/database.dart';
 
 class TokenDao {
+  final DatabaseHelper _databaseHelper = DatabaseHelper();
+
   Future<void> insertToken(String token) async {
-    final db = await DatabaseHelper().database;
-    await db.insert('token', {'token': token},
-        conflictAlgorithm: ConflictAlgorithm.replace);
+    if (token.isEmpty) {
+      throw Exception('El token no puede ser vacío');
+    }
+    final db = await _databaseHelper.database;
+    await db.insert(
+      'token',
+      {'token': token},
+      conflictAlgorithm: ConflictAlgorithm.replace,
+    );
   }
 
   Future<String?> retrieveToken() async {
-    final db = await DatabaseHelper().database;
-    final result = await db.query('token');
-    if (result.isNotEmpty) {
-      return result.first['token'] as String?;
+    final db = await _databaseHelper.database;
+    final List<Map<String, dynamic>> maps = await db.query('token', limit: 1);
+
+    if (maps.isNotEmpty) {
+      return maps.first['token'] as String?;
     }
     return null;
   }
 
   Future<void> deleteToken() async {
-    final db = await DatabaseHelper().database;
+    final db = await _databaseHelper.database;
     await db.delete('token');
   }
 }

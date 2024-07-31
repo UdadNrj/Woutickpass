@@ -1,11 +1,7 @@
 import 'package:flutter/material.dart';
-<<<<<<< HEAD
+import 'package:woutickpass/models/objects/attendee.dart';
 import 'package:woutickpass/models/objects/session.dart';
-=======
-import 'package:woutickpass/models/Sessions_objeto..dart';
-import 'package:woutickpass/models/attendee.objeto.dart';
 import 'package:woutickpass/screens/Attendee_screen.dart';
->>>>>>> parent of dc54c47 (Cambios grandes !)
 
 class EventDetailsPage extends StatelessWidget {
   final Session event;
@@ -35,7 +31,7 @@ class EventDetailsPage extends StatelessWidget {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        title: Text(event.name),
+        title: Text(event.title),
         backgroundColor: Colors.white,
       ),
       body: Padding(
@@ -44,7 +40,7 @@ class EventDetailsPage extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              event.name,
+              event.title,
               style: TextStyle(
                 fontSize: 24,
                 fontWeight: FontWeight.bold,

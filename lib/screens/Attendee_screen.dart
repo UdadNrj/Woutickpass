@@ -27,7 +27,7 @@ class AttendeesListScreen extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              event.name,
+              event.title,
               style: TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.bold,

@@ -1,8 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:woutickpass/services/database.dart';
+import 'package:woutickpass/screens/Sessions_screen_wpass.dart';
+import 'package:woutickpass/services/token_dao.dart';
+import 'package:woutickpass/services/Api/api_auth_wpass.dart';
 
 class DrawerCodeEvent extends StatefulWidget {
-  const DrawerCodeEvent({Key? key}) : super(key: key);
+  final String someParameter;
+
+  const DrawerCodeEvent({Key? key, required this.someParameter})
+      : super(key: key);
 
   @override
   DrawerCodeEventState createState() => DrawerCodeEventState();
@@ -10,7 +15,10 @@ class DrawerCodeEvent extends StatefulWidget {
 
 class DrawerCodeEventState extends State<DrawerCodeEvent> {
   bool _isScrollControlled = false;
-  bool _isUserLoggedIn = false; 
+  bool _isUserLoggedIn = false;
+  final _formKey = GlobalKey<FormState>();
+  final _eventService = ApiAuthWpass();
+  String? _eventCode;
 
   @override
   void initState() {
@@ -18,44 +26,51 @@ class DrawerCodeEventState extends State<DrawerCodeEvent> {
     _checkUserLoginStatus();
   }
 
+  Future<void> _handleRegisterEvent() async {
+    if (_formKey.currentState?.validate() ?? false) {
+      _formKey.currentState?.save();
+      if (_eventCode == null || _eventCode!.isEmpty) {
+        _showErrorMessage('El código de evento está vacío.');
+        return;
+      }
+
+      try {
+        final sessions = await ApiAuthWpass.getEvents(_eventCode!);
+
+        Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (context) => SessionsScreenWpass(
+              wpassCode: 'wpass',
+            ),
+          ),
+        );
+      } catch (e) {
+        _showErrorMessage('Error al obtener eventos: $e');
+      }
+    }
+  }
+
   Future<void> _checkUserLoginStatus() async {
-    String? token = await DatabaseHelper().retrieveToken(); 
+    String? token = await TokenDao().retrieveToken();
     setState(() {
       _isUserLoggedIn = token != null && token.isNotEmpty;
     });
   }
 
-  void _showUserMessage(BuildContext context) {
+  void _showErrorMessage(String message) {
     showDialog(
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text(_isUserLoggedIn
-              ? 'Agregar Otros Eventos'
-              : 'Iniciar Sesión'),
-          content: Text(_isUserLoggedIn
-              ? '¿Deseas agregar más eventos?'
-              : '¿Deseas iniciar sesión para agregar eventos?'),
+          title: Text('Error'),
+          content: Text(message),
           actions: <Widget>[
             TextButton(
               onPressed: () {
-                if (_isUserLoggedIn) {
-                  // Manejar agregar eventos
-                  Navigator.of(context).pop();
-                } else {
-                  // Navegar a la página de inicio de sesión
-                  Navigator.of(context).pushNamed('/loginPage');
-                }
+                Navigator.of(context).pop();
               },
-              child: Text(_isUserLoggedIn ? 'Agregar Eventos' : 'Iniciar Sesión'),
+              child: Text('Aceptar'),
             ),
-            if (_isUserLoggedIn)
-              TextButton(
-                onPressed: () {
-                  Navigator.of(context).pop();
-                },
-                child: Text('Cancelar'),
-              ),
           ],
         );
       },
@@ -90,7 +105,12 @@ class DrawerCodeEventState extends State<DrawerCodeEvent> {
                 ),
               ),
               const SizedBox(height: 10),
-              TextFieldValided(),
+              Form(
+                key: _formKey,
+                child: TextFieldValidated(onSaved: (value) {
+                  _eventCode = value;
+                }),
+              ),
               const SizedBox(height: 10),
               RichText(
                 text: const TextSpan(
@@ -116,9 +136,17 @@ class DrawerCodeEventState extends State<DrawerCodeEvent> {
               ),
               const SizedBox(height: 20),
               ElevatedButton(
-                onPressed: () => _showUserMessage(context),
-                child: const Text(
-                  'COMPROBAR ESTADO',
+                onPressed: _handleRegisterEvent,
+                style: ElevatedButton.styleFrom(
+                    backgroundColor: Color(0xFF202B37)),
+                child: const Text('REGISTRAR EVENTO'),
+              ),
+              const SizedBox(height: 20),
+              Text(
+                'Parámetro recibido: ${widget.someParameter}',
+                style: const TextStyle(
+                  color: Colors.black,
+                  fontSize: 14,
                 ),
               ),
             ],
@@ -129,84 +157,19 @@ class DrawerCodeEventState extends State<DrawerCodeEvent> {
   }
 }
 
-class TextFieldValided extends StatefulWidget {
-  @override
-  _TextFieldValidedState createState() => _TextFieldValidedState();
-}
+class TextFieldValidated extends StatelessWidget {
+  final FormFieldSetter<String>? onSaved;
 
-class _TextFieldValidedState extends State<TextFieldValided> {
-  String enteredCode = '';
-
-  final TextEditingController _controller = TextEditingController();
+  TextFieldValidated({this.onSaved});
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: <Widget>[
-        TextField(
-          controller: _controller,
-          keyboardType: TextInputType.number,
-          decoration: InputDecoration(
-            labelText: 'ej. 12345678',
-            contentPadding:
-                const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(4),
-              borderSide:
-                  const BorderSide(color: Color.fromRGBO(172, 172, 172, 1)),
-            ),
-            fillColor: Color.fromRGBO(252, 252, 253, 1),
-            filled: true,
-          ),
-          onChanged: (value) {
-            setState(() {
-              enteredCode = value;
-            });
-          },
-        ),
-        const SizedBox(height: 10),
-        Row(
-          children: [
-            ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 30, vertical: 16),
-                backgroundColor: enteredCode.length == 8
-                    ? Color(0xFF141C24)
-                    : Color(0xFFCED2DA),
-              ),
-              onPressed: () {
-                if (enteredCode.length == 8) {
-                  // Manejar la lógica de registro de eventos aquí
-                } else {
-                  showDialog(
-                    context: context,
-                    builder: (BuildContext context) {
-                      return AlertDialog(
-                        title: Text('Código Inválido'),
-                        content: Text('Por favor, ingresa un código de 8 dígitos válido.'),
-                        actions: <Widget>[
-                          TextButton(
-                            onPressed: () {
-                              Navigator.of(context).pop();
-                            },
-                            child: Text('OK'),
-                          ),
-                        ],
-                      );
-                    },
-                  );
-                }
-              },
-              child: const Text(
-                'REGISTRAR EVENTO',
-                style: TextStyle(color: Colors.white),
-              ),
-            ),
-          ],
-        ),
-      ],
+    return TextFormField(
+      onSaved: onSaved,
+      decoration: InputDecoration(
+        labelText: 'Event Code',
+        border: OutlineInputBorder(),
+      ),
     );
   }
 }

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:woutickpass/models/logic/qr_scanner.dart';
+import 'package:woutickpass/models/drawers/drawer_code_event.dart';
 import 'package:woutickpass/models/objects/session.dart';
 import 'package:woutickpass/screens/Sessions_details_screnn.dart';
 
@@ -16,7 +16,7 @@ class PageEvents extends StatefulWidget {
 }
 
 class _PageMultiEventsState extends State<PageEvents> {
-  void _openIconButtonPressed(BuildContext context) {
+  void _openIconButtonPressed(BuildContext context, String parameter) {
     showModalBottomSheet(
       backgroundColor: Color.fromARGB(255, 255, 255, 255),
       context: context,
@@ -26,7 +26,9 @@ class _PageMultiEventsState extends State<PageEvents> {
           padding: EdgeInsets.only(
             bottom: MediaQuery.of(context).viewInsets.bottom,
           ),
-          child: QrScanner(),
+          child: DrawerCodeEvent(
+            someParameter: parameter,
+          ),
         ),
       ),
     );
@@ -76,7 +78,7 @@ class _PageMultiEventsState extends State<PageEvents> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                event.name,
+                                event.title,
                                 style: const TextStyle(
                                   fontSize: 18,
                                   fontWeight: FontWeight.bold,
@@ -120,7 +122,8 @@ class _PageMultiEventsState extends State<PageEvents> {
                     padding: const EdgeInsets.symmetric(
                         horizontal: 80, vertical: 16),
                     backgroundColor: Color(0xFF202B37)),
-                onPressed: () => _openIconButtonPressed(context),
+                onPressed: () =>
+                    _openIconButtonPressed(context, "defaultParameter"),
                 child: const Text(
                   "AGREGAR NUEVO EVENTO",
                   style: TextStyle(

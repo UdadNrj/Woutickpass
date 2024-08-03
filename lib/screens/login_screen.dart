@@ -18,13 +18,11 @@ class LoginScreen extends StatelessWidget {
           },
         ),
       ),
-      body: const Stack(
-        children: <Widget>[
-          Padding(
-            padding: EdgeInsets.all(16.0),
-            child: LoginForm(),
-          ),
-        ],
+      body: const Padding(
+        padding: EdgeInsets.all(16.0),
+        child: SingleChildScrollView(
+          child: LoginForm(),
+        ),
       ),
     );
   }
@@ -49,13 +47,17 @@ class _LoginFormState extends State<LoginForm> {
 
   @override
   Widget build(BuildContext context) {
+    final screenSize = MediaQuery.of(context).size;
+    final screenHeight = screenSize.height;
+    final screenWidth = screenSize.width;
+
     return Column(
       mainAxisAlignment: MainAxisAlignment.start,
       children: <Widget>[
         titleBar(),
-        const SizedBox(height: 20),
+        SizedBox(height: screenHeight * 0.02),
         Container(
-          margin: const EdgeInsets.only(bottom: 20.0),
+          margin: EdgeInsets.only(bottom: screenHeight * 0.02),
           child: TextField(
             onChanged: (value) {
               setState(() {
@@ -80,7 +82,7 @@ class _LoginFormState extends State<LoginForm> {
           ),
         ),
         Container(
-          margin: const EdgeInsets.only(bottom: 20.0),
+          margin: EdgeInsets.only(bottom: screenHeight * 0.02),
           child: TextField(
             onChanged: (value) {
               setState(() {
@@ -116,15 +118,15 @@ class _LoginFormState extends State<LoginForm> {
             ),
           ),
         ),
-        const SizedBox(height: 30),
+        SizedBox(height: screenHeight * 0.03),
         TextPassword(context),
-        const SizedBox(height: 70),
+        SizedBox(height: screenHeight * 0.07),
         ElevatedButton(
           style: ButtonStyle(
             backgroundColor: MaterialStateProperty.all(Color(0xFF202B37)),
             foregroundColor: MaterialStateProperty.all(Colors.white),
-            padding: MaterialStateProperty.all(
-                const EdgeInsets.symmetric(vertical: 16, horizontal: 130)),
+            padding: MaterialStateProperty.all(EdgeInsets.symmetric(
+                vertical: screenHeight * 0.02, horizontal: screenWidth * 0.25)),
             shape: MaterialStateProperty.all<RoundedRectangleBorder>(
               RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(80),
@@ -134,7 +136,7 @@ class _LoginFormState extends State<LoginForm> {
           onPressed: _login,
           child: const Text('INICIAR SESION'),
         ),
-        const SizedBox(height: 40),
+        SizedBox(height: screenHeight * 0.04),
         register(),
       ],
     );

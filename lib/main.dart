@@ -20,8 +20,7 @@ class MyApp extends StatelessWidget {
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
         title: 'WoutickPass',
-        theme: ThemeData(
-        ),
+        theme: ThemeData(),
         onGenerateRoute: (settings) {
           switch (settings.name) {
             case '/login':
@@ -41,7 +40,7 @@ class MyApp extends StatelessWidget {
               return MaterialPageRoute(builder: (context) => SplashScreen());
           }
         },
-        initialRoute: '/splash', 
+        initialRoute: '/splash',
       ),
     );
   }

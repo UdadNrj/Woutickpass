@@ -62,9 +62,7 @@ class AttendeesListScreen extends StatelessWidget {
                             subtitle: Text(
                                 '${attendee.ticketType} (${attendee.ticketCode})'),
                             trailing: Icon(Icons.arrow_forward),
-                            onTap: () {
-                              // Acción al hacer tap en un asistente
-                            },
+                            onTap: () {},
                           ),
                         );
                       },

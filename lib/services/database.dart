@@ -22,6 +22,10 @@ class DatabaseHelper {
       path,
       version: 1,
       onCreate: _onCreate,
+      onOpen: (db) async {
+        // Verificar y agregar la columna `session_id` si no existe
+        await _checkAndAddColumn(db);
+      },
       onDowngrade: onDatabaseDowngradeDelete,
     );
   }
@@ -53,91 +57,90 @@ class DatabaseHelper {
         value INTEGER
       )
     ''');
+
     await db.execute('''
-    CREATE TABLE session_details (
-      uuid TEXT PRIMARY KEY,
-      is_active INTEGER,
-      created_at TEXT,
-      updated_at TEXT,
-      is_featured INTEGER,
-      is_private INTEGER,
-      is_canceled INTEGER,
-      order INTEGER,
-      name TEXT,
-      slug TEXT,
-      description TEXT,
-      text_out_of_stock TEXT,
-      text_not_available TEXT,
-      streaming_url TEXT,
-      streaming_description TEXT,
-      streaming_free_access INTEGER,
-      public_start_at TEXT,
-      public_end_at TEXT,
-      start_at TEXT,
-      end_at TEXT,
-      doors_open_time TEXT,
-      is_cashless INTEGER,
-      returns_start_at TEXT,
-      returns_end_at TEXT,
-      returns_min_amount INTEGER,
-      has_sell_max INTEGER,
-      sell_max INTEGER,
-      sell_max_type TEXT,
-      tickets_total INTEGER,
-      tickets_sold INTEGER,
-      status INTEGER,
-      event_venue TEXT,
-      text_offering INTEGER,
-      tickets TEXT
-    )
-  ''');
+      CREATE TABLE session_details (
+        uuid TEXT PRIMARY KEY,
+        is_active INTEGER,
+        created_at TEXT,
+        updated_at TEXT,
+        is_featured INTEGER,
+        is_private INTEGER,
+        is_canceled INTEGER,
+        order_number INTEGER,  -- Renombrado para evitar conflictos
+        name TEXT,
+        slug TEXT,
+        description TEXT,
+        text_out_of_stock TEXT,
+        text_not_available TEXT,
+        streaming_url TEXT,
+        streaming_description TEXT,
+        streaming_free_access INTEGER,
+        public_start_at TEXT,
+        public_end_at TEXT,
+        start_at TEXT,
+        end_at TEXT,
+        doors_open_time TEXT,
+        is_cashless INTEGER,
+        returns_start_at TEXT,
+        returns_end_at TEXT,
+        returns_min_amount INTEGER,
+        has_sell_max INTEGER,
+        sell_max INTEGER,
+        sell_max_type TEXT,
+        tickets_total INTEGER,
+        tickets_sold INTEGER,
+        status INTEGER,
+        event_venue TEXT,
+        text_offering INTEGER,
+        tickets TEXT
+      )
+    ''');
 
     await db.execute('''
       CREATE TABLE tickets (
         uuid TEXT PRIMARY KEY,
-        user TEXT,
-        event TEXT,
+        payment_at TEXT,
+        created_at TEXT,
+        updated_at TEXT,
         session TEXT,
-        ticket TEXT,
-        referer TEXT,
-        referer_user TEXT,
-        price INTEGER,
+        event TEXT,
+        status TEXT,
         ticket_code TEXT,
-        cashless_number TEXT,
+        type TEXT,
+        total INTEGER,
         accessed_at TEXT,
         checkin_at TEXT,
         last_entry_at TEXT,
         last_exit_at TEXT,
-        is_refundable INTEGER,
         name TEXT,
         dni TEXT,
         birthdate TEXT,
+        postal_code TEXT,
         email TEXT,
         phone TEXT,
         gender TEXT,
-        postal_code TEXT,
-        age INTEGER,
         question1_text TEXT,
         question1_answer TEXT,
         question2_text TEXT,
         question2_answer TEXT,
         question3_text TEXT,
         question3_answer TEXT,
-        numeration TEXT,
-        seat_name TEXT,
-        start_date TEXT,
-        start_date_vip TEXT,
-        extra1_title TEXT,
-        extra1_text TEXT,
-        extra2_title TEXT,
-        extra2_text TEXT,
-        extra3_title TEXT,
-        extra3_text TEXT,
-        holder_name TEXT,
-        holder_surname TEXT,
-        place_name TEXT,
-        place_address TEXT
+        referer_user_full_name TEXT,
+        banned_at TEXT
       )
     ''');
+  }
+
+  Future<void> _checkAndAddColumn(Database db) async {
+    // Verifica si la columna 'session_id' existe en la tabla 'tickets'
+    List<Map> tableInfo = await db.rawQuery('PRAGMA table_info(tickets)');
+    bool columnExists =
+        tableInfo.any((column) => column['name'] == 'session_id');
+
+    // Si la columna 'session_id' no existe, agrégala
+    if (!columnExists) {
+      await db.execute('ALTER TABLE tickets ADD COLUMN session_id TEXT');
+    }
   }
 }

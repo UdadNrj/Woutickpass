@@ -27,9 +27,8 @@ class _SessionsScreenState extends State<SessionsScreen> {
   }
 
   Future<void> _loadEvents() async {
-    futureEvents = EventService.getEvents(widget.token);
-
     try {
+      futureEvents = EventService.getEvents(widget.token);
       final apiEvents = await futureEvents;
       print('Eventos obtenidos de la API: $apiEvents');
       events = apiEvents;
@@ -44,9 +43,12 @@ class _SessionsScreenState extends State<SessionsScreen> {
       setState(() {});
     } catch (e) {
       events = await SessionsDao().retrieveSessions();
+      final selectedEvents = await SessionsDao().getSelectedSessions();
       checkedEvents = {
-        for (var event in events) event.uuid: false,
+        for (var event in events)
+          event.uuid: selectedEvents.contains(event.uuid),
       };
+      setState(() {});
       print('Error al cargar eventos desde la API: $e');
     }
   }
@@ -59,6 +61,8 @@ class _SessionsScreenState extends State<SessionsScreen> {
     setState(() {
       checkedEvents[uuid] = value ?? false;
     });
+
+    print('Session UUID: $uuid, Selected: ${checkedEvents[uuid]}');
 
     final selectedEvents = getSelectedEvents();
     SessionsDao()

@@ -25,6 +25,7 @@ class MainPage extends StatefulWidget {
 class _MainPageState extends State<MainPage> {
   late int _currentIndex;
   late Future<List<Session>> _selectedEventsFuture;
+  List<Session>? _selectedEvents;
 
   @override
   void initState() {
@@ -34,7 +35,11 @@ class _MainPageState extends State<MainPage> {
   }
 
   Future<List<Session>> _loadSelectedEvents() async {
-    return await SessionsDao().getSelectedSessions();
+    final sessions = await SessionsDao().getSelectedSessions();
+    setState(() {
+      _selectedEvents = sessions;
+    });
+    return sessions;
   }
 
   void _openFilterSheet(BuildContext context) {
@@ -55,11 +60,11 @@ class _MainPageState extends State<MainPage> {
   Widget _getAppBarTitle(int index) {
     switch (index) {
       case 0:
-        return Text('Multi-Eventos');
+        return const Text('Multi-Eventos');
       case 1:
         return SvgPicture.asset('assets/icons/Logo-Div-black.svg');
       case 2:
-        return Text('Ajustes');
+        return const Text('Ajustes');
       default:
         return Container();
     }
@@ -90,7 +95,7 @@ class _MainPageState extends State<MainPage> {
         onIndexChanged: (index) {
           setState(() {
             _currentIndex = index;
-            if (index == 1) {
+            if (index == 1 && _selectedEvents == null) {
               _selectedEventsFuture = _loadSelectedEvents();
             }
           });
@@ -102,7 +107,9 @@ class _MainPageState extends State<MainPage> {
           children: [
             Expanded(
               child: FutureBuilder<List<Session>>(
-                future: _selectedEventsFuture,
+                future: _selectedEvents != null
+                    ? Future.value(_selectedEvents)
+                    : _selectedEventsFuture,
                 builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
                     return Center(child: CircularProgressIndicator());

@@ -24,7 +24,7 @@ class _SessionsScreenState extends State<SessionsScreenWpass> {
   }
 
   Future<void> _loadSessions() async {
-    futureSessions = ApiAuthWpass.getEvents(widget.wpassCode);
+    futureSessions = ApiAuthWpass.getSessions(widget.wpassCode);
 
     try {
       final apiSessions = await futureSessions;

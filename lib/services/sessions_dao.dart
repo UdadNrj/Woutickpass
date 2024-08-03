@@ -1,6 +1,5 @@
 import 'package:sqflite/sqflite.dart';
 import 'package:woutickpass/models/objects/session.dart';
-
 import 'package:woutickpass/services/database.dart';
 
 class SessionsDao {
@@ -31,7 +30,8 @@ class SessionsDao {
     final db = await DatabaseHelper().database;
     final List<Map<String, dynamic>> maps = await db.query(
       'sessions',
-      where: 'is_selected = 1',
+      where: 'is_selected = ?',
+      whereArgs: [1],
     );
     return List.generate(maps.length, (i) {
       return Session.fromJson(maps[i]);
@@ -60,10 +60,12 @@ class SessionsDao {
 
   Future<void> updateSelectedSessions(List<String> sessionUuids) async {
     final db = await DatabaseHelper().database;
+
     await db.update(
       'sessions',
       {'is_selected': 0},
     );
+
     for (var uuid in sessionUuids) {
       await db.update(
         'sessions',

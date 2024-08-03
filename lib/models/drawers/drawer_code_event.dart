@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:woutickpass/screens/Sessions_screen_wpass.dart';
 import 'package:woutickpass/services/token_dao.dart';
 import 'package:woutickpass/services/Api/api_auth_wpass.dart';
+import 'package:woutickpass/models/objects/session.dart';
 
 class DrawerCodeEvent extends StatefulWidget {
   final String someParameter;
@@ -16,8 +17,8 @@ class DrawerCodeEvent extends StatefulWidget {
 class DrawerCodeEventState extends State<DrawerCodeEvent> {
   bool _isScrollControlled = false;
   bool _isUserLoggedIn = false;
+  bool _isEventCodeEmpty = true;
   final _formKey = GlobalKey<FormState>();
-  final _eventService = ApiAuthWpass();
   String? _eventCode;
 
   @override
@@ -35,12 +36,12 @@ class DrawerCodeEventState extends State<DrawerCodeEvent> {
       }
 
       try {
-        final sessions = await ApiAuthWpass.getEvents(_eventCode!);
-
+        final List<Session> sessions =
+            await ApiAuthWpass.getSessions(_eventCode!);
         Navigator.of(context).push(
           MaterialPageRoute(
             builder: (context) => SessionsScreenWpass(
-              wpassCode: 'wpass',
+              wpassCode: _eventCode!,
             ),
           ),
         );
@@ -77,6 +78,13 @@ class DrawerCodeEventState extends State<DrawerCodeEvent> {
     );
   }
 
+  void _onEventCodeChanged(String? value) {
+    setState(() {
+      _eventCode = value;
+      _isEventCodeEmpty = value == null || value.isEmpty;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -107,9 +115,12 @@ class DrawerCodeEventState extends State<DrawerCodeEvent> {
               const SizedBox(height: 10),
               Form(
                 key: _formKey,
-                child: TextFieldValidated(onSaved: (value) {
-                  _eventCode = value;
-                }),
+                child: TextFieldValidated(
+                  onChanged: _onEventCodeChanged,
+                  onSaved: (value) {
+                    _eventCode = value;
+                  },
+                ),
               ),
               const SizedBox(height: 10),
               RichText(
@@ -136,9 +147,12 @@ class DrawerCodeEventState extends State<DrawerCodeEvent> {
               ),
               const SizedBox(height: 20),
               ElevatedButton(
-                onPressed: _handleRegisterEvent,
+                onPressed: _isEventCodeEmpty ? null : _handleRegisterEvent,
                 style: ElevatedButton.styleFrom(
-                    backgroundColor: Color(0xFF202B37)),
+                  backgroundColor:
+                      _isEventCodeEmpty ? Colors.grey : Color(0xFF202B37),
+                  foregroundColor: Colors.white,
+                ),
                 child: const Text('REGISTRAR EVENTO'),
               ),
               const SizedBox(height: 20),
@@ -159,13 +173,15 @@ class DrawerCodeEventState extends State<DrawerCodeEvent> {
 
 class TextFieldValidated extends StatelessWidget {
   final FormFieldSetter<String>? onSaved;
+  final ValueChanged<String?>? onChanged;
 
-  TextFieldValidated({this.onSaved});
+  TextFieldValidated({this.onSaved, this.onChanged});
 
   @override
   Widget build(BuildContext context) {
     return TextFormField(
       onSaved: onSaved,
+      onChanged: onChanged,
       decoration: InputDecoration(
         labelText: 'Event Code',
         border: OutlineInputBorder(),

@@ -6,25 +6,22 @@ import 'package:flutter/foundation.dart';
 import 'package:woutickpass/models/objects/session.dart';
 
 class ApiAuthWpass {
-  static const String baseUrl = 'https://api-dev.woutick.com/wpass/v1';
-
-  static Future<List<Session>> getEvents(String wpass) async {
+  static Future<List<Session>> getSessions(String wpass) async {
     if (wpass.isEmpty) {
       throw Exception('El código wpass está vacío al obtener eventos');
     }
-
-    final String url = _constructUrl(wpass);
     final headers = {
       'Content-Type': 'application/json',
     };
 
-    debugPrint('Sending GET request to URL: $url');
+    debugPrint('Sending GET request to URL: ');
 
     final http.Client client = http.Client();
     try {
       final response = await client
           .get(
-            Uri.parse(url),
+            Uri.parse(
+                'https://api-dev.woutick.com/wpass/v1/session/?wpass_code=$wpass'),
             headers: headers,
           )
           .timeout(const Duration(seconds: 10));
@@ -52,10 +49,6 @@ class ApiAuthWpass {
     } finally {
       client.close();
     }
-  }
-
-  static String _constructUrl(String wpass) {
-    return '$baseUrl/session/?wpass_code=$wpass';
   }
 
   static List<Session> _parseSessions(String responseBody) {

@@ -11,79 +11,94 @@ class HomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     var tokenProvider = context.watch<TokenProvider>();
+    final screenSize = MediaQuery.of(context).size;
 
     return Scaffold(
       resizeToAvoidBottomInset: false,
-      body: Stack(
-        children: [
-          Container(
-            decoration: const BoxDecoration(
-              image: DecorationImage(
-                image: AssetImage('assets/images/img-login.jpg'),
-                fit: BoxFit.cover,
+      body: SafeArea(
+        child: Stack(
+          children: [
+            Container(
+              decoration: const BoxDecoration(
+                image: DecorationImage(
+                  image: AssetImage('assets/images/img-login.jpg'),
+                  fit: BoxFit.cover,
+                ),
               ),
             ),
-          ),
-          Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                TitleUpWidget(),
-                const SizedBox(height: 20),
-                TitleFeaturedWidget(),
-                const SizedBox(height: 50),
-                ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 70, vertical: 16),
-                    backgroundColor: const Color(0xFFCC3364),
-                  ),
-                  onPressed: () =>
-                      _openIconButtonPressed(context, "defaultParameter"),
-                  child: const Text(
-                    "INTRODUCIR CODIGO DE EVENTO",
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 13,
-                      fontWeight: FontWeight.w700,
+            Center(
+              child: LayoutBuilder(
+                builder: (context, constraints) {
+                  return Padding(
+                    padding: EdgeInsets.symmetric(
+                        horizontal: constraints.maxWidth * 0.1),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: <Widget>[
+                        TitleUpWidget(),
+                        SizedBox(height: screenSize.height * 0.02),
+                        TitleFeaturedWidget(),
+                        SizedBox(height: screenSize.height * 0.05),
+                        ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            padding: EdgeInsets.symmetric(
+                                horizontal: screenSize.width * 0.15,
+                                vertical: screenSize.height * 0.02),
+                            backgroundColor: const Color(0xFFCC3364),
+                          ),
+                          onPressed: () => _openIconButtonPressed(
+                              context, "defaultParameter"),
+                          child: const FittedBox(
+                            fit: BoxFit.scaleDown,
+                            child: Text(
+                              "INTRODUCIR CODIGO DE EVENTO",
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 13,
+                                fontWeight: FontWeight.w700,
+                              ),
+                            ),
+                          ),
+                        ),
+                        SizedBox(height: screenSize.height * 0.02),
+                        ButtonHeader(),
+                        if (tokenProvider.token.isEmpty)
+                          TextButton(
+                            onPressed: () {
+                              Navigator.push(
+                                context,
+                                _createRoute(const LoginScreen()),
+                              );
+                            },
+                            child: const Text(
+                              'Iniciar Sesión',
+                              style: TextStyle(
+                                color: Color(0xFFCC3364),
+                                fontSize: 14,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                          )
+                        else
+                          Column(
+                            children: [
+                              ElevatedButton(
+                                onPressed: () {
+                                  tokenProvider.clearToken();
+                                },
+                                child: const Text('Cerrar Sesión'),
+                              ),
+                              SizedBox(height: screenSize.height * 0.02),
+                            ],
+                          ),
+                      ],
                     ),
-                  ),
-                ),
-                const SizedBox(height: 20),
-                ButtonHeader(),
-                if (tokenProvider.token.isEmpty)
-                  TextButton(
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        _createRoute(const LoginScreen()),
-                      );
-                    },
-                    child: const Text(
-                      'Iniciar Sesión',
-                      style: TextStyle(
-                        color: Color(0xFFCC3364),
-                        fontSize: 14,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                  )
-                else
-                  Column(
-                    children: [
-                      ElevatedButton(
-                        onPressed: () {
-                          tokenProvider.clearToken();
-                        },
-                        child: const Text('Cerrar Sesión'),
-                      ),
-                      const SizedBox(height: 20),
-                    ],
-                  ),
-              ],
+                  );
+                },
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -130,11 +145,11 @@ class TitleUpWidget extends StatelessWidget {
       alignment: Alignment.center,
       children: [
         Container(
-          height: 500,
+          height: MediaQuery.of(context).size.height * 0.4,
           color: Colors.transparent,
         ),
         Positioned(
-          top: 20,
+          top: MediaQuery.of(context).size.height * 0.02,
           child: SvgPicture.asset("assets/icons/Logo-Div.svg"),
         ),
       ],
@@ -145,22 +160,30 @@ class TitleUpWidget extends StatelessWidget {
 class TitleFeaturedWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return const Column(
+    return Column(
       children: [
-        Text(
-          "CONTROL DE ACCESOS.",
-          style: TextStyle(
-            color: Colors.white,
-            fontSize: 30,
-            fontWeight: FontWeight.w900,
+        FittedBox(
+          fit: BoxFit.scaleDown,
+          child: Text(
+            "CONTROL DE ACCESOS.",
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              color: Colors.white,
+              fontSize: 30,
+              fontWeight: FontWeight.w900,
+            ),
           ),
         ),
-        Text(
-          "SIMPLIFICADO.",
-          style: TextStyle(
-            color: Colors.white,
-            fontSize: 30,
-            fontWeight: FontWeight.w900,
+        FittedBox(
+          fit: BoxFit.scaleDown,
+          child: Text(
+            "SIMPLIFICADO.",
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              color: Colors.white,
+              fontSize: 30,
+              fontWeight: FontWeight.w900,
+            ),
           ),
         ),
       ],
@@ -173,6 +196,7 @@ class ButtonHeader extends StatelessWidget {
   Widget build(BuildContext context) {
     return const Text(
       "¿Tienes cuenta en management.woutick?",
+      textAlign: TextAlign.center,
       style: TextStyle(
         color: Colors.white,
         fontSize: 14,

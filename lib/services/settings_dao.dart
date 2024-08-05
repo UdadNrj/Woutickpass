@@ -35,10 +35,4 @@ class SettingDao {
       print('Error al guardar la configuración: $e');
     }
   }
-
-  Future<void> logout() async {
-    final db = await _dbHelper.database;
-
-    await db.delete('settings');
-  }
 }

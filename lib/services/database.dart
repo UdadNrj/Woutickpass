@@ -1,3 +1,5 @@
+// database_helper.dart
+
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 
@@ -67,7 +69,7 @@ class DatabaseHelper {
         is_featured INTEGER,
         is_private INTEGER,
         is_canceled INTEGER,
-        order_number INTEGER,  -- Renombrado para evitar conflictos
+        order_number INTEGER,  
         name TEXT,
         slug TEXT,
         description TEXT,
@@ -98,7 +100,7 @@ class DatabaseHelper {
     ''');
 
     await db.execute('''
-      CREATE TABLE tickets (
+    CREATE TABLE tickets (
         uuid TEXT PRIMARY KEY,
         payment_at TEXT,
         created_at TEXT,
@@ -106,13 +108,13 @@ class DatabaseHelper {
         session TEXT,
         event TEXT,
         status TEXT,
-        ticket_code TEXT,
+        ticket_code TEXT, 
         type TEXT,
         total INTEGER,
         accessed_at TEXT,
-        checkin_at TEXT,
-        last_entry_at TEXT,
-        last_exit_at TEXT,
+        checkin_at TEXT, 
+        last_entry_at TEXT, 
+        last_exit_at TEXT, 
         name TEXT,
         dni TEXT,
         birthdate TEXT,
@@ -128,6 +130,14 @@ class DatabaseHelper {
         question3_answer TEXT,
         referer_user_full_name TEXT,
         banned_at TEXT
+    )
+''');
+
+    await db.execute('''
+      CREATE TABLE page_state (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        key TEXT UNIQUE,
+        value TEXT
       )
     ''');
   }
@@ -142,5 +152,27 @@ class DatabaseHelper {
     if (!columnExists) {
       await db.execute('ALTER TABLE tickets ADD COLUMN session_id TEXT');
     }
+  }
+
+  Future<void> savePageState(String key, String value) async {
+    final db = await database;
+    await db.insert(
+      'page_state',
+      {'key': key, 'value': value},
+      conflictAlgorithm: ConflictAlgorithm.replace,
+    );
+  }
+
+  Future<String?> getPageState(String key) async {
+    final db = await database;
+    final result = await db.query(
+      'page_state',
+      where: 'key = ?',
+      whereArgs: [key],
+    );
+    if (result.isNotEmpty) {
+      return result.first['value'] as String?;
+    }
+    return null;
   }
 }

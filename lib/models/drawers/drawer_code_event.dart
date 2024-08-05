@@ -15,7 +15,6 @@ class DrawerCodeEvent extends StatefulWidget {
 }
 
 class DrawerCodeEventState extends State<DrawerCodeEvent> {
-  bool _isScrollControlled = false;
   bool _isUserLoggedIn = false;
   bool _isEventCodeEmpty = true;
   final _formKey = GlobalKey<FormState>();
@@ -88,83 +87,84 @@ class DrawerCodeEventState extends State<DrawerCodeEvent> {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.all(16),
+      padding: EdgeInsets.only(
+        left: 16,
+        right: 16,
+        top: 16,
+        bottom: MediaQuery.of(context).viewInsets.bottom + 16,
+      ),
       child: SingleChildScrollView(
-        controller: _isScrollControlled ? ScrollController() : null,
-        child: SizedBox(
-          width: double.infinity,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              const Text(
-                'Introducir código de evento',
-                style: TextStyle(
-                  fontWeight: FontWeight.w700,
-                  fontSize: 20,
-                ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: <Widget>[
+            const Text(
+              'Introducir código de evento',
+              style: TextStyle(
+                fontWeight: FontWeight.w700,
+                fontSize: 20,
               ),
-              const SizedBox(height: 10),
-              const Text(
-                "Necesitamos la clave de ocho dígitos de tu evento para sincronizarlo con el controlador de accesos.",
-                style: TextStyle(
-                  color: Color.fromRGBO(113, 113, 133, 1),
-                  fontSize: 14,
-                  fontWeight: FontWeight.w500,
-                ),
+            ),
+            const SizedBox(height: 10),
+            const Text(
+              "Necesitamos la clave de ocho dígitos de tu evento para sincronizarlo con el controlador de accesos.",
+              style: TextStyle(
+                color: Color.fromRGBO(113, 113, 133, 1),
+                fontSize: 14,
+                fontWeight: FontWeight.w500,
               ),
-              const SizedBox(height: 10),
-              Form(
-                key: _formKey,
-                child: TextFieldValidated(
-                  onChanged: _onEventCodeChanged,
-                  onSaved: (value) {
-                    _eventCode = value;
-                  },
-                ),
+            ),
+            const SizedBox(height: 10),
+            Form(
+              key: _formKey,
+              child: TextFieldValidated(
+                onChanged: _onEventCodeChanged,
+                onSaved: (value) {
+                  _eventCode = value;
+                },
               ),
-              const SizedBox(height: 10),
-              RichText(
-                text: const TextSpan(
-                  children: <TextSpan>[
-                    TextSpan(
-                      text: "Al registrar tu evento aceptas nuestros ",
-                      style: TextStyle(
-                        color: Color.fromRGBO(113, 113, 133, 1),
-                        fontSize: 14,
-                        fontWeight: FontWeight.w500,
-                      ),
+            ),
+            const SizedBox(height: 10),
+            RichText(
+              text: const TextSpan(
+                children: <TextSpan>[
+                  TextSpan(
+                    text: "Al registrar tu evento aceptas nuestros ",
+                    style: TextStyle(
+                      color: Color.fromRGBO(113, 113, 133, 1),
+                      fontSize: 14,
+                      fontWeight: FontWeight.w500,
                     ),
-                    TextSpan(
-                      text: "Términos de Servicio y Política de Privacidad",
-                      style: TextStyle(
-                        color: Colors.black,
-                        fontSize: 14,
-                        fontWeight: FontWeight.w500,
-                      ),
+                  ),
+                  TextSpan(
+                    text: "Términos de Servicio y Política de Privacidad",
+                    style: TextStyle(
+                      color: Colors.black,
+                      fontSize: 14,
+                      fontWeight: FontWeight.w500,
                     ),
-                  ],
-                ),
+                  ),
+                ],
               ),
-              const SizedBox(height: 20),
-              ElevatedButton(
-                onPressed: _isEventCodeEmpty ? null : _handleRegisterEvent,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor:
-                      _isEventCodeEmpty ? Colors.grey : Color(0xFF202B37),
-                  foregroundColor: Colors.white,
-                ),
-                child: const Text('REGISTRAR EVENTO'),
+            ),
+            const SizedBox(height: 20),
+            ElevatedButton(
+              onPressed: _isEventCodeEmpty ? null : _handleRegisterEvent,
+              style: ElevatedButton.styleFrom(
+                backgroundColor:
+                    _isEventCodeEmpty ? Colors.grey : Color(0xFF202B37),
+                foregroundColor: Colors.white,
               ),
-              const SizedBox(height: 20),
-              Text(
-                'Parámetro recibido: ${widget.someParameter}',
-                style: const TextStyle(
-                  color: Colors.black,
-                  fontSize: 14,
-                ),
+              child: const Text('REGISTRAR EVENTO'),
+            ),
+            const SizedBox(height: 20),
+            Text(
+              'Parámetro recibido: ${widget.someParameter}',
+              style: const TextStyle(
+                color: Colors.black,
+                fontSize: 14,
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );

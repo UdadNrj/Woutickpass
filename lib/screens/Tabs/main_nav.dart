@@ -1,6 +1,9 @@
+// main_page.dart
+
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:woutickpass/models/objects/session.dart';
+import 'package:woutickpass/services/database.dart';
 import 'package:woutickpass/services/sessions_dao.dart';
 import 'package:woutickpass/screens/Tabs/button_nav.dart';
 import 'package:woutickpass/services/controllers/filter.dart';
@@ -22,7 +25,7 @@ class MainPage extends StatefulWidget {
   _MainPageState createState() => _MainPageState();
 }
 
-class _MainPageState extends State<MainPage> {
+class _MainPageState extends State<MainPage> with WidgetsBindingObserver {
   late int _currentIndex;
   late Future<List<Session>> _selectedEventsFuture;
   List<Session>? _selectedEvents;
@@ -30,7 +33,28 @@ class _MainPageState extends State<MainPage> {
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance?.addObserver(this);
     _currentIndex = widget.currentIndex;
+    _selectedEventsFuture = _loadSelectedEvents();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.paused) {
+      _savePageState();
+    }
+  }
+
+  Future<void> _savePageState() async {
+    await DatabaseHelper()
+        .savePageState('currentIndex', _currentIndex.toString());
+  }
+
+  Future<void> _loadPageState() async {
+    final index = await DatabaseHelper().getPageState('currentIndex');
+    setState(() {
+      _currentIndex = int.tryParse(index ?? '0') ?? 0;
+    });
     _selectedEventsFuture = _loadSelectedEvents();
   }
 
@@ -130,5 +154,11 @@ class _MainPageState extends State<MainPage> {
         ),
       ),
     );
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance?.removeObserver(this);
+    super.dispose();
   }
 }

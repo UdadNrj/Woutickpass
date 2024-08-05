@@ -3,7 +3,7 @@ import 'package:woutickpass/models/objects/session.dart';
 import 'package:woutickpass/models/objects/session_details.dart';
 import 'package:woutickpass/screens/Tabs/main_nav.dart';
 import 'package:woutickpass/services/Api/api_auth_sessions.dart';
-import 'package:woutickpass/services/Api/api_auth_uuid.dart';
+import 'package:woutickpass/services/Api/api_auth_session_uuid.dart';
 import 'package:woutickpass/services/sessions_dao.dart';
 
 class SessionsScreen extends StatefulWidget {
@@ -78,7 +78,7 @@ class _SessionsScreenState extends State<SessionsScreen> {
         getSelectedEvents().map((e) => e.uuid).toList();
     try {
       List<SessionDetails> selectedSessions =
-          await ApiAuthUuid.getSessionsByUUIDs(selectedUUIDs);
+          await ApiAuthSessionUuid.getSessionsByUUIDs(selectedUUIDs);
       Navigator.push(
         context,
         MaterialPageRoute(

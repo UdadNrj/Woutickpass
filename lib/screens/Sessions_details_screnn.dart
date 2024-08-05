@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:woutickpass/models/objects/attendee.dart';
 import 'package:woutickpass/models/objects/session.dart';
-import 'package:woutickpass/screens/Attendee_screen.dart';
+import 'package:woutickpass/screens/Attendee_list_screen.dart';
+import 'package:woutickpass/screens/statistics_screnn.dart';
+import 'package:woutickpass/screens/tickets_Configuration_screen.dart';
+import 'package:woutickpass/services/tickets_dao.dart';
 
-class EventDetailsPage extends StatelessWidget {
+class EventDetailsPage extends StatefulWidget {
   final Session event;
 
   const EventDetailsPage({
@@ -12,105 +15,155 @@ class EventDetailsPage extends StatelessWidget {
   }) : super(key: key);
 
   @override
-  Widget build(BuildContext context) {
-    List<Attendee> attendees = [
-      Attendee(
-        name: "Nombre Apellido Apellido",
-        ticketType: "Tipo Entrada",
-        ticketCode: "DNG72YB1",
-        status: "DENTRO",
-      ),
-      Attendee(
-        name: "Nombre Apellido Apellido",
-        ticketType: "Tipo Entrada",
-        ticketCode: "DNG72YB2",
-        status: "SIN REGISTRO",
-      ),
-    ];
+  _EventDetailsPageState createState() => _EventDetailsPageState();
+}
 
+class _EventDetailsPageState extends State<EventDetailsPage> {
+  late Future<List<Attendee>> _attendeesFuture;
+
+  @override
+  void initState() {
+    super.initState();
+    _attendeesFuture = _loadAttendees();
+  }
+
+  Future<List<Attendee>> _loadAttendees() async {
+    final dao = TicketsDao.instance;
+    final tickets = await dao.getTicketsByEvent(widget.event.title);
+    return tickets
+        .map((ticket) => Attendee(
+              name: ticket.name,
+              ticketType: ticket.type,
+              ticketCode: ticket.ticketCode,
+              status: ticket.status,
+            ))
+        .toList();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        title: Text(event.title),
+        centerTitle: true,
+        title: Text(widget.event.title),
         backgroundColor: Colors.white,
+        foregroundColor: Colors.black,
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              event.title,
-              style: TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            SizedBox(height: 16),
-            Text(
-              'Fecha: ${event.startAt}',
-              style: TextStyle(
-                fontSize: 18,
-                color: Colors.grey,
-              ),
-            ),
-            SizedBox(height: 16),
-            Text(
-              'Código de Acceso: ${event.wpassCode ?? 'N/A'}',
-              style: TextStyle(
-                fontSize: 18,
-                color: Colors.grey,
-              ),
-            ),
-            SizedBox(height: 32),
-            ListTile(
-              title: Text('Lista de asistentes'),
-              subtitle: Text(
-                  'Revisa la lista de asistentes totales a tu evento y edita los estados de las entradas de forma manual.'),
-              leading: Icon(Icons.people),
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => AttendeesListScreen(
-                      event: event,
-                      attendees: attendees,
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 12.0),
+              child: ListTile(
+                contentPadding: EdgeInsets.symmetric(horizontal: 24.0),
+                title: Text('Lista de asistentes'),
+                subtitle: Text(
+                    'Revisa la lista de asistentes totales a tu evento y edita los estados de las entradas de forma manual.'),
+                trailing: Icon(
+                  Icons.people,
+                  size: 32,
+                  color: Colors.black,
+                ),
+                onTap: () async {
+                  final attendees = await _attendeesFuture;
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => AttendeesListScreen(
+                        event: widget.event,
+                        attendees: attendees,
+                      ),
                     ),
-                  ),
-                );
-              },
+                  );
+                },
+              ),
             ),
             Divider(),
-            ListTile(
-              title: Text('Configuración de entradas'),
-              subtitle: Text(
-                  'Edita qué entradas quieres que se sincronicen con el escáner para esta sesión.'),
-              leading: Icon(Icons.settings),
-              onTap: () {},
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 12.0),
+              child: ListTile(
+                contentPadding: EdgeInsets.symmetric(horizontal: 24.0),
+                title: Text('Configuración de entradas'),
+                subtitle: Text(
+                    'Edita qué entradas quieres que se sincronicen con el escáner para esta sesión.'),
+                trailing: Icon(
+                  Icons.settings,
+                  size: 32,
+                  color: Colors.black,
+                ),
+                onTap: () async {
+                  final ticketTypes =
+                      await TicketsDao.instance.getTicketTypes();
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => TicketConfigurationScreen(
+                        event: widget.event,
+                        ticketTypes: ticketTypes,
+                      ),
+                    ),
+                  );
+                },
+              ),
             ),
             Divider(),
-            ListTile(
-              title: Text('Estadísticas de aforo'),
-              subtitle: Text(
-                  'Accede a la información detallada y actualizada de los asistentes a esta sesión.'),
-              leading: Icon(Icons.show_chart),
-              onTap: () {},
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 12.0),
+              child: ListTile(
+                contentPadding: EdgeInsets.symmetric(horizontal: 24.0),
+                title: Text('Estadísticas de aforo'),
+                subtitle: Text(
+                    'Accede a la información detallada y actualizada de los asistentes a esta sesión.'),
+                trailing: Icon(
+                  Icons.show_chart,
+                  size: 32,
+                  color: Colors.black,
+                ),
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) =>
+                          StatisticsScreen(event: widget.event.title),
+                    ),
+                  );
+                },
+              ),
             ),
             Divider(),
-            ListTile(
-              title: Text('Finalizar sesión'),
-              subtitle: Text(
-                  'Subir la información al servidor y borrar todas las entradas descargadas en el dispositivo.'),
-              leading: Icon(Icons.exit_to_app),
-              onTap: () {},
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 12.0),
+              child: ListTile(
+                contentPadding: EdgeInsets.symmetric(horizontal: 24.0),
+                title: Text('Finalizar sesión'),
+                subtitle: Text(
+                    'Subir la información al servidor y borrar todas las entradas descargadas en el dispositivo.'),
+                trailing: Icon(
+                  Icons.exit_to_app,
+                  size: 32,
+                  color: Colors.black,
+                ),
+                onTap: () {},
+              ),
             ),
             Divider(),
-            ListTile(
-              title: Text('Vaciar Aforo'),
-              subtitle: Text(
-                  'Reiniciar la lista de entrads validadas para esta sesion'),
-              leading: Icon(Icons.restore),
-              onTap: () {},
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 12.0),
+              child: ListTile(
+                contentPadding: EdgeInsets.symmetric(horizontal: 24.0),
+                title: Text('Vaciar Aforo'),
+                subtitle: Text(
+                    'Reiniciar la lista de entradas validadas para esta sesión'),
+                trailing: Icon(
+                  Icons.restore,
+                  size: 32,
+                  color: Colors.black,
+                ),
+                onTap: () {},
+              ),
             ),
           ],
         ),

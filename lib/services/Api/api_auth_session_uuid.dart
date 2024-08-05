@@ -5,7 +5,7 @@ import 'package:http/http.dart' as http;
 import 'package:flutter/foundation.dart';
 import 'package:woutickpass/models/objects/session_details.dart';
 
-class ApiAuthUuid {
+class ApiAuthSessionUuid {
   static Future<List<SessionDetails>> getSessionsByUUIDs(
       List<String> uuids) async {
     if (uuids.isEmpty) {

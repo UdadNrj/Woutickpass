@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:woutickpass/services/database.dart';
+import 'package:woutickpass/screens/Tabs/page_events.dart';
 import 'package:woutickpass/screens/home_screen.dart';
+import 'package:woutickpass/services/database.dart';
 import 'package:woutickpass/services/settings_dao.dart';
 
 class PageSetting extends StatefulWidget {
@@ -63,8 +64,6 @@ class _PageSettingState extends State<PageSetting> {
     await _saveSetting('additionalSetting1', additionalSetting1);
     await _saveSetting('additionalSetting2', additionalSetting2);
     await _saveSetting('additionalSetting3', additionalSetting3);
-
-    await _settingDao.logout();
 
     Navigator.pushReplacement(
       context,

@@ -1,9 +1,11 @@
+// page_events.dart
 import 'package:flutter/material.dart';
-import 'package:woutickpass/services/sessions_dao.dart';
 import 'package:woutickpass/models/objects/session.dart';
-import 'package:woutickpass/services/api/api_ticket.dart';
-import 'package:woutickpass/models/drawers/drawer_code_event.dart';
+import 'package:woutickpass/services/sessions_dao.dart';
+import 'package:woutickpass/services/Api/api_auth_ticket.dart';
 import 'package:woutickpass/screens/Sessions_details_screnn.dart';
+import 'package:woutickpass/models/drawers/drawer_code_event.dart';
+import 'package:woutickpass/services/Api/api_auth_tickets_uuid.dart';
 
 class PageEvents extends StatefulWidget {
   const PageEvents({Key? key}) : super(key: key);
@@ -19,7 +21,11 @@ class _PageEventsState extends State<PageEvents> {
   @override
   void initState() {
     super.initState();
-    _loadSelectedEvents();
+    _loadPageState();
+  }
+
+  Future<void> _loadPageState() async {
+    await _loadSelectedEvents();
   }
 
   Future<void> _loadSelectedEvents() async {
@@ -47,7 +53,9 @@ class _PageEventsState extends State<PageEvents> {
     });
 
     try {
+      await ApiAuthTicketsUuid.getTicketsByUuid(sessionId);
       await ApiTickets.getSessionsBYTickets(sessionId);
+
       debugPrint('Tickets downloaded and stored for session $sessionId');
     } catch (e) {
       debugPrint('Error downloading tickets for session $sessionId: $e');

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
 import 'package:woutickpass/models/drawers/drawer_code_event.dart';
-import 'package:woutickpass/screens/login_screen.dart';
+import 'package:woutickpass/screens/Login_screen.dart';
 import 'package:woutickpass/providers/token_provider.dart';
 
 class HomeScreen extends StatelessWidget {

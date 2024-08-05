@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:woutickpass/models/objects/session.dart';
 import 'package:woutickpass/models/objects/attendee.dart';
+import 'package:woutickpass/screens/Search_AttendeesScreen.dart';
 
 class AttendeesListScreen extends StatelessWidget {
   final Session event;
@@ -20,6 +21,20 @@ class AttendeesListScreen extends StatelessWidget {
         centerTitle: true,
         title: Text('Asistentes'),
         backgroundColor: Colors.white,
+        actions: [
+          IconButton(
+            icon: Icon(Icons.search, color: Colors.black),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) =>
+                      SearchAttendeesScreen(attendees: attendees),
+                ),
+              );
+            },
+          ),
+        ],
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),

@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:woutickpass/providers/token_provider.dart';
 import 'package:woutickpass/screens/Tabs/main_nav.dart';
-import 'package:woutickpass/screens/home_screen.dart';
-import 'package:woutickpass/screens/login_screen.dart';
+import 'package:woutickpass/screens/Home_screen.dart';
+import 'package:woutickpass/screens/Login_screen.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -24,9 +24,9 @@ class MyApp extends StatelessWidget {
         onGenerateRoute: (settings) {
           switch (settings.name) {
             case '/login':
-              return MaterialPageRoute(builder: (context) => LoginScreen());
-            case '/home':
               return MaterialPageRoute(builder: (context) => HomeScreen());
+            case '/home':
+              return MaterialPageRoute(builder: (context) => LoginScreen());
             case '/main':
               final args = settings.arguments as Map<String, dynamic>;
               return MaterialPageRoute(
@@ -37,54 +37,10 @@ class MyApp extends StatelessWidget {
                 ),
               );
             default:
-              return MaterialPageRoute(builder: (context) => SplashScreen());
+              return MaterialPageRoute(builder: (context) => LoginScreen());
           }
         },
-        initialRoute: '/splash',
-      ),
-    );
-  }
-}
-
-class SplashScreen extends StatefulWidget {
-  @override
-  _SplashScreenState createState() => _SplashScreenState();
-}
-
-class _SplashScreenState extends State<SplashScreen> {
-  @override
-  void initState() {
-    super.initState();
-    _simulateStartup();
-  }
-
-  Future<void> _simulateStartup() async {
-    await Future.delayed(Duration(seconds: 2));
-    final tokenProvider = Provider.of<TokenProvider>(context, listen: false);
-    final token = tokenProvider.token;
-
-    if (token.isEmpty) {
-      Navigator.of(context).pushReplacementNamed('/home');
-    } else {
-      Navigator.of(context).pushReplacementNamed(
-        '/main',
-        arguments: {
-          'token': token,
-          'currentIndex': 1,
-          'selectedEvents': tokenProvider.selectedEvents,
-        },
-      );
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return WillPopScope(
-      onWillPop: () async => false,
-      child: Scaffold(
-        body: Center(
-          child: CircularProgressIndicator(),
-        ),
+        initialRoute: '/login',
       ),
     );
   }

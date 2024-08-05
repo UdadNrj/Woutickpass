@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:woutickpass/screens/Tabs/page_events.dart';
-import 'package:woutickpass/screens/home_screen.dart';
+import 'package:woutickpass/screens/Home_screen.dart';
 import 'package:woutickpass/services/database.dart';
 import 'package:woutickpass/services/settings_dao.dart';
 

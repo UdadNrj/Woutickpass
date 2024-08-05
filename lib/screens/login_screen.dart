@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:woutickpass/screens/password_screen.dart';
+import 'package:woutickpass/screens/Password_screen.dart';
 import 'package:woutickpass/services/Api/api_auth_login.dart';
 
 class LoginScreen extends StatelessWidget {

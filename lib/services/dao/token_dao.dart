@@ -1,7 +1,7 @@
 import 'package:sqflite/sql.dart';
 import 'package:woutickpass/services/database.dart';
 
-class TokenDao {
+class TokenDAO {
   final DatabaseHelper _databaseHelper = DatabaseHelper();
 
   Future<void> insertToken(String token) async {

@@ -3,8 +3,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:woutickpass/models/objects/session.dart';
+import 'package:woutickpass/services/dao/sessions_dao.dart';
 import 'package:woutickpass/services/database.dart';
-import 'package:woutickpass/services/sessions_dao.dart';
 import 'package:woutickpass/screens/Tabs/button_nav.dart';
 import 'package:woutickpass/services/controllers/filter.dart';
 import 'package:woutickpass/services/controllers/route.dart';
@@ -59,7 +59,7 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver {
   }
 
   Future<List<Session>> _loadSelectedEvents() async {
-    final sessions = await SessionsDao().getSelectedSessions();
+    final sessions = await SessionsDAO().getSelectedSessions();
     setState(() {
       _selectedEvents = sessions;
     });

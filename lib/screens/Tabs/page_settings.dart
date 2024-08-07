@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:woutickpass/screens/Tabs/page_events.dart';
 import 'package:woutickpass/screens/Home_screen.dart';
 import 'package:woutickpass/services/database.dart';
-import 'package:woutickpass/services/settings_dao.dart';
+import 'package:woutickpass/services/dao/settings_dao.dart';
 
 class PageSetting extends StatefulWidget {
   const PageSetting({Key? key}) : super(key: key);
@@ -22,12 +21,12 @@ class _PageSettingState extends State<PageSetting> {
   bool additionalSetting2 = true;
   bool additionalSetting3 = true;
 
-  late SettingDao _settingDao;
+  late SettingDAO _settingDao;
 
   @override
   void initState() {
     super.initState();
-    _settingDao = SettingDao(DatabaseHelper());
+    _settingDao = SettingDAO(DatabaseHelper());
     _loadSettings();
   }
 

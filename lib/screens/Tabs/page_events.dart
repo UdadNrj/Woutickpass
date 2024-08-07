@@ -1,11 +1,9 @@
-// page_events.dart
 import 'package:flutter/material.dart';
-import 'package:woutickpass/models/objects/session.dart';
-import 'package:woutickpass/services/sessions_dao.dart';
-import 'package:woutickpass/services/Api/api_auth_ticket.dart';
-import 'package:woutickpass/screens/Sessions_details_screnn.dart';
 import 'package:woutickpass/models/drawers/drawer_code_event.dart';
-import 'package:woutickpass/services/Api/api_auth_tickets_uuid.dart';
+import 'package:woutickpass/models/objects/session.dart';
+import 'package:woutickpass/screens/Sessions_details_screnn.dart';
+import 'package:woutickpass/services/dao/sessions_dao.dart';
+import 'package:woutickpass/services/api/tickets_api.dart';
 
 class PageEvents extends StatefulWidget {
   const PageEvents({Key? key}) : super(key: key);
@@ -34,7 +32,7 @@ class _PageEventsState extends State<PageEvents> {
     });
 
     try {
-      final sessions = await SessionsDao().getSelectedSessions();
+      final sessions = await SessionsDAO().getSelectedSessions();
       setState(() {
         selectedEvents = sessions;
       });
@@ -53,12 +51,21 @@ class _PageEventsState extends State<PageEvents> {
     });
 
     try {
-      await ApiAuthTicketsUuid.getTicketsByUuid(sessionId);
-      await ApiTickets.getSessionsBYTickets(sessionId);
+      await TicketsAPI.getTicketsBySessionId(sessionId);
 
-      debugPrint('Tickets downloaded and stored for session $sessionId');
+      debugPrint('Tickets downloaded for session $sessionId');
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+            content: Text('Tickets descargados para la sesión $sessionId.')),
+      );
     } catch (e) {
       debugPrint('Error downloading tickets for session $sessionId: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+            content:
+                Text('Error al descargar tickets para la sesión $sessionId')),
+      );
     } finally {
       setState(() {
         loadingStatus[sessionId] = false;
@@ -97,7 +104,7 @@ class _PageEventsState extends State<PageEvents> {
               itemCount: selectedEvents.length,
               itemBuilder: (context, index) {
                 Session event = selectedEvents[index];
-                bool isLoading = loadingStatus[event.uuid] ?? true;
+                bool isLoading = loadingStatus[event.uuid] ?? false;
 
                 return GestureDetector(
                   onTap: isLoading
@@ -107,7 +114,7 @@ class _PageEventsState extends State<PageEvents> {
                             context,
                             MaterialPageRoute(
                               builder: (context) =>
-                                  EventDetailsPage(event: event),
+                                  EventDetailsPage(sessionId: event.uuid),
                             ),
                           );
                         },

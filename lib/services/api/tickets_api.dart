@@ -1,48 +1,38 @@
-// // apiGetTickets(bolean only_new),
-// // apiGetTicketDetails(),
-// // apiDownloadTickets(bolean only_new),
-// // apiDownloadTickets(),
-// Class ticketService(get),
-
-// lib/api/api_tickets.dart
-
-// lib/services/api/api_ticket.dart
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 import 'package:woutickpass/models/objects/ticket.dart';
-import 'package:woutickpass/services/tickets_dao.dart';
 
-class ApiTickets {
-  static Future<void> getSessionsBYTickets(String? sessionId) async {
-    if (sessionId == null || sessionId.isEmpty) {
-      throw Exception('El UUID de la sesión está vacío');
-    }
+class TicketsAPI {
+  static Future<void> getTicketsByUuid(String? uuid) async {
+    await _getTickets(
+        'https://api-dev.woutick.com/wpass/v1/tickets/$uuid', uuid);
+  }
 
-    final dao = TicketsDao.instance;
-    bool ticketsExist = await dao.sessionTicketsExist(sessionId);
+  static Future<void> getTicketsBySessionId(String? sessionId) async {
+    await _getTickets(
+        'https://api-dev.woutick.com/wpass/v1/tickets/?session=$sessionId',
+        sessionId);
+  }
 
-    if (ticketsExist) {
-      debugPrint(
-          'Tickets for session $sessionId already exist. Skipping download.');
-      return;
+  static Future<void> _getTickets(String url, String? id) async {
+    if (id == null || id.isEmpty) {
+      throw Exception('El UUID está vacío');
     }
 
     final headers = {
       'Content-Type': 'application/json',
     };
 
-    debugPrint(
-        'Sending GET request to URL: https://api-dev.woutick.com/wpass/v1/tickets/?session=$sessionId');
+    debugPrint('Sending GET request to URL: $url');
 
     final http.Client client = http.Client();
     try {
       final response = await client
           .get(
-            Uri.parse(
-                'https://api-dev.woutick.com/wpass/v1/tickets/?session=$sessionId'),
+            Uri.parse(url),
             headers: headers,
           )
           .timeout(const Duration(seconds: 10));
@@ -60,6 +50,8 @@ class ApiTickets {
         } else {
           throw Exception('El cuerpo de la respuesta está vacío.');
         }
+      } else if (response.statusCode == 404) {
+        debugPrint('No tickets found for ID: $id. Skipping download.');
       } else {
         throw Exception(
             'Error al obtener las entradas. Código de estado: ${response.statusCode}. Cuerpo de la respuesta: ${response.body}');
@@ -91,9 +83,12 @@ class ApiTickets {
   }
 
   static Future<void> _storeTickets(List<Ticket> tickets) async {
-    final dao = TicketsDao.instance;
+    // Aquí puedes implementar la lógica para almacenar las entradas en una base de datos o en cualquier otro lugar.
+    // Por ejemplo, puedes usar otro DAO o cualquier otra lógica de almacenamiento.
+    // Esta función es un placeholder y debe ser adaptada a tus necesidades.
     for (var ticket in tickets) {
-      await dao.insert(ticket);
+      // Implementa tu lógica de almacenamiento aquí
+      // await someStorageFunction(ticket);
     }
   }
 }

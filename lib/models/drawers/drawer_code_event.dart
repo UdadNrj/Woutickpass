@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:woutickpass/screens/Sessions_screen_wpass.dart';
-import 'package:woutickpass/services/token_dao.dart';
-import 'package:woutickpass/services/Api/api_auth_wpass.dart';
 import 'package:woutickpass/models/objects/session.dart';
+import 'package:woutickpass/screens/Sessions_screen_wpass.dart';
+import 'package:woutickpass/services/api/session_api.dart';
+import 'package:woutickpass/services/dao/token_dao.dart';
 
 class DrawerCodeEvent extends StatefulWidget {
   final String someParameter;
@@ -36,7 +36,7 @@ class DrawerCodeEventState extends State<DrawerCodeEvent> {
 
       try {
         final List<Session> sessions =
-            await ApiAuthWpass.getSessions(_eventCode!);
+            await SessionAPI.getSessionsListByWpass(_eventCode!);
         Navigator.of(context).push(
           MaterialPageRoute(
             builder: (context) => SessionsScreenWpass(
@@ -51,7 +51,7 @@ class DrawerCodeEventState extends State<DrawerCodeEvent> {
   }
 
   Future<void> _checkUserLoginStatus() async {
-    String? token = await TokenDao().retrieveToken();
+    String? token = await TokenDAO().retrieveToken();
     setState(() {
       _isUserLoggedIn = token != null && token.isNotEmpty;
     });

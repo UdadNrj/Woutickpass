@@ -2,7 +2,7 @@ import 'package:sqflite/sqflite.dart';
 import 'package:woutickpass/models/objects/session.dart';
 import 'package:woutickpass/services/database.dart';
 
-class SessionsDao {
+class SessionsDAO {
   Future<void> addSession(Session session) async {
     final db = await DatabaseHelper().database;
     await db.insert(
@@ -24,6 +24,21 @@ class SessionsDao {
   Future<void> clearSessions() async {
     final db = await DatabaseHelper().database;
     await db.delete('sessions');
+  }
+
+  Future<Session?> getSessionById(String uuid) async {
+    final db = await DatabaseHelper().database;
+    final List<Map<String, dynamic>> maps = await db.query(
+      'sessions',
+      where: 'uuid = ?',
+      whereArgs: [uuid],
+    );
+
+    if (maps.isNotEmpty) {
+      return Session.fromJson(maps.first);
+    } else {
+      return null;
+    }
   }
 
   Future<List<Session>> getSelectedSessions() async {

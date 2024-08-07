@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:woutickpass/screens/Password_screen.dart';
-import 'package:woutickpass/services/Api/api_auth_login.dart';
+import 'package:woutickpass/services/api/auth_login_api.dart';
 
 class LoginScreen extends StatelessWidget {
   const LoginScreen({super.key});
@@ -39,7 +39,7 @@ class _LoginFormState extends State<LoginForm> {
   String gmail = '';
   String password = '';
   bool _isPasswordVisible = false;
-  final LoginService _authService = LoginService();
+  final AuthLoginAPI _authService = AuthLoginAPI();
 
   void _login() async {
     await _authService.login(context, gmail, password);

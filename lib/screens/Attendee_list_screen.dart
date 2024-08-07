@@ -1,25 +1,29 @@
 import 'package:flutter/material.dart';
 import 'package:woutickpass/models/objects/session.dart';
 import 'package:woutickpass/models/objects/attendee.dart';
+import 'package:woutickpass/models/objects/ticket.dart';
 import 'package:woutickpass/screens/Search_AttendeesScreen.dart';
 
 class AttendeesListScreen extends StatelessWidget {
   final Session event;
-  final List<Attendee> attendees;
+  final List<Ticket> tickets;
 
   const AttendeesListScreen({
     Key? key,
     required this.event,
-    required this.attendees,
+    required this.tickets,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    List<Attendee> attendees = convertTicketsToAttendees(tickets);
+    print('Asistentes convertidos: $attendees');
+
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
         centerTitle: true,
-        title: Text('Asistentes'),
+        title: Text('${event.title} - Asistentes'),
         backgroundColor: Colors.white,
         actions: [
           IconButton(
@@ -87,6 +91,18 @@ class AttendeesListScreen extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  List<Attendee> convertTicketsToAttendees(List<Ticket> tickets) {
+    print('Convirtiendo tickets a asistentes: $tickets');
+    return tickets.map((ticket) {
+      return Attendee(
+        name: ticket.name,
+        ticketType: ticket.type,
+        ticketCode: ticket.ticketCode,
+        status: ticket.status,
+      );
+    }).toList();
   }
 
   Widget _getStatusIcon(String status) {

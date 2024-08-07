@@ -2,7 +2,7 @@ import 'package:sqflite/sqflite.dart';
 import 'package:woutickpass/models/objects/session_details.dart';
 import 'package:woutickpass/services/database.dart';
 
-class SessionDetailsDao {
+class SessionDetailsDAO {
   final DatabaseHelper _databaseHelper = DatabaseHelper();
 
   Future<void> insertSessionDetails(SessionDetails sessionDetails) async {

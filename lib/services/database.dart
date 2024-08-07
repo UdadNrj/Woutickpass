@@ -25,7 +25,6 @@ class DatabaseHelper {
       version: 1,
       onCreate: _onCreate,
       onOpen: (db) async {
-        // Verificar y agregar la columna `session_id` si no existe
         await _checkAndAddColumn(db);
       },
       onDowngrade: onDatabaseDowngradeDelete,

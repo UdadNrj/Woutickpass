@@ -1,10 +1,10 @@
 import 'package:sqflite/sqflite.dart';
 import 'package:woutickpass/services/database.dart';
 
-class SettingDao {
+class SettingDAO {
   final DatabaseHelper _dbHelper;
 
-  SettingDao(this._dbHelper);
+  SettingDAO(this._dbHelper);
 
   Future<bool> loadSetting(String key, bool defaultValue) async {
     final db = await _dbHelper.database;

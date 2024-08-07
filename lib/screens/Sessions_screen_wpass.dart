@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:woutickpass/models/objects/session.dart';
-import 'package:woutickpass/services/Api/api_auth_wpass.dart';
-import 'package:woutickpass/services/sessions_dao.dart';
+import 'package:woutickpass/services/api/session_api.dart';
+import 'package:woutickpass/services/dao/sessions_dao.dart';
 
 class SessionsScreenWpass extends StatefulWidget {
   final String wpassCode;
@@ -24,23 +24,23 @@ class _SessionsScreenState extends State<SessionsScreenWpass> {
   }
 
   Future<void> _loadSessions() async {
-    futureSessions = ApiAuthWpass.getSessions(widget.wpassCode);
+    futureSessions = SessionAPI.getSessionsListByWpass(widget.wpassCode);
 
     try {
       final apiSessions = await futureSessions;
       print('Sesiones obtenidas de la API: $apiSessions');
       sessions = apiSessions;
 
-      await SessionsDao().storeSessions(sessions);
+      await SessionsDAO().storeSessions(sessions);
 
-      final selectedSessions = await SessionsDao().getSelectedSessions();
+      final selectedSessions = await SessionsDAO().getSelectedSessions();
       checkedSessions = {
         for (var session in sessions)
           session.uuid: selectedSessions.contains(session.uuid),
       };
       setState(() {});
     } catch (e) {
-      sessions = await SessionsDao().retrieveSessions();
+      sessions = await SessionsDAO().retrieveSessions();
       checkedSessions = {
         for (var session in sessions) session.uuid: false,
       };
@@ -58,7 +58,7 @@ class _SessionsScreenState extends State<SessionsScreenWpass> {
     });
 
     final selectedSessions = getSelectedSessions();
-    SessionsDao()
+    SessionsDAO()
         .updateSelectedSessions(selectedSessions.map((s) => s.uuid).toList());
   }
 

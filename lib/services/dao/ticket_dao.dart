@@ -1,17 +1,21 @@
+import 'package:flutter/material.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:woutickpass/models/objects/ticket.dart';
 import 'package:woutickpass/services/database.dart';
 
-class TicketsDao {
-  static final TicketsDao instance = TicketsDao._privateConstructor();
-  TicketsDao._privateConstructor();
+class TicketDAO {
+  static final TicketDAO instance = TicketDAO._privateConstructor();
+  TicketDAO._privateConstructor();
 
   Future<Database> get _db async => await DatabaseHelper().database;
 
   Future<int> insert(Ticket ticket) async {
     Database db = await _db;
-    return await db.insert('tickets', ticket.toMap(),
+    int result = await db.insert('tickets', ticket.toMap(),
         conflictAlgorithm: ConflictAlgorithm.replace);
+    debugPrint(
+        'Insertado/Actualizado ticket con UUID ${ticket.uuid}. Resultado: $result');
+    return result;
   }
 
   Future<int> update(Ticket ticket) async {
@@ -30,6 +34,15 @@ class TicketsDao {
       'tickets',
       where: 'uuid = ?',
       whereArgs: [uuid],
+    );
+  }
+
+  Future<int> deleteTicketsByEvent(String event) async {
+    Database db = await _db;
+    return await db.delete(
+      'tickets',
+      where: 'event = ?',
+      whereArgs: [event],
     );
   }
 
@@ -75,34 +88,29 @@ class TicketsDao {
     return result.map((row) => row['type'] as String).toList();
   }
 
-  // Método para verificar si ya existen tickets para una sesión
   Future<bool> sessionTicketsExist(String sessionId) async {
     Database db = await _db;
     var result = await db.query(
       'tickets',
-      where: 'session = ?', // Cambiado a 'session'
+      where: 'session = ?',
       whereArgs: [sessionId],
     );
     return result.isNotEmpty;
   }
 
-  // Nuevo método para obtener estadísticas de tickets para un evento específico
   Future<Map<String, int>> getTicketStatisticsByEvent(String event) async {
     Database db = await _db;
 
-    // Contar check-ins
     final checkinsResult = await db.rawQuery(
         'SELECT COUNT(*) AS count FROM tickets WHERE event = ? AND checkin_at IS NOT NULL',
         [event]);
     final checkinsCount = Sqflite.firstIntValue(checkinsResult) ?? 0;
 
-    // Contar entradas (last_entry_at)
     final entriesResult = await db.rawQuery(
         'SELECT COUNT(*) AS count FROM tickets WHERE event = ? AND last_entry_at IS NOT NULL',
         [event]);
     final entriesCount = Sqflite.firstIntValue(entriesResult) ?? 0;
 
-    // Contar salidas (last_exit_at)
     final exitsResult = await db.rawQuery(
         'SELECT COUNT(*) AS count FROM tickets WHERE event = ? AND last_exit_at IS NOT NULL',
         [event]);
@@ -115,7 +123,6 @@ class TicketsDao {
     };
   }
 
-  // Nuevo método para obtener estadísticas por tipo de ticket para un evento específico
   Future<Map<String, int>> getTicketTypeStatistics(String event) async {
     Database db = await _db;
 

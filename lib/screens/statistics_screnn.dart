@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:woutickpass/services/tickets_dao.dart';
+import 'package:woutickpass/services/dao/ticket_dao.dart';
 
 class StatisticsScreen extends StatefulWidget {
   final String event;
@@ -18,8 +18,8 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
   void initState() {
     super.initState();
     _statisticsFuture =
-        TicketsDao.instance.getTicketStatisticsByEvent(widget.event);
-    _ticketTypesFuture = TicketsDao.instance.getTicketTypes();
+        TicketDAO.instance.getTicketStatisticsByEvent(widget.event);
+    _ticketTypesFuture = TicketDAO.instance.getTicketTypes();
   }
 
   @override
@@ -84,8 +84,6 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
               ),
             ),
             SizedBox(height: 24),
-
-            // Contenedor para los Tipos de Entradas
             Container(
               padding: const EdgeInsets.all(16.0),
               decoration: BoxDecoration(

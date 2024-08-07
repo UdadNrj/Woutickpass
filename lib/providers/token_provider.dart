@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:woutickpass/models/objects/session.dart';
-import 'package:woutickpass/services/sessions_dao.dart';
-import 'package:woutickpass/services/token_dao.dart';
+import 'package:woutickpass/services/dao/sessions_dao.dart';
+import 'package:woutickpass/services/dao/token_dao.dart';
 
 class TokenProvider with ChangeNotifier {
   String _token = '';
@@ -10,8 +10,8 @@ class TokenProvider with ChangeNotifier {
   String get token => _token;
   List<Session> get selectedEvents => _selectedEvents;
 
-  final TokenDao _tokenDao = TokenDao();
-  final SessionsDao _sessionsDao = SessionsDao();
+  final TokenDAO _tokenDao = TokenDAO();
+  final SessionsDAO _sessionsDao = SessionsDAO();
 
   TokenProvider() {
     _initialize();

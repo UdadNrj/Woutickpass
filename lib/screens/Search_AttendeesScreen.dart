@@ -47,7 +47,7 @@ class _SearchAttendeesScreenState extends State<SearchAttendeesScreen> {
         title: TextField(
           controller: _searchController,
           decoration: InputDecoration(
-            hintText: 'Buscar asistentes o entradas',
+            hintText: 'Buscar por nombre',
             border: InputBorder.none,
           ),
           autofocus: true,
@@ -61,8 +61,8 @@ class _SearchAttendeesScreenState extends State<SearchAttendeesScreen> {
       body: _filteredAttendees.isEmpty
           ? Center(
               child: Text(
-                'No hemos encontrado resultados',
-                style: TextStyle(fontSize: 18, color: Colors.black),
+                'No hay asistentes que coincidan.',
+                style: TextStyle(fontSize: 18, color: Colors.grey),
               ),
             )
           : ListView.builder(

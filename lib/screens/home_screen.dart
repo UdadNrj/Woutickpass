@@ -1,16 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:provider/provider.dart';
-import 'package:woutickpass/models/drawers/drawer_code_event.dart';
 import 'package:woutickpass/screens/Login_screen.dart';
-import 'package:woutickpass/providers/token_provider.dart';
+import 'package:woutickpass/models/drawers/drawer_code_event.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    var tokenProvider = context.watch<TokenProvider>();
     final screenSize = MediaQuery.of(context).size;
 
     return Scaffold(
@@ -62,35 +59,22 @@ class HomeScreen extends StatelessWidget {
                         ),
                         SizedBox(height: screenSize.height * 0.02),
                         ButtonHeader(),
-                        if (tokenProvider.token.isEmpty)
-                          TextButton(
-                            onPressed: () {
-                              Navigator.push(
-                                context,
-                                _createRoute(const LoginScreen()),
-                              );
-                            },
-                            child: const Text(
-                              'Iniciar Sesión',
-                              style: TextStyle(
-                                color: Color(0xFFCC3364),
-                                fontSize: 14,
-                                fontWeight: FontWeight.w500,
-                              ),
+                        TextButton(
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              _createRoute(const LoginScreen()),
+                            );
+                          },
+                          child: const Text(
+                            'Iniciar Sesión',
+                            style: TextStyle(
+                              color: Color(0xFFCC3364),
+                              fontSize: 14,
+                              fontWeight: FontWeight.w500,
                             ),
-                          )
-                        else
-                          Column(
-                            children: [
-                              ElevatedButton(
-                                onPressed: () {
-                                  tokenProvider.clearToken();
-                                },
-                                child: const Text('Cerrar Sesión'),
-                              ),
-                              SizedBox(height: screenSize.height * 0.02),
-                            ],
                           ),
+                        )
                       ],
                     ),
                   );

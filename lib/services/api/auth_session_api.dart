@@ -2,7 +2,6 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:woutickpass/models/objects/session.dart';
-import 'package:woutickpass/services/dao/sessions_dao.dart';
 
 class AuthSessionAPI {
   static const String _baseUrl =
@@ -43,37 +42,5 @@ class AuthSessionAPI {
       debugPrint('Error al obtener sesiones: $e');
       throw Exception('No se pudieron cargar las sesiones. Error: $e');
     }
-  }
-
-  // Método para actualizar sesiones
-  static Future<void> updateSessions(String token) async {
-    final sessions = await getSession(token);
-    final dbHelper = SessionsDAO();
-    await dbHelper.storeSessions(sessions);
-    debugPrint('Sesiones actualizadas correctamente.');
-  }
-
-  // Método para obtener y almacenar sesiones
-  static Future<void> fetchAndStoreSessions(String token) async {
-    final sessions = await getSession(token);
-    final dbHelper = SessionsDAO();
-    await dbHelper.storeSessions(sessions);
-    debugPrint('Sesiones obtenidas y almacenadas correctamente.');
-  }
-
-  // Método para obtener y actualizar sesiones seleccionadas
-  static Future<void> fetchAndUpdateSelectedSessions(String token) async {
-    final sessions = await getSession(token);
-    final dbHelper = SessionsDAO();
-    final selectedSessions = await dbHelper.getSelectedSessions();
-
-    final selectedUuids =
-        selectedSessions.map((session) => session.uuid).toList();
-    final filteredSessions = sessions
-        .where((session) => selectedUuids.contains(session.uuid))
-        .toList();
-
-    await dbHelper.storeSessions(filteredSessions);
-    debugPrint('Sesiones seleccionadas actualizadas correctamente.');
   }
 }

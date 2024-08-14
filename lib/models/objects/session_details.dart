@@ -115,7 +115,7 @@ class SessionDetails {
       status: map['status'],
       eventVenue: map['event_venue'],
       textOffering: map['text_offering'],
-      tickets: map['tickets'].split(','),
+      tickets: (map['tickets'] as String).split(','),
     );
   }
 

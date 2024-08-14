@@ -20,7 +20,7 @@ class Routes extends StatelessWidget {
       case 0:
         return PageMultiEvents();
       case 1:
-        return PageEvents();
+        return PageEvents(selectedEvents: selectedEvents);
       case 2:
         return PageSetting();
       default:

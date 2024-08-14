@@ -1,12 +1,7 @@
-// main_page.dart
-
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:woutickpass/models/objects/session.dart';
-import 'package:woutickpass/services/dao/sessions_dao.dart';
-import 'package:woutickpass/services/database.dart';
 import 'package:woutickpass/screens/Tabs/button_nav.dart';
-import 'package:woutickpass/services/controllers/filter.dart';
 import 'package:woutickpass/services/controllers/route.dart';
 
 class MainPage extends StatefulWidget {
@@ -27,71 +22,11 @@ class MainPage extends StatefulWidget {
 
 class _MainPageState extends State<MainPage> with WidgetsBindingObserver {
   late int _currentIndex;
-  late Future<List<Session>> _selectedEventsFuture;
-  List<Session>? _selectedEvents;
 
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance?.addObserver(this);
     _currentIndex = widget.currentIndex;
-    _selectedEventsFuture = _loadSelectedEvents();
-  }
-
-  @override
-  void didChangeAppLifecycleState(AppLifecycleState state) {
-    if (state == AppLifecycleState.paused) {
-      _savePageState();
-    }
-  }
-
-  Future<void> _savePageState() async {
-    await DatabaseHelper()
-        .savePageState('currentIndex', _currentIndex.toString());
-  }
-
-  Future<void> _loadPageState() async {
-    final index = await DatabaseHelper().getPageState('currentIndex');
-    setState(() {
-      _currentIndex = int.tryParse(index ?? '0') ?? 0;
-    });
-    _selectedEventsFuture = _loadSelectedEvents();
-  }
-
-  Future<List<Session>> _loadSelectedEvents() async {
-    final sessions = await SessionsDAO().getSelectedSessions();
-    setState(() {
-      _selectedEvents = sessions;
-    });
-    return sessions;
-  }
-
-  void _openFilterSheet(BuildContext context) {
-    showModalBottomSheet(
-      backgroundColor: Colors.white,
-      isScrollControlled: true,
-      context: context,
-      builder: (ctx) => SingleChildScrollView(
-        child: Container(
-          height: MediaQuery.of(context).size.height * 0.8,
-          padding: EdgeInsets.all(18),
-          child: addFilter(),
-        ),
-      ),
-    );
-  }
-
-  Widget _getAppBarTitle(int index) {
-    switch (index) {
-      case 0:
-        return const Text('Multi-Eventos');
-      case 1:
-        return SvgPicture.asset('assets/icons/Logo-Div-black.svg');
-      case 2:
-        return const Text('Ajustes');
-      default:
-        return Container();
-    }
   }
 
   @override
@@ -101,7 +36,7 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver {
         automaticallyImplyLeading: false,
         backgroundColor: Colors.white,
         centerTitle: true,
-        title: _getAppBarTitle(_currentIndex),
+        title: SvgPicture.asset('assets/icons/Logo-Div-black.svg'),
         leading: IconButton(
           onPressed: () {},
           icon: SvgPicture.asset("assets/icons/Modo_online.svg"),
@@ -110,7 +45,7 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver {
           if (_currentIndex == 1)
             IconButton(
               icon: SvgPicture.asset("assets/icons/Filter.svg"),
-              onPressed: () => _openFilterSheet(context),
+              onPressed: () {},
             ),
         ],
       ),
@@ -119,46 +54,13 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver {
         onIndexChanged: (index) {
           setState(() {
             _currentIndex = index;
-            if (index == 1 && _selectedEvents == null) {
-              _selectedEventsFuture = _loadSelectedEvents();
-            }
           });
         },
       ),
-      body: Container(
-        color: Colors.grey[200],
-        child: Column(
-          children: [
-            Expanded(
-              child: FutureBuilder<List<Session>>(
-                future: _selectedEvents != null
-                    ? Future.value(_selectedEvents)
-                    : _selectedEventsFuture,
-                builder: (context, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.waiting) {
-                    return Center(child: CircularProgressIndicator());
-                  } else if (snapshot.hasError) {
-                    return Center(child: Text('Error al cargar eventos.'));
-                  } else if (snapshot.hasData) {
-                    return Routes(
-                      index: _currentIndex,
-                      selectedEvents: snapshot.data!,
-                    );
-                  } else {
-                    return Center(child: Text('No hay eventos seleccionados.'));
-                  }
-                },
-              ),
-            ),
-          ],
-        ),
+      body: Routes(
+        index: _currentIndex,
+        selectedEvents: widget.selectedEvents,
       ),
     );
-  }
-
-  @override
-  void dispose() {
-    WidgetsBinding.instance?.removeObserver(this);
-    super.dispose();
   }
 }

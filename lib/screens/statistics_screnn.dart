@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:woutickpass/services/dao/ticket_dao.dart';
 
 class StatisticsScreen extends StatefulWidget {
   final String event;
@@ -13,14 +12,6 @@ class StatisticsScreen extends StatefulWidget {
 class _StatisticsScreenState extends State<StatisticsScreen> {
   late Future<Map<String, int>> _statisticsFuture;
   late Future<List<String>> _ticketTypesFuture;
-
-  @override
-  void initState() {
-    super.initState();
-    _statisticsFuture =
-        TicketDAO.instance.getTicketStatisticsByEvent(widget.event);
-    _ticketTypesFuture = TicketDAO.instance.getTicketTypes();
-  }
 
   @override
   Widget build(BuildContext context) {

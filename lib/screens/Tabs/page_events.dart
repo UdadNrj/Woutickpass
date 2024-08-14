@@ -1,19 +1,20 @@
 import 'package:flutter/material.dart';
-import 'package:woutickpass/models/drawers/drawer_code_event.dart';
 import 'package:woutickpass/models/objects/session.dart';
-import 'package:woutickpass/screens/Sessions_details_screnn.dart';
-import 'package:woutickpass/services/dao/sessions_dao.dart';
+import 'package:woutickpass/models/objects/ticket.dart';
+import 'package:woutickpass/screens/Attendee_list_screen.dart';
 import 'package:woutickpass/services/api/tickets_api.dart';
+import 'package:woutickpass/models/drawers/drawer_code_event.dart';
 
 class PageEvents extends StatefulWidget {
-  const PageEvents({Key? key}) : super(key: key);
+  final List<Session> selectedEvents;
+
+  const PageEvents({Key? key, required this.selectedEvents}) : super(key: key);
 
   @override
   _PageEventsState createState() => _PageEventsState();
 }
 
 class _PageEventsState extends State<PageEvents> {
-  List<Session> selectedEvents = [];
   Map<String, bool> loadingStatus = {};
 
   @override
@@ -32,12 +33,7 @@ class _PageEventsState extends State<PageEvents> {
     });
 
     try {
-      final sessions = await SessionsDAO().getSelectedSessions();
-      setState(() {
-        selectedEvents = sessions;
-      });
-
-      for (var session in sessions) {
+      for (var session in widget.selectedEvents) {
         await _downloadTickets(session.uuid);
       }
     } catch (e) {
@@ -51,20 +47,58 @@ class _PageEventsState extends State<PageEvents> {
     });
 
     try {
-      await TicketsAPI.getTicketsBySessionId(sessionId);
+      // Obtén la lista de tickets desde la API
+      final List<dynamic> ticketsJsonList =
+          await TicketsAPI.getTicketsBySessionUuid(sessionId);
 
-      debugPrint('Tickets downloaded for session $sessionId');
+      // Asegúrate de que ticketsJsonList sea una lista de mapas o instancias de Ticket
+      if (ticketsJsonList.isNotEmpty) {
+        List<Ticket> tickets = ticketsJsonList
+            .map((json) {
+              // Verifica si json ya es una instancia de Ticket
+              if (json is Ticket) {
+                debugPrint('Ticket instance: $json');
+                return json;
+              }
+              // Si es un Map<String, dynamic>, conviértelo en Ticket
+              else if (json is Map<String, dynamic>) {
+                debugPrint('Ticket JSON: $json');
+                return Ticket.fromJson(json);
+              }
+              // Si no es ninguno de los dos, es un formato inesperado
+              else {
+                debugPrint('Invalid ticket JSON format: $json');
+                return null; // Ignora elementos inválidos
+              }
+            })
+            .whereType<Ticket>()
+            .toList(); // Filtra los valores nulos
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-            content: Text('Tickets descargados para la sesión $sessionId.')),
-      );
+        debugPrint('Tickets downloaded for session $sessionId');
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Tickets downloaded for session $sessionId.'),
+          ),
+        );
+
+        // Navega a la pantalla de AttendeesListScreen con la lista de tickets
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) =>
+                AttendeesListScreen(event: sessionId, tickets: tickets),
+          ),
+        );
+      } else {
+        throw Exception('No tickets found.');
+      }
     } catch (e) {
       debugPrint('Error downloading tickets for session $sessionId: $e');
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-            content:
-                Text('Error al descargar tickets para la sesión $sessionId')),
+          content: Text('Error downloading tickets: ${e.toString()}'),
+        ),
       );
     } finally {
       setState(() {
@@ -101,22 +135,24 @@ class _PageEventsState extends State<PageEvents> {
             color: Colors.white,
             margin: const EdgeInsets.only(bottom: 50),
             child: ListView.builder(
-              itemCount: selectedEvents.length,
+              itemCount: widget.selectedEvents.length,
               itemBuilder: (context, index) {
-                Session event = selectedEvents[index];
+                Session event = widget.selectedEvents[index];
                 bool isLoading = loadingStatus[event.uuid] ?? false;
 
                 return GestureDetector(
                   onTap: isLoading
                       ? null
-                      : () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) =>
-                                  EventDetailsPage(sessionId: event.uuid),
-                            ),
-                          );
+                      : () async {
+                          setState(() {
+                            loadingStatus[event.uuid] = true;
+                          });
+
+                          await _downloadTickets(event.uuid);
+
+                          setState(() {
+                            loadingStatus[event.uuid] = false;
+                          });
                         },
                   child: Container(
                     margin:
@@ -149,7 +185,7 @@ class _PageEventsState extends State<PageEvents> {
                               ),
                               const SizedBox(height: 8),
                               Text(
-                                '${event.startAt} - Ubicación',
+                                '${event.eventStartAt} - Ubicación',
                                 style: const TextStyle(
                                   color: Colors.grey,
                                 ),

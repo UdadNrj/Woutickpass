@@ -55,14 +55,17 @@ class SessionsDAO {
 
   Future<void> storeSessions(List<Session> sessions) async {
     final db = await DatabaseHelper().database;
-    await db.delete('sessions');
-    for (var session in sessions) {
-      await db.insert(
-        'sessions',
-        session.toJson(),
-        conflictAlgorithm: ConflictAlgorithm.replace,
-      );
-    }
+    // Elimina todas las sesiones actuales y agrega las nuevas
+    await db.transaction((txn) async {
+      await txn.delete('sessions');
+      for (var session in sessions) {
+        await txn.insert(
+          'sessions',
+          session.toJson(),
+          conflictAlgorithm: ConflictAlgorithm.replace,
+        );
+      }
+    });
   }
 
   Future<List<Session>> retrieveSessions() async {
@@ -75,20 +78,23 @@ class SessionsDAO {
 
   Future<void> updateSelectedSessions(List<String> sessionUuids) async {
     final db = await DatabaseHelper().database;
-
-    await db.update(
-      'sessions',
-      {'is_selected': 0},
-    );
-
-    for (var uuid in sessionUuids) {
-      await db.update(
+    // Utiliza una transacción para actualizar de manera segura
+    await db.transaction((txn) async {
+      // Desselecciona todas las sesiones
+      await txn.update(
         'sessions',
-        {'is_selected': 1},
-        where: 'uuid = ?',
-        whereArgs: [uuid],
+        {'is_selected': 0},
       );
-    }
+      // Selecciona solo las sesiones con los UUIDs proporcionados
+      for (var uuid in sessionUuids) {
+        await txn.update(
+          'sessions',
+          {'is_selected': 1},
+          where: 'uuid = ?',
+          whereArgs: [uuid],
+        );
+      }
+    });
   }
 
   Future<void> addSessionToSelectedSessions(String uuid) async {

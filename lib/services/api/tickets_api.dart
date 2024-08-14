@@ -6,18 +6,19 @@ import 'package:http/http.dart' as http;
 import 'package:woutickpass/models/objects/ticket.dart';
 
 class TicketsAPI {
-  static Future<void> getTicketsByUuid(String? uuid) async {
-    await _getTickets(
+  static Future<List<Ticket>> getTicketsByUuid(String? uuid) async {
+    return await _getTickets(
         'https://api-dev.woutick.com/wpass/v1/tickets/$uuid', uuid);
   }
 
-  static Future<void> getTicketsBySessionId(String? sessionId) async {
-    await _getTickets(
-        'https://api-dev.woutick.com/wpass/v1/tickets/?session=$sessionId',
-        sessionId);
+  static Future<List<Ticket>> getTicketsBySessionUuid(
+      String? sessionUuid) async {
+    return await _getTickets(
+        'https://api-dev.woutick.com/wpass/v1/tickets/?session=$sessionUuid',
+        sessionUuid);
   }
 
-  static Future<void> _getTickets(String url, String? id) async {
+  static Future<List<Ticket>> _getTickets(String url, String? id) async {
     if (id == null || id.isEmpty) {
       throw Exception('El UUID está vacío');
     }
@@ -47,11 +48,13 @@ class TicketsAPI {
           List<Ticket> tickets =
               ticketsJson.map((json) => Ticket.fromMap(json)).toList();
           await _storeTickets(tickets);
+          return tickets;
         } else {
           throw Exception('El cuerpo de la respuesta está vacío.');
         }
       } else if (response.statusCode == 404) {
         debugPrint('No tickets found for ID: $id. Skipping download.');
+        return [];
       } else {
         throw Exception(
             'Error al obtener las entradas. Código de estado: ${response.statusCode}. Cuerpo de la respuesta: ${response.body}');
@@ -73,12 +76,15 @@ class TicketsAPI {
   }
 
   static List<dynamic> _parseTickets(String responseBody) {
-    final List<dynamic> jsonResponse = json.decode(responseBody);
+    final dynamic jsonResponse = json.decode(responseBody);
+
     if (jsonResponse is List) {
       return jsonResponse;
+    } else if (jsonResponse is Map<String, dynamic>) {
+      // Si el JSON es un objeto único, lo colocamos en una lista
+      return [jsonResponse];
     } else {
-      throw Exception(
-          'Se esperaba una lista de entradas pero se encontró: $jsonResponse');
+      throw Exception('Unexpected format in tickets JSON list: $jsonResponse');
     }
   }
 

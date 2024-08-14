@@ -1,33 +1,33 @@
 import 'package:flutter/material.dart';
-import 'package:woutickpass/models/objects/attendee.dart';
+import 'package:woutickpass/models/objects/ticket.dart';
 
-class SearchAttendeesScreen extends StatefulWidget {
-  final List<Attendee> attendees;
+class SearchTicketsScreen extends StatefulWidget {
+  final List<Ticket> tickets;
 
-  const SearchAttendeesScreen({Key? key, required this.attendees})
+  const SearchTicketsScreen({Key? key, required this.tickets})
       : super(key: key);
 
   @override
-  _SearchAttendeesScreenState createState() => _SearchAttendeesScreenState();
+  _SearchTicketsScreenState createState() => _SearchTicketsScreenState();
 }
 
-class _SearchAttendeesScreenState extends State<SearchAttendeesScreen> {
+class _SearchTicketsScreenState extends State<SearchTicketsScreen> {
   late TextEditingController _searchController;
-  late List<Attendee> _filteredAttendees;
+  late List<Ticket> _filteredTickets;
 
   @override
   void initState() {
     super.initState();
     _searchController = TextEditingController();
-    _filteredAttendees = widget.attendees;
-    _searchController.addListener(_filterAttendees);
+    _filteredTickets = widget.tickets;
+    _searchController.addListener(_filterTickets);
   }
 
-  void _filterAttendees() {
+  void _filterTickets() {
     final query = _searchController.text.toLowerCase();
     setState(() {
-      _filteredAttendees = widget.attendees.where((attendee) {
-        return attendee.name.toLowerCase().contains(query);
+      _filteredTickets = widget.tickets.where((ticket) {
+        return (ticket.name ?? 'Desconocido').toLowerCase().contains(query);
       }).toList();
     });
   }
@@ -58,24 +58,23 @@ class _SearchAttendeesScreenState extends State<SearchAttendeesScreen> {
           onPressed: () => Navigator.pop(context),
         ),
       ),
-      body: _filteredAttendees.isEmpty
+      body: _filteredTickets.isEmpty
           ? Center(
               child: Text(
-                'No hay asistentes que coincidan.',
+                'No hay tickets que coincidan.',
                 style: TextStyle(fontSize: 18, color: Colors.grey),
               ),
             )
           : ListView.builder(
-              itemCount: _filteredAttendees.length,
+              itemCount: _filteredTickets.length,
               itemBuilder: (context, index) {
-                final attendee = _filteredAttendees[index];
+                final ticket = _filteredTickets[index];
                 return Card(
                   margin: const EdgeInsets.symmetric(vertical: 8.0),
                   child: ListTile(
-                    leading: _getStatusIcon(attendee.status),
-                    title: Text(attendee.name),
-                    subtitle:
-                        Text('${attendee.ticketType} (${attendee.ticketCode})'),
+                    leading: _getStatusIcon(ticket.status),
+                    title: Text(ticket.name ?? 'Desconocido'),
+                    subtitle: Text('${ticket.type} (${ticket.ticketCode})'),
                     trailing: Icon(Icons.arrow_forward),
                     onTap: () {},
                   ),

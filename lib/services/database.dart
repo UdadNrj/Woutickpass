@@ -1,5 +1,3 @@
-// database_helper.dart
-
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 
@@ -24,9 +22,6 @@ class DatabaseHelper {
       path,
       version: 1,
       onCreate: _onCreate,
-      onOpen: (db) async {
-        await _checkAndAddColumn(db);
-      },
       onDowngrade: onDatabaseDowngradeDelete,
     );
   }
@@ -99,7 +94,7 @@ class DatabaseHelper {
     ''');
 
     await db.execute('''
-    CREATE TABLE tickets (
+      CREATE TABLE tickets (
         uuid TEXT PRIMARY KEY,
         payment_at TEXT,
         created_at TEXT,
@@ -128,9 +123,10 @@ class DatabaseHelper {
         question3_text TEXT,
         question3_answer TEXT,
         referer_user_full_name TEXT,
-        banned_at TEXT
+        banned_at TEXT,
+        session_id TEXT
     )
-''');
+    ''');
 
     await db.execute('''
       CREATE TABLE page_state (
@@ -139,39 +135,5 @@ class DatabaseHelper {
         value TEXT
       )
     ''');
-  }
-
-  Future<void> _checkAndAddColumn(Database db) async {
-    // Verifica si la columna 'session_id' existe en la tabla 'tickets'
-    List<Map> tableInfo = await db.rawQuery('PRAGMA table_info(tickets)');
-    bool columnExists =
-        tableInfo.any((column) => column['name'] == 'session_id');
-
-    // Si la columna 'session_id' no existe, agrégala
-    if (!columnExists) {
-      await db.execute('ALTER TABLE tickets ADD COLUMN session_id TEXT');
-    }
-  }
-
-  Future<void> savePageState(String key, String value) async {
-    final db = await database;
-    await db.insert(
-      'page_state',
-      {'key': key, 'value': value},
-      conflictAlgorithm: ConflictAlgorithm.replace,
-    );
-  }
-
-  Future<String?> getPageState(String key) async {
-    final db = await database;
-    final result = await db.query(
-      'page_state',
-      where: 'key = ?',
-      whereArgs: [key],
-    );
-    if (result.isNotEmpty) {
-      return result.first['value'] as String?;
-    }
-    return null;
   }
 }

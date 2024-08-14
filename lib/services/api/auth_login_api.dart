@@ -6,7 +6,6 @@ import 'package:provider/provider.dart';
 import 'package:woutickpass/providers/token_provider.dart';
 import 'package:woutickpass/screens/Sessions_screnn.dart';
 import 'package:woutickpass/services/api/auth_session_api.dart';
-import 'package:woutickpass/services/dao/token_dao.dart';
 
 class AuthLoginAPI {
   Future<String?> askToken(String gmail, String password) async {
@@ -40,61 +39,41 @@ class AuthLoginAPI {
     if (connectivityResult == ConnectivityResult.none) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-            content: Text('No internet connection. Logging in offline.')),
+            content: Text('No internet connection. Unable to login.')),
       );
+      return;
+    }
 
-      final token = await TokenDAO().retrieveToken();
+    try {
+      final token = await askToken(gmail, password);
       if (token != null && token.isNotEmpty) {
         context.read<TokenProvider>().setToken(token);
 
         try {
-          await AuthSessionAPI.fetchAndStoreSessions(token);
+          final sessions = await AuthSessionAPI.getSession(token);
+
           Navigator.pushReplacement(
             context,
             MaterialPageRoute(
-                builder: (context) => SessionsScreen(token: token)),
+                builder: (context) => SessionsScreen(
+                      token: token,
+                    )),
           );
         } catch (e) {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Error fetching events: $e')),
+            SnackBar(content: Text('Error fetching sessions: $e')),
           );
         }
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('No stored token available.')),
+          const SnackBar(content: Text('Received an empty token from server.')),
         );
       }
-    } else {
-      try {
-        final token = await askToken(gmail, password);
-        if (token != null && token.isNotEmpty) {
-          await TokenDAO().insertToken(token);
-          context.read<TokenProvider>().setToken(token);
-
-          try {
-            await AuthSessionAPI.fetchAndStoreSessions(token);
-            Navigator.pushReplacement(
-              context,
-              MaterialPageRoute(
-                  builder: (context) => SessionsScreen(token: token)),
-            );
-          } catch (e) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text('Error fetching events: $e')),
-            );
-          }
-        } else {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-                content: Text('Received an empty token from server.')),
-          );
-        }
-      } catch (e) {
-        debugPrint('Error during login: $e');
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Login failed: $e')),
-        );
-      }
+    } catch (e) {
+      debugPrint('Error during login: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Login failed: $e')),
+      );
     }
   }
 }

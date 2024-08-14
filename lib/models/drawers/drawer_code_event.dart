@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:woutickpass/models/objects/session.dart';
 import 'package:woutickpass/screens/Sessions_screen_wpass.dart';
 import 'package:woutickpass/services/api/session_api.dart';
-import 'package:woutickpass/services/dao/token_dao.dart';
 
 class DrawerCodeEvent extends StatefulWidget {
   final String someParameter;
@@ -15,7 +14,6 @@ class DrawerCodeEvent extends StatefulWidget {
 }
 
 class DrawerCodeEventState extends State<DrawerCodeEvent> {
-  bool _isUserLoggedIn = false;
   bool _isEventCodeEmpty = true;
   final _formKey = GlobalKey<FormState>();
   String? _eventCode;
@@ -23,7 +21,7 @@ class DrawerCodeEventState extends State<DrawerCodeEvent> {
   @override
   void initState() {
     super.initState();
-    _checkUserLoginStatus();
+    // Aquí no se realiza la comprobación del estado de inicio de sesión ya que hemos eliminado el uso del DAO.
   }
 
   Future<void> _handleRegisterEvent() async {
@@ -48,13 +46,6 @@ class DrawerCodeEventState extends State<DrawerCodeEvent> {
         _showErrorMessage('Error al obtener eventos: $e');
       }
     }
-  }
-
-  Future<void> _checkUserLoginStatus() async {
-    String? token = await TokenDAO().retrieveToken();
-    setState(() {
-      _isUserLoggedIn = token != null && token.isNotEmpty;
-    });
   }
 
   void _showErrorMessage(String message) {
@@ -183,9 +174,15 @@ class TextFieldValidated extends StatelessWidget {
       onSaved: onSaved,
       onChanged: onChanged,
       decoration: InputDecoration(
-        labelText: 'Event Code',
+        labelText: 'Código de Evento',
         border: OutlineInputBorder(),
       ),
+      validator: (value) {
+        if (value == null || value.isEmpty) {
+          return 'Por favor ingrese un código de evento';
+        }
+        return null;
+      },
     );
   }
 }

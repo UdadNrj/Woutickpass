@@ -48,6 +48,7 @@
 // }
 
 import 'package:flutter/material.dart';
+import 'package:woutickpass/models/objects/ticket.dart';
 import 'package:woutickpass/screens/Search_AttendeesScreen.dart';
 
 class ScannerPage extends StatefulWidget {
@@ -70,12 +71,12 @@ class _ScannerPageState extends State<ScannerPage> {
           IconButton(
             icon: Icon(Icons.search, color: Colors.black),
             onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => SearchAttendeesScreen(attendees: []),
-                ),
-              );
+              // Navigator.push(
+              //   context,
+              //   MaterialPageRoute(
+              //     builder: (context) => SearchAttendeesScreen(Ticket: Ticket),
+              //   ),
+              // );
             },
           ),
         ],

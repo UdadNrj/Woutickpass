@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:woutickpass/models/objects/session.dart';
 import 'package:woutickpass/services/api/session_api.dart';
-import 'package:woutickpass/services/dao/sessions_dao.dart';
 
 class SessionsScreenWpass extends StatefulWidget {
   final String wpassCode;
@@ -31,20 +30,17 @@ class _SessionsScreenState extends State<SessionsScreenWpass> {
       print('Sesiones obtenidas de la API: $apiSessions');
       sessions = apiSessions;
 
-      await SessionsDAO().storeSessions(sessions);
-
-      final selectedSessions = await SessionsDAO().getSelectedSessions();
-      checkedSessions = {
-        for (var session in sessions)
-          session.uuid: selectedSessions.contains(session.uuid),
-      };
-      setState(() {});
-    } catch (e) {
-      sessions = await SessionsDAO().retrieveSessions();
+      // Inicializa checkedSessions solo con los datos de la API
       checkedSessions = {
         for (var session in sessions) session.uuid: false,
       };
+      setState(() {});
+    } catch (e) {
+      // En caso de error, maneja la excepción de manera adecuada
       print('Error al cargar sesiones desde la API: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error al cargar sesiones.')),
+      );
     }
   }
 
@@ -56,10 +52,6 @@ class _SessionsScreenState extends State<SessionsScreenWpass> {
     setState(() {
       checkedSessions[uuid] = value ?? false;
     });
-
-    final selectedSessions = getSelectedSessions();
-    SessionsDAO()
-        .updateSelectedSessions(selectedSessions.map((s) => s.uuid).toList());
   }
 
   List<Session> getSelectedSessions() {
@@ -135,12 +127,14 @@ class _SessionsScreenState extends State<SessionsScreenWpass> {
               onPressed: isButtonActive
                   ? () {
                       List<Session> selectedSessions = getSelectedSessions();
+                      // Aquí puedes manejar las sesiones seleccionadas,
+                      // como navegar a otra página o realizar una acción
+                      // Ejemplo:
                       // Navigator.push(
                       //   context,
                       //   MaterialPageRoute(
                       //     builder: (context) => MainPage(
-                      //       token: widget.wpassCode,
-                      //       currentIndex: 1,
+                      //       wpassCode: widget.wpassCode,
                       //       selectedSessions: selectedSessions,
                       //     ),
                       //   ),

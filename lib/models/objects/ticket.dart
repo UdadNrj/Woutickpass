@@ -4,35 +4,53 @@ part 'ticket.g.dart';
 
 @JsonSerializable()
 class Ticket {
-  String uuid;
-  String session;
-  String event;
-  String status;
-  String ticketCode;
-  String type;
-  int total;
-  DateTime? paymentAt;
-  DateTime? createdAt;
-  DateTime? updatedAt;
-  DateTime? accessedAt;
-  DateTime? checkinAt;
-  DateTime? lastEntryAt;
-  DateTime? lastExitAt;
-  String name;
-  String dni;
-  DateTime? birthdate;
-  String postalCode;
-  String email;
-  String phone;
-  String gender;
-  String question1Text;
-  String question1Answer;
-  String question2Text;
-  String question2Answer;
-  String question3Text;
-  String question3Answer;
-  String refererUserFullName;
-  DateTime? bannedAt;
+  final String uuid;
+  final String session;
+  final String event;
+  final String status;
+  @JsonKey(name: 'ticket_code')
+  final String ticketCode;
+  final String type;
+  final int total;
+  @JsonKey(name: 'payment_at')
+  final DateTime? paymentAt;
+  @JsonKey(name: 'created_at')
+  final DateTime? createdAt;
+  @JsonKey(name: 'updated_at')
+  final DateTime? updatedAt;
+  @JsonKey(name: 'accessed_at')
+  final DateTime? accessedAt;
+  @JsonKey(name: 'checkin_at')
+  final DateTime? checkinAt;
+  @JsonKey(name: 'last_entry_at')
+  final DateTime? lastEntryAt;
+  @JsonKey(name: 'last_exit_at')
+  final DateTime? lastExitAt;
+  final String name;
+  final String dni;
+  @JsonKey(name: 'birthdate')
+  final DateTime? birthdate;
+  @JsonKey(name: 'postal_code')
+  final String postalCode;
+  final String email;
+  final String phone;
+  final String gender;
+  @JsonKey(name: 'question1_text')
+  final String question1Text;
+  @JsonKey(name: 'question1_answer')
+  final String question1Answer;
+  @JsonKey(name: 'question2_text')
+  final String question2Text;
+  @JsonKey(name: 'question2_answer')
+  final String question2Answer;
+  @JsonKey(name: 'question3_text')
+  final String question3Text;
+  @JsonKey(name: 'question3_answer')
+  final String question3Answer;
+  @JsonKey(name: 'referer_user_full_name')
+  final String refererUserFullName;
+  @JsonKey(name: 'banned_at')
+  final DateTime? bannedAt;
 
   Ticket({
     required this.uuid,
@@ -148,62 +166,4 @@ class Ticket {
           map['banned_at'] != null ? DateTime.parse(map['banned_at']) : null,
     );
   }
-}
-
-void main() {
-  // Supongamos que obtenemos la lista de tickets de alguna API
-  List<Ticket> tickets = [
-    Ticket(
-      uuid: '1',
-      session: 'S1',
-      event: 'E1',
-      status: 'active',
-      ticketCode: 'T1',
-      type: 'VIP',
-      total: 100,
-      name: 'John Doe',
-      dni: '123456789',
-      postalCode: '12345',
-      email: 'john@example.com',
-      phone: '1234567890',
-      gender: 'M',
-      question1Text: 'Q1',
-      question1Answer: 'A1',
-      question2Text: 'Q2',
-      question2Answer: 'A2',
-      question3Text: 'Q3',
-      question3Answer: 'A3',
-      refererUserFullName: 'Referrer',
-    ),
-    Ticket(
-      uuid: '2',
-      session: 'S2',
-      event: 'E2',
-      status: 'inactive',
-      ticketCode: 'T2',
-      type: 'Regular',
-      total: 50,
-      name: '',
-      dni: '987654321',
-      postalCode: '54321',
-      email: 'jane@example.com',
-      phone: '0987654321',
-      gender: 'F',
-      question1Text: 'Q1',
-      question1Answer: 'A1',
-      question2Text: 'Q2',
-      question2Answer: 'A2',
-      question3Text: 'Q3',
-      question3Answer: 'A3',
-      refererUserFullName: 'Referrer',
-    ),
-  ];
-
-  // Filtrando los nombres vacíos
-  List<String> names = tickets
-      .map((ticket) =>
-          ticket.name.isNotEmpty ? ticket.name : 'Nombre no disponible')
-      .toList();
-
-  print(names); // Imprime: [John Doe, Nombre no disponible]
 }

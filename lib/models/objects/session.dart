@@ -3,18 +3,18 @@ import 'package:woutickpass/models/objects/session_details.dart';
 
 @immutable
 class Session {
-  final String uuid; // Identificador único del evento
-  final String title; // Nombre del evento
-  final String subtitle; // Subtitulo del evento
-  final String? wpassCode; // Código de pase del evento
-  final String eventStartAt; // Fecha de inicio del evento como cadena
-  final DateTime startAt; // Fecha de inicio del evento como DateTime
+  final String uuid;
+  final String title;
+  final String subtitle;
+  final String? wpassCode;
+  final String eventStartAt;
+  final DateTime startAt;
 
   const Session({
     required this.uuid,
     required this.title,
     required this.subtitle,
-    required this.wpassCode,
+    this.wpassCode,
     required this.eventStartAt,
     required this.startAt,
   });
@@ -41,13 +41,10 @@ class Session {
     };
   }
 
-  // Convertir Session a SessionDetails
-  SessionDetails toSessionDetails(Session session) {
-    // Parsear la fecha de inicio del evento desde el formato ISO 8601
-    DateTime eventStartAt = DateTime.parse(session.eventStartAt);
-
+  // Convert Session to SessionDetails
+  SessionDetails toSessionDetails() {
     return SessionDetails(
-      uuid: session.uuid,
+      uuid: uuid,
       isActive: true,
       createdAt: DateTime.now(),
       updatedAt: DateTime.now(),
@@ -55,22 +52,22 @@ class Session {
       isPrivate: false,
       isCanceled: false,
       order: 0,
-      name: session.title,
+      name: title,
       slug: '',
-      description: session.subtitle,
+      description: subtitle,
       textOutOfStock: '',
       textNotAvailable: '',
       streamingUrl: '',
       streamingDescription: '',
       streamingFreeAccess: false,
-      publicStartAt: eventStartAt,
-      publicEndAt: eventStartAt.add(Duration(days: 1)),
-      startAt: session.startAt,
-      endAt: session.startAt.add(Duration(hours: 2)),
+      publicStartAt: DateTime.parse(eventStartAt),
+      publicEndAt: DateTime.parse(eventStartAt).add(Duration(days: 1)),
+      startAt: startAt,
+      endAt: startAt.add(Duration(hours: 2)),
       doorsOpenTime: '',
       isCashless: false,
-      returnsStartAt: session.startAt,
-      returnsEndAt: session.startAt.add(Duration(hours: 1)),
+      returnsStartAt: startAt,
+      returnsEndAt: startAt.add(Duration(hours: 1)),
       returnsMinAmount: 0,
       hasSellMax: false,
       sellMax: 0,
@@ -80,7 +77,7 @@ class Session {
       status: '',
       eventVenue: '',
       textOffering: '',
-      tickets: [], // Lista vacía por defecto
+      tickets: [], // Empty list by default
     );
   }
 
@@ -89,7 +86,7 @@ class Session {
       uuid: details.uuid,
       title: details.name,
       subtitle: details.description,
-      wpassCode: '',
+      wpassCode: '', // No direct mapping for wpassCode
       eventStartAt: details.publicStartAt.toIso8601String(),
       startAt: details.startAt,
     );

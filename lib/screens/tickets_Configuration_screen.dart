@@ -1,38 +1,32 @@
 import 'package:flutter/material.dart';
-import 'package:woutickpass/models/objects/session.dart';
 
-class TicketConfigurationScreen extends StatefulWidget {
-  final Session event;
-  final List<String> ticketTypes;
+class EntryConfigurationPage extends StatefulWidget {
+  final String sessionId;
 
-  const TicketConfigurationScreen({
+  const EntryConfigurationPage({
     Key? key,
-    required this.event,
-    required this.ticketTypes,
+    required this.sessionId,
   }) : super(key: key);
 
   @override
-  _TicketConfigurationScreenState createState() =>
-      _TicketConfigurationScreenState();
+  _EntryConfigurationPageState createState() => _EntryConfigurationPageState();
 }
 
-class _TicketConfigurationScreenState extends State<TicketConfigurationScreen> {
-  late List<String> _selectedTicketTypes;
+class _EntryConfigurationPageState extends State<EntryConfigurationPage> {
+  // Simulando datos con estados seleccionados
+  final List<Map<String, dynamic>> entries = [
+    {'status': 'Active', 'type': 'Standard', 'selected': true},
+    {'status': 'Inactive', 'type': 'VIP', 'selected': false},
+    {'status': 'Active', 'type': 'Premium', 'selected': false},
+  ];
 
-  @override
-  void initState() {
-    super.initState();
-    _selectedTicketTypes = List.from(widget.ticketTypes);
-  }
-
-  void _toggleSelection(String type) {
-    setState(() {
-      if (_selectedTicketTypes.contains(type)) {
-        _selectedTicketTypes.remove(type);
-      } else {
-        _selectedTicketTypes.add(type);
-      }
-    });
+  // Acción para guardar la configuración
+  void _saveConfiguration() {
+    // Aquí puedes implementar la lógica para guardar la configuración
+    print('Configuración guardada: $entries');
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('Configuración guardada exitosamente')),
+    );
   }
 
   @override
@@ -40,69 +34,49 @@ class _TicketConfigurationScreenState extends State<TicketConfigurationScreen> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        centerTitle: true,
-        title: Text('Configuración de entradas'),
         backgroundColor: Colors.white,
-        foregroundColor: Colors.black,
+        title: Text('Configuración de Entradas'),
+        iconTheme: IconThemeData(color: Colors.black),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              widget.event.title,
-              style: TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            SizedBox(height: 16),
-            Text(
-              'Selecciona los tipos de entradas que quieres sincronizar con el escáner:',
-              style: TextStyle(
-                fontSize: 16,
-                color: Colors.grey,
-              ),
-            ),
-            SizedBox(height: 16),
             Expanded(
               child: ListView.builder(
-                itemCount: widget.ticketTypes.length,
+                itemCount: entries.length,
                 itemBuilder: (context, index) {
-                  final type = widget.ticketTypes[index];
-                  return CheckboxListTile(
-                    title: Text(type),
-                    value: _selectedTicketTypes.contains(type),
-                    activeColor: Colors.green,
-                    onChanged: (bool? value) {
-                      if (value != null) {
-                        _toggleSelection(type);
-                      }
-                    },
+                  final entry = entries[index];
+                  return Card(
+                    color: Colors.white,
+                    margin: EdgeInsets.symmetric(vertical: 8.0),
+                    child: CheckboxListTile(
+                      activeColor: Colors.green,
+                      title: Text('Tipo: ${entry['type']}'),
+                      subtitle: Text('Estado: ${entry['status']}'),
+                      value: entry['selected'],
+                      onChanged: (bool? value) {
+                        setState(() {
+                          entry['selected'] = value!;
+                        });
+                      },
+                    ),
                   );
                 },
               ),
             ),
-            SizedBox(height: 16),
-            Center(
-              child: ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 80, vertical: 16),
-                  backgroundColor: const Color(0xFF202B37),
-                ),
-                onPressed: () {
-                  _saveConfiguration();
-                  Navigator.pop(context);
-                },
-                child: Text(
-                  'GUARDAR CONFIGURACION',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 13,
-                    fontWeight: FontWeight.w700,
-                  ),
+            SizedBox(height: 16.0),
+            ElevatedButton(
+              onPressed: _saveConfiguration,
+              style: ElevatedButton.styleFrom(
+                padding: EdgeInsets.symmetric(vertical: 16.0, horizontal: 70.0),
+                backgroundColor: Color.fromRGBO(20, 28, 36, 1),
+              ),
+              child: Text(
+                'GUARDAR CONFIGURACIÓN',
+                style: TextStyle(
+                  fontSize: 18.0,
+                  color: Colors.white,
                 ),
               ),
             ),
@@ -111,6 +85,4 @@ class _TicketConfigurationScreenState extends State<TicketConfigurationScreen> {
       ),
     );
   }
-
-  void _saveConfiguration() {}
 }

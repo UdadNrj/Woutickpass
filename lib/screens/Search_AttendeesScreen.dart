@@ -1,103 +1,108 @@
 import 'package:flutter/material.dart';
 import 'package:woutickpass/models/objects/ticket.dart';
 
-class SearchTicketsScreen extends StatefulWidget {
-  final List<Ticket> tickets;
+class TicketSearchDelegate extends SearchDelegate {
+  final Future<List<Ticket>> ticketsFuture;
 
-  const SearchTicketsScreen({Key? key, required this.tickets})
-      : super(key: key);
-
-  @override
-  _SearchTicketsScreenState createState() => _SearchTicketsScreenState();
-}
-
-class _SearchTicketsScreenState extends State<SearchTicketsScreen> {
-  late TextEditingController _searchController;
-  late List<Ticket> _filteredTickets;
+  TicketSearchDelegate({required this.ticketsFuture});
 
   @override
-  void initState() {
-    super.initState();
-    _searchController = TextEditingController();
-    _filteredTickets = widget.tickets;
-    _searchController.addListener(_filterTickets);
-  }
-
-  void _filterTickets() {
-    final query = _searchController.text.toLowerCase();
-    setState(() {
-      _filteredTickets = widget.tickets.where((ticket) {
-        return (ticket.name ?? 'Desconocido').toLowerCase().contains(query);
-      }).toList();
-    });
-  }
-
-  @override
-  void dispose() {
-    _searchController.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.white,
-      appBar: AppBar(
-        centerTitle: true,
-        title: TextField(
-          controller: _searchController,
-          decoration: InputDecoration(
-            hintText: 'Buscar por nombre',
-            border: InputBorder.none,
-          ),
-          autofocus: true,
-        ),
-        backgroundColor: Colors.white,
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: Colors.black),
-          onPressed: () => Navigator.pop(context),
-        ),
+  List<Widget> buildActions(BuildContext context) {
+    return [
+      IconButton(
+        icon: Icon(Icons.clear, color: Colors.black54),
+        onPressed: () {
+          query = '';
+          showSuggestions(context);
+        },
       ),
-      body: _filteredTickets.isEmpty
-          ? Center(
-              child: Text(
-                'No hay tickets que coincidan.',
-                style: TextStyle(fontSize: 18, color: Colors.grey),
-              ),
-            )
-          : ListView.builder(
-              itemCount: _filteredTickets.length,
-              itemBuilder: (context, index) {
-                final ticket = _filteredTickets[index];
-                return Card(
-                  margin: const EdgeInsets.symmetric(vertical: 8.0),
-                  child: ListTile(
-                    leading: _getStatusIcon(ticket.status),
-                    title: Text(ticket.name ?? 'Desconocido'),
-                    subtitle: Text('${ticket.type} (${ticket.ticketCode})'),
-                    trailing: Icon(Icons.arrow_forward),
-                    onTap: () {},
-                  ),
-                );
-              },
-            ),
+    ];
+  }
+
+  @override
+  Widget buildLeading(BuildContext context) {
+    return IconButton(
+      icon: Icon(Icons.arrow_back, color: Colors.black54),
+      onPressed: () {
+        close(context, null);
+      },
     );
   }
 
-  Widget _getStatusIcon(String status) {
-    switch (status) {
-      case 'DENTRO':
-        return Icon(Icons.check_circle, color: Colors.green);
-      case 'SIN REGISTRO':
-        return Icon(Icons.help, color: Colors.grey);
-      case 'FUERA':
-        return Icon(Icons.exit_to_app, color: Colors.blue);
-      case 'DEVUELTA':
-        return Icon(Icons.undo, color: Colors.red);
-      case 'ACCESO BLOQUEADO':
-        return Icon(Icons.block, color: Colors.red);
-      default:
-        return Icon(Icons.help, color: Colors.grey);
-    }
+  @override
+  Widget buildResults(BuildContext context) {
+    return Container(
+      color: Colors.white,
+      child: FutureBuilder<List<Ticket>>(
+        future: ticketsFuture,
+        builder: (context, snapshot) {
+          if (!snapshot.hasData || snapshot.data!.isEmpty) {
+            return Center(
+                child: Text('No hay resultados.',
+                    style: TextStyle(color: Colors.black54)));
+          }
+
+          final tickets = snapshot.data!;
+          final filteredTickets = tickets.where((ticket) {
+            final ticketName = ticket.name.toLowerCase();
+            final ticketCode = ticket.ticketCode.toLowerCase();
+            final ticketType = ticket.event.toLowerCase();
+            final searchQuery = query.toLowerCase();
+
+            return ticketName.contains(searchQuery) ||
+                ticketCode.contains(searchQuery) ||
+                ticketType.contains(searchQuery);
+          }).toList();
+
+          if (filteredTickets.isEmpty) {
+            return Center(
+                child: Text('No se encontraron resultados para "$query".',
+                    style: TextStyle(color: Colors.black54)));
+          }
+
+          return ListView.builder(
+            itemCount: filteredTickets.length,
+            itemBuilder: (context, index) {
+              final ticket = filteredTickets[index];
+              return Container(
+                margin: EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+                child: Card(
+                  color: Colors.white,
+                  elevation: 2.0,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8.0),
+                  ),
+                  child: ListTile(
+                    contentPadding: EdgeInsets.all(16.0),
+                    title: Text(ticket.name,
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold, color: Colors.black)),
+                    subtitle: Text(ticket.ticketCode,
+                        style: TextStyle(color: Colors.black54)),
+                    onTap: () {
+                      close(context, ticket);
+                    },
+                  ),
+                ),
+              );
+            },
+          );
+        },
+      ),
+    );
+  }
+
+  @override
+  Widget buildSuggestions(BuildContext context) {
+    return Container(
+      color: Colors.white,
+      padding: EdgeInsets.all(16.0),
+      child: Center(
+        child: Text(
+          'Busca por nombre, código o tipo de entrada',
+          style: TextStyle(color: Colors.black54),
+        ),
+      ),
+    );
   }
 }

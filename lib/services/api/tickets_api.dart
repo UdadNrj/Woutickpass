@@ -81,7 +81,6 @@ class TicketsAPI {
     if (jsonResponse is List) {
       return jsonResponse;
     } else if (jsonResponse is Map<String, dynamic>) {
-      // Si el JSON es un objeto único, lo colocamos en una lista
       return [jsonResponse];
     } else {
       throw Exception('Unexpected format in tickets JSON list: $jsonResponse');

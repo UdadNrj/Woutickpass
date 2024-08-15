@@ -46,6 +46,21 @@ class TicketDAO {
     );
   }
 
+  Future<List<Ticket>> getTicketsBySessionId(String sessionId) async {
+    final db = await instance._db;
+    final maps = await db.query(
+      'tickets',
+      where: 'session = ?',
+      whereArgs: [sessionId],
+    );
+
+    if (maps.isNotEmpty) {
+      return maps.map((json) => Ticket.fromMap(json)).toList();
+    } else {
+      return [];
+    }
+  }
+
   Future<List<Ticket>> getAllTickets() async {
     Database db = await _db;
     var tickets = await db.query('tickets');

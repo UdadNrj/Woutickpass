@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:woutickpass/models/objects/session.dart';
-import 'package:woutickpass/models/objects/ticket.dart';
-import 'package:woutickpass/screens/Attendee_list_screen.dart';
-import 'package:woutickpass/services/api/tickets_api.dart';
 import 'package:woutickpass/models/drawers/drawer_code_event.dart';
+import 'package:woutickpass/models/objects/ticket.dart';
+import 'package:woutickpass/models/objects/session.dart';
+import 'package:woutickpass/screens/Sessions_details_screnn.dart';
+import 'package:woutickpass/services/api/tickets_api.dart';
+import 'package:woutickpass/services/dao/ticket_dao.dart';
 
 class PageEvents extends StatefulWidget {
   final List<Session> selectedEvents;
@@ -16,6 +17,8 @@ class PageEvents extends StatefulWidget {
 
 class _PageEventsState extends State<PageEvents> {
   Map<String, bool> loadingStatus = {};
+  Map<String, List<Ticket>> cachedTickets =
+      {}; // Map para almacenar los tickets descargados
 
   @override
   void initState() {
@@ -34,62 +37,101 @@ class _PageEventsState extends State<PageEvents> {
 
     try {
       for (var session in widget.selectedEvents) {
-        await _downloadTickets(session.uuid);
+        await _handleTickets(session.uuid);
       }
     } catch (e) {
       debugPrint('Error loading selected events: $e');
     }
   }
 
-  Future<void> _downloadTickets(String sessionId) async {
+  Future<void> _handleTickets(String sessionId) async {
     setState(() {
       loadingStatus[sessionId] = true;
     });
 
     try {
+      // Primero verifica si los tickets ya están en cache
+      if (cachedTickets.containsKey(sessionId)) {
+        debugPrint('Using cached tickets for session $sessionId');
+        // Actualiza la interfaz con los tickets almacenados en caché
+        setState(() {});
+        return;
+      }
+
+      // Verifica si los tickets ya están almacenados en la base de datos local
+      List<Ticket> localTickets =
+          await TicketDAO.instance.getTicketsBySessionId(sessionId);
+
+      if (localTickets.isNotEmpty) {
+        // Si ya existen tickets en la base de datos, los usa y los almacena en cache
+        debugPrint('Tickets already stored for session $sessionId');
+        cachedTickets[sessionId] = localTickets;
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Tickets already stored for session $sessionId.'),
+          ),
+        );
+
+        // Actualiza la interfaz con los tickets almacenados
+        setState(() {});
+      } else {
+        // Si no existen, descarga los tickets desde la API
+        await _downloadAndStoreTickets(sessionId);
+      }
+    } catch (e) {
+      debugPrint('Error handling tickets for session $sessionId: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Error handling tickets: ${e.toString()}'),
+        ),
+      );
+    } finally {
+      setState(() {
+        loadingStatus[sessionId] = false;
+      });
+    }
+  }
+
+  Future<void> _downloadAndStoreTickets(String sessionId) async {
+    try {
       // Obtén la lista de tickets desde la API
       final List<dynamic> ticketsJsonList =
           await TicketsAPI.getTicketsBySessionUuid(sessionId);
 
-      // Asegúrate de que ticketsJsonList sea una lista de mapas o instancias de Ticket
       if (ticketsJsonList.isNotEmpty) {
         List<Ticket> tickets = ticketsJsonList
             .map((json) {
-              // Verifica si json ya es una instancia de Ticket
               if (json is Ticket) {
-                debugPrint('Ticket instance: $json');
                 return json;
-              }
-              // Si es un Map<String, dynamic>, conviértelo en Ticket
-              else if (json is Map<String, dynamic>) {
-                debugPrint('Ticket JSON: $json');
+              } else if (json is Map<String, dynamic>) {
                 return Ticket.fromJson(json);
-              }
-              // Si no es ninguno de los dos, es un formato inesperado
-              else {
-                debugPrint('Invalid ticket JSON format: $json');
-                return null; // Ignora elementos inválidos
+              } else {
+                return null;
               }
             })
             .whereType<Ticket>()
-            .toList(); // Filtra los valores nulos
+            .toList();
 
-        debugPrint('Tickets downloaded for session $sessionId');
+        // Almacena los tickets en la base de datos local
+        for (var ticket in tickets) {
+          await TicketDAO.instance.insert(ticket);
+        }
+
+        // Almacena los tickets en cache
+        cachedTickets[sessionId] = tickets;
+
+        debugPrint('Tickets downloaded and stored for session $sessionId');
 
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Tickets downloaded for session $sessionId.'),
+            content:
+                Text('Tickets downloaded and stored for session $sessionId.'),
           ),
         );
 
-        // Navega a la pantalla de AttendeesListScreen con la lista de tickets
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) =>
-                AttendeesListScreen(event: sessionId, tickets: tickets),
-          ),
-        );
+        // Actualiza la interfaz con los tickets recién descargados
+        setState(() {});
       } else {
         throw Exception('No tickets found.');
       }
@@ -100,10 +142,6 @@ class _PageEventsState extends State<PageEvents> {
           content: Text('Error downloading tickets: ${e.toString()}'),
         ),
       );
-    } finally {
-      setState(() {
-        loadingStatus[sessionId] = false;
-      });
     }
   }
 
@@ -140,6 +178,9 @@ class _PageEventsState extends State<PageEvents> {
                 Session event = widget.selectedEvents[index];
                 bool isLoading = loadingStatus[event.uuid] ?? false;
 
+                // Obtén los tickets almacenados en caché para el evento actual
+                List<Ticket> tickets = cachedTickets[event.uuid] ?? [];
+
                 return GestureDetector(
                   onTap: isLoading
                       ? null
@@ -148,7 +189,7 @@ class _PageEventsState extends State<PageEvents> {
                             loadingStatus[event.uuid] = true;
                           });
 
-                          await _downloadTickets(event.uuid);
+                          await _handleTickets(event.uuid);
 
                           setState(() {
                             loadingStatus[event.uuid] = false;
@@ -191,28 +232,49 @@ class _PageEventsState extends State<PageEvents> {
                                 ),
                               ),
                               const SizedBox(height: 8),
-                              isLoading
-                                  ? const Text(
-                                      'Descargando entradas...',
-                                      style: TextStyle(
-                                        color: Colors.red,
-                                      ),
-                                    )
-                                  : const Text(
-                                      'Entradas descargadas',
-                                      style: TextStyle(
-                                        color: Colors.green,
-                                      ),
-                                    ),
+                              if (isLoading)
+                                const Text(
+                                  'Descargando entradas...',
+                                  style: TextStyle(
+                                    color: Colors.red,
+                                  ),
+                                )
+                              else if (tickets.isNotEmpty)
+                                const Text(
+                                  'Entradas listas',
+                                  style: TextStyle(
+                                    color: Colors.green,
+                                  ),
+                                )
+                              else
+                                const Text(
+                                  'No hay entradas disponibles',
+                                  style: TextStyle(
+                                    color: Colors.grey,
+                                  ),
+                                ),
                             ],
                           ),
                         ),
-                        isLoading
-                            ? const CircularProgressIndicator()
-                            : const Icon(
-                                Icons.arrow_forward_ios,
-                                color: Colors.grey,
-                              ),
+                        if (tickets.isNotEmpty && !isLoading)
+                          IconButton(
+                            icon: const Icon(Icons.arrow_forward_ios,
+                                color: Colors.grey),
+                            onPressed: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => SessionDetailsPage(
+                                    sessionId: event.uuid,
+                                    sessionName: event.title,
+                                  ),
+                                ),
+                              );
+                            },
+                          )
+                        else if (isLoading)
+                          const CircularProgressIndicator()
+                        // Si no hay tickets y no está cargando, no se muestra ningún ícono adicional
                       ],
                     ),
                   ),

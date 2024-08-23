@@ -3,6 +3,9 @@ import 'package:sqflite/sqflite.dart';
 import 'package:woutickpass/models/objects/ticket.dart';
 import 'package:woutickpass/services/database.dart';
 
+var CHECKIN_AVAILABLE = true;
+var CHECKOUT_AVAILABLE = false;
+
 class TicketDAO {
   static final TicketDAO instance = TicketDAO._privateConstructor();
   TicketDAO._privateConstructor();
@@ -153,3 +156,97 @@ class TicketDAO {
     return typeStats;
   }
 }
+
+// Future<void> checkIn(int ticketId) async {
+//   final ticket = await TicketDatabase.instance.getTicket(ticketId);
+//   if (ticket = null) {
+//     print("no se encuentra ticketId");
+//     print(ticketId);
+//     return;
+//   }
+//   if (ticket.lastEntryAt = null ||
+//       ticket.lastExitAt != null && ticket.lastExitAt > ticket.lastEntryA) {
+//     if (!CHECKIN_AVAILABLE) {
+//       print("este dispositivo tiene desactivadas las entradas");
+//       return;
+//     }
+//     final now = DateTime.now().toIso8601String();
+//     ticket.lastEntryAt = now; // El check-in también cuenta como entrada
+//     if (ticket.checkinAt == null) {
+//       ticket.checkinAt = now;
+//     }
+//     await TicketDatabase.instance.updateTicket(ticket);
+//     print("Check-in realizado: $now");
+//   }
+//   else {
+//     print("la persona ya ingreso");
+//   }
+//   // Registrar el check-in solo si no se ha registrado antes
+// }
+
+
+
+// Future<void> checkIn(int ticketId) async {
+//   // Buscar el ticket en la base de datos
+//   final ticket = await TicketDatabase.instance.getTicket(ticketId);
+
+//   if (ticket == null) {
+//     // Si no se encuentra el ticket
+//     print("No se encuentra ticketId: $ticketId");
+//     return;
+//   }
+
+//   // Verificar si el último registro de entrada es nulo o si la última salida es posterior a la última entrada
+//   bool puedeIngresar = ticket.lastEntryAt == null ||
+//       (ticket.lastExitAt != null && ticket.lastExitAt!.compareTo(ticket.lastEntryAt!) > 0);
+
+//   if (!puedeIngresar) {
+//     print("La persona ya ingresó");
+//     return;
+//   }
+
+//   if (!CHECKIN_AVAILABLE) {
+//     print("Este dispositivo tiene desactivadas las entradas");
+//     return;
+//   }
+
+//   // Registrar la nueva entrada
+//   final now = DateTime.now().toIso8601String();
+//   ticket.lastEntryAt = now;
+
+//   // Si nunca se ha registrado un check-in, lo registramos ahora
+//   if (ticket.checkinAt == null) {
+//     ticket.checkinAt = now;
+//   }
+
+//   // Actualizar el ticket en la base de datos
+//   await TicketDatabase.instance.updateTicket(ticket);
+//   print("Check-in realizado: $now");
+// }
+
+
+
+
+
+
+// Future<void> registerEntry(int ticketId) async {
+//   final ticket = await TicketDatabase.instance.getTicket(ticketId);
+//   if (ticket != null) {
+//     final now = DateTime.now().toIso8601String();
+//     ticket.lastEntryAt = now;
+
+//     await TicketDatabase.instance.updateTicket(ticket);
+//     print("Entrada registrada: $now");
+//   }
+// }
+
+// Future<void> registerExit(int ticketId) async {
+//   final ticket = await TicketDatabase.instance.getTicket(ticketId);
+//   if (ticket != null) {
+//     final now = DateTime.now().toIso8601String();
+//     ticket.lastExitAt = now;
+
+//     await TicketDatabase.instance.updateTicket(ticket);
+//     print("Salida registrada: $now");
+//   }
+// }

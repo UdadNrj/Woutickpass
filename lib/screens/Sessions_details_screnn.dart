@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:woutickpass/screens/Aforo_statistics_screen.dart';
 import 'package:woutickpass/screens/Attendee_list_screen.dart';
 import 'package:woutickpass/screens/Tickets_Configuration_screen.dart';
 
@@ -40,117 +41,78 @@ class SessionDetailsPage extends StatelessWidget {
                   padding: const EdgeInsets.only(
                       bottom: 80.0), // Espacio inferior para el botón
                   children: [
-                    // Primer grupo de ListTiles
-                    Padding(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 24.0,
-                        vertical: 8.0,
-                      ),
-                      child: ListTile(
-                        title: Text('Lista de asistentes'),
-                        subtitle: Text(
-                            'Revisa la lista de asistentes totales a tu evento y edita los estados de las entradas de forma manual.'),
-                        trailing: Icon(Icons.arrow_forward_ios),
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => AttendeeListScreen(
-                                sessionId: sessionId,
-                              ),
+                    // Primer grupo de ListTiles con estilo aplicado
+                    _buildListTile(
+                      context,
+                      'Lista de asistentes',
+                      'Revisa la lista de asistentes totales a tu evento y edita los estados de las entradas de forma manual.',
+                      Icons.people,
+                      () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => AttendeeListScreen(
+                              sessionId: sessionId,
                             ),
-                          );
-                        },
-                      ),
+                          ),
+                        );
+                      },
                     ),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 24.0,
-                        vertical: 8.0,
-                      ),
-                      child: ListTile(
-                        title: Text('Configuración de entradas'),
-                        subtitle: Text(
-                            'Edita qué entradas quieres que se sincronicen con el escáner para esta sesión.'),
-                        trailing: Icon(Icons.arrow_forward_ios),
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => EntryConfigurationPage(
-                                sessionId: sessionId,
-                              ),
+                    _buildListTile(
+                      context,
+                      'Configuración de entradas',
+                      'Edita qué entradas quieres que se sincronicen con el escáner para esta sesión.',
+                      Icons.settings,
+                      () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => EntryConfigurationPage(
+                              sessionId: sessionId,
                             ),
-                          );
-                        },
-                      ),
+                          ),
+                        );
+                      },
                     ),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 24.0,
-                        vertical: 8.0,
-                      ),
-                      child: ListTile(
-                        title: Text('Estadísticas de aforo'),
-                        subtitle: Text(
-                            'Accede a la información detallada y actualizada de los asistentes a esta sesión.'),
-                        trailing: Icon(Icons.arrow_forward_ios),
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => AttendeeListScreen(
-                                sessionId: sessionId,
-                              ),
-                            ),
-                          );
-                        },
-                      ),
+                    _buildListTile(
+                      context,
+                      'Estadísticas de aforo',
+                      'Accede a la información detallada y actualizada de los asistentes a esta sesión.',
+                      Icons.bar_chart,
+                      () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) =>
+                                AforoStatisticsScreen(sessionId: sessionId),
+                          ),
+                        );
+                      },
                     ),
-                    // Segundo grupo de ListTiles
-                    Padding(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 24.0,
-                        vertical: 8.0,
-                      ),
-                      child: ListTile(
-                        title: Text('Finalizar sesión'),
-                        subtitle: Text(
-                            'Subir la información al servidor y borrar todas las entradas descargadas en el dispositivo.'),
-                        trailing: Icon(Icons.arrow_forward_ios),
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => AttendeeListScreen(
-                                sessionId: sessionId,
-                              ),
-                            ),
-                          );
-                        },
-                      ),
+                    _buildListTile(
+                      context,
+                      'Finalizar sesión',
+                      'Subir la información al servidor y borrar todas las entradas descargadas en el dispositivo.',
+                      Icons.check_circle,
+                      () {
+                        _showConfirmationDialog(context, sessionId);
+                      },
                     ),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 24.0,
-                        vertical: 8.0,
-                      ),
-                      child: ListTile(
-                        title: Text('Vaciar aforo'),
-                        subtitle: Text(
-                            'Reiniciar la lista de entradas validadas para esta sesión'),
-                        trailing: Icon(Icons.arrow_forward_ios),
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => AttendeeListScreen(
-                                sessionId: sessionId,
-                              ),
+                    _buildListTile(
+                      context,
+                      'Vaciar aforo',
+                      'Reiniciar la lista de entradas validadas para esta sesión',
+                      Icons.delete,
+                      () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => AttendeeListScreen(
+                              sessionId: sessionId,
                             ),
-                          );
-                        },
-                      ),
+                          ),
+                        );
+                      },
                     ),
                   ],
                 ),
@@ -170,17 +132,111 @@ class SessionDetailsPage extends StatelessWidget {
                 padding: EdgeInsets.symmetric(vertical: 16.0),
                 backgroundColor: Color(0xFFCC3364),
               ),
-              child: Text(
-                'ESCANEAR ENTRADAS',
-                style: TextStyle(
-                  fontSize: 18.0,
-                  color: Colors.white,
-                ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(Icons.qr_code_scanner, color: Colors.white),
+                  SizedBox(width: 8.0), // Espacio entre el ícono y el texto
+                  Text(
+                    'ESCANEAR ENTRADAS',
+                    style: TextStyle(
+                      fontSize: 18.0,
+                      color: Colors.white,
+                    ),
+                  ),
+                ],
               ),
             ),
           ),
         ],
       ),
+    );
+  }
+
+  Widget _buildListTile(
+    BuildContext context,
+    String title,
+    String subtitle,
+    IconData icon,
+    VoidCallback onTap,
+  ) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(
+        horizontal: 24.0,
+        vertical: 8.0,
+      ),
+      child: Container(
+        padding: EdgeInsets.all(24.0),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(6.0),
+          border: Border(
+            bottom: BorderSide(
+              color: Color(0xFFE4E7EC),
+              width: 2.0,
+            ),
+          ),
+          boxShadow: [
+            BoxShadow(
+              color:
+                  Color(0x1C1C1C).withOpacity(0.08), // rgba(28, 39, 49, 0.08)
+              offset: Offset(0, 2),
+              blurRadius: 6,
+            ),
+          ],
+        ),
+        child: ListTile(
+          title: Text(
+            title,
+            style: TextStyle(
+              color: Color(0xFF141C24), // Neutrals-Grey900
+              fontFamily: 'Poppins',
+              fontSize: 16.0,
+              fontWeight: FontWeight.w600,
+              height: 1.4,
+              fontFeatures: [FontFeature.stylisticSet(2)],
+            ),
+          ),
+          subtitle: Text(subtitle),
+          trailing: Icon(icon),
+          onTap: onTap,
+        ),
+      ),
+    );
+  }
+
+  void _showConfirmationDialog(BuildContext context, String sessionId) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('¿Estás seguro de esta acción?'),
+          content: Text(
+            'Toda la información sobre las entradas de esta sesión se subirá al servidor y se eliminará del dispositivo.',
+          ),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: Text('Cancelar'),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text('Sesión finalizada con éxito.'),
+                  ),
+                );
+              },
+              child: Text(
+                'Confirmar',
+              ),
+            ),
+          ],
+        );
+      },
     );
   }
 }

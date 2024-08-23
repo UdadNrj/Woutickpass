@@ -41,51 +41,27 @@ class _PageEventsState extends State<PageEvents> {
       }
     } catch (e) {
       debugPrint('Error loading selected events: $e');
+      _showErrorSnackBar('Error loading events: ${e.toString()}');
     }
   }
 
-  Future<void> _handleTickets(String sessionId) async {
+  Future<void> _handleTickets(String sessionId,
+      {bool forceRefresh = false}) async {
+    if (loadingStatus[sessionId] == true) return;
+
     setState(() {
       loadingStatus[sessionId] = true;
     });
 
     try {
-      // Primero verifica si los tickets ya están en cache
-      if (cachedTickets.containsKey(sessionId)) {
-        debugPrint('Using cached tickets for session $sessionId');
-        // Actualiza la interfaz con los tickets almacenados en caché
-        setState(() {});
-        return;
+      if (!forceRefresh) {
+        if (await _useCachedOrLocalTickets(sessionId)) return;
       }
 
-      // Verifica si los tickets ya están almacenados en la base de datos local
-      List<Ticket> localTickets =
-          await TicketDAO.instance.getTicketsBySessionId(sessionId);
-
-      if (localTickets.isNotEmpty) {
-        // Si ya existen tickets en la base de datos, los usa y los almacena en cache
-        debugPrint('Tickets already stored for session $sessionId');
-        cachedTickets[sessionId] = localTickets;
-
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Tickets already stored for session $sessionId.'),
-          ),
-        );
-
-        // Actualiza la interfaz con los tickets almacenados
-        setState(() {});
-      } else {
-        // Si no existen, descarga los tickets desde la API
-        await _downloadAndStoreTickets(sessionId);
-      }
+      await _downloadAndStoreTickets(sessionId);
     } catch (e) {
       debugPrint('Error handling tickets for session $sessionId: $e');
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Error handling tickets: ${e.toString()}'),
-        ),
-      );
+      _showErrorSnackBar('Error handling tickets: ${e.toString()}');
     } finally {
       setState(() {
         loadingStatus[sessionId] = false;
@@ -93,61 +69,63 @@ class _PageEventsState extends State<PageEvents> {
     }
   }
 
+  Future<bool> _useCachedOrLocalTickets(String sessionId) async {
+    if (cachedTickets.containsKey(sessionId)) {
+      debugPrint('Using cached tickets for session $sessionId');
+      setState(() {});
+      return true;
+    }
+
+    List<Ticket> localTickets =
+        await TicketDAO.instance.getTicketsBySessionId(sessionId);
+
+    if (localTickets.isNotEmpty) {
+      debugPrint('Tickets already stored for session $sessionId');
+      cachedTickets[sessionId] = localTickets;
+
+      _showSnackBar('Tickets already stored for session $sessionId.');
+
+      setState(() {});
+      return true;
+    }
+
+    return false;
+  }
+
   Future<void> _downloadAndStoreTickets(String sessionId) async {
     try {
-      // Obtén la lista de tickets desde la API
       final List<dynamic> ticketsJsonList =
           await TicketsAPI.getTicketsBySessionUuid(sessionId);
 
       if (ticketsJsonList.isNotEmpty) {
         List<Ticket> tickets = ticketsJsonList
-            .map((json) {
-              if (json is Ticket) {
-                return json;
-              } else if (json is Map<String, dynamic>) {
-                return Ticket.fromJson(json);
-              } else {
-                return null;
-              }
-            })
-            .whereType<Ticket>()
+            .map((json) => json is Ticket
+                ? json
+                : Ticket.fromJson(json as Map<String, dynamic>))
             .toList();
 
-        // Almacena los tickets en la base de datos local
         for (var ticket in tickets) {
           await TicketDAO.instance.insert(ticket);
         }
 
-        // Almacena los tickets en cache
         cachedTickets[sessionId] = tickets;
 
         debugPrint('Tickets downloaded and stored for session $sessionId');
+        _showSnackBar('Tickets downloaded and stored for session $sessionId.');
 
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content:
-                Text('Tickets downloaded and stored for session $sessionId.'),
-          ),
-        );
-
-        // Actualiza la interfaz con los tickets recién descargados
         setState(() {});
       } else {
         throw Exception('No tickets found.');
       }
     } catch (e) {
       debugPrint('Error downloading tickets for session $sessionId: $e');
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Error downloading tickets: ${e.toString()}'),
-        ),
-      );
+      _showErrorSnackBar('Error downloading tickets: ${e.toString()}');
     }
   }
 
   void _openIconButtonPressed(BuildContext context, String parameter) {
     showModalBottomSheet(
-      backgroundColor: const Color.fromARGB(255, 255, 255, 255),
+      backgroundColor: Colors.white,
       context: context,
       builder: (ctx) => SingleChildScrollView(
         child: Container(
@@ -155,11 +133,21 @@ class _PageEventsState extends State<PageEvents> {
           padding: EdgeInsets.only(
             bottom: MediaQuery.of(context).viewInsets.bottom,
           ),
-          child: DrawerCodeEvent(
-            someParameter: parameter,
-          ),
+          child: DrawerCodeEvent(someParameter: parameter),
         ),
       ),
+    );
+  }
+
+  void _showSnackBar(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(message)),
+    );
+  }
+
+  void _showErrorSnackBar(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(message), backgroundColor: Colors.red),
     );
   }
 
@@ -178,22 +166,13 @@ class _PageEventsState extends State<PageEvents> {
                 Session event = widget.selectedEvents[index];
                 bool isLoading = loadingStatus[event.uuid] ?? false;
 
-                // Obtén los tickets almacenados en caché para el evento actual
                 List<Ticket> tickets = cachedTickets[event.uuid] ?? [];
 
                 return GestureDetector(
                   onTap: isLoading
                       ? null
                       : () async {
-                          setState(() {
-                            loadingStatus[event.uuid] = true;
-                          });
-
                           await _handleTickets(event.uuid);
-
-                          setState(() {
-                            loadingStatus[event.uuid] = false;
-                          });
                         },
                   child: Container(
                     margin:
@@ -274,7 +253,6 @@ class _PageEventsState extends State<PageEvents> {
                           )
                         else if (isLoading)
                           const CircularProgressIndicator()
-                        // Si no hay tickets y no está cargando, no se muestra ningún ícono adicional
                       ],
                     ),
                   ),

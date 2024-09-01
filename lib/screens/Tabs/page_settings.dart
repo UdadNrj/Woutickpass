@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:woutickpass/screens/Home_screen.dart';
+import 'package:woutickpass/services/dao/settings_dao.dart';
+import 'package:woutickpass/services/database.dart';
 
 class PageSetting extends StatefulWidget {
   const PageSetting({Key? key}) : super(key: key);
@@ -9,6 +11,9 @@ class PageSetting extends StatefulWidget {
 }
 
 class _PageSettingState extends State<PageSetting> {
+  late SettingDAO _settingDAO; // Corregido
+
+  // Variables de configuración
   bool offlineMode = true;
   bool showAttendeesCounter = true;
   bool vibration = true;
@@ -22,22 +27,37 @@ class _PageSettingState extends State<PageSetting> {
   @override
   void initState() {
     super.initState();
-    // Inicializa los valores de configuración aquí si es necesario
+    _settingDAO = SettingDAO(DatabaseHelper());
     _loadSettings();
   }
 
-  void _loadSettings() {
-    // Aquí puedes cargar configuraciones predeterminadas o inicializar los valores
-    // Por ahora, los valores están predeterminados en el estado
+  /// Carga las configuraciones desde la base de datos
+  void _loadSettings() async {
+    offlineMode = await _settingDAO.loadSetting('offlineMode', offlineMode);
+    showAttendeesCounter = await _settingDAO.loadSetting(
+        'showAttendeesCounter', showAttendeesCounter);
+    vibration = await _settingDAO.loadSetting('vibration', vibration);
+    receiveNotification = await _settingDAO.loadSetting(
+        'receiveNotification', receiveNotification);
+    readModeNotification = await _settingDAO.loadSetting(
+        'readModeNotification', readModeNotification);
+    salida = await _settingDAO.loadSetting('salida', salida);
+    additionalSetting1 =
+        await _settingDAO.loadSetting('additionalSetting1', additionalSetting1);
+    additionalSetting2 =
+        await _settingDAO.loadSetting('additionalSetting2', additionalSetting2);
+    additionalSetting3 =
+        await _settingDAO.loadSetting('additionalSetting3', additionalSetting3);
+
+    setState(() {}); // Actualiza la UI después de cargar los datos
   }
 
-  void _saveSetting(String key, bool value) {
-    // Implementa aquí el guardado de configuraciones si es necesario
-    // Actualmente, las configuraciones solo se mantienen en memoria
+  /// Guarda una configuración en la base de datos
+  void _saveSetting(String key, bool value) async {
+    await _settingDAO.saveSetting(key, value);
   }
 
   void _logout(BuildContext context) {
-    // Guardar configuraciones en memoria solo si se ha implementado el almacenamiento persistente
     _saveSetting('offlineMode', offlineMode);
     _saveSetting('showAttendeesCounter', showAttendeesCounter);
     _saveSetting('vibration', vibration);
@@ -89,6 +109,7 @@ class _PageSettingState extends State<PageSetting> {
             onChanged: (bool value) {
               setState(() {
                 offlineMode = value;
+                _saveSetting('offlineMode', value);
               });
             },
             backgroundColor: Colors.white,
@@ -99,6 +120,7 @@ class _PageSettingState extends State<PageSetting> {
             onChanged: (bool value) {
               setState(() {
                 showAttendeesCounter = value;
+                _saveSetting('showAttendeesCounter', value);
               });
             },
             backgroundColor: Colors.white,
@@ -109,6 +131,7 @@ class _PageSettingState extends State<PageSetting> {
             onChanged: (bool value) {
               setState(() {
                 vibration = value;
+                _saveSetting('vibration', value);
               });
             },
             backgroundColor: Colors.white,
@@ -119,6 +142,7 @@ class _PageSettingState extends State<PageSetting> {
             onChanged: (bool value) {
               setState(() {
                 receiveNotification = value;
+                _saveSetting('receiveNotification', value);
               });
             },
             backgroundColor: Colors.white,
@@ -129,6 +153,7 @@ class _PageSettingState extends State<PageSetting> {
             onChanged: (bool value) {
               setState(() {
                 additionalSetting1 = value;
+                _saveSetting('additionalSetting1', value);
               });
             },
             backgroundColor: Colors.white,
@@ -140,6 +165,7 @@ class _PageSettingState extends State<PageSetting> {
             onChanged: (bool value) {
               setState(() {
                 additionalSetting2 = value;
+                _saveSetting('additionalSetting2', value);
               });
             },
             backgroundColor: Colors.white,
@@ -150,6 +176,7 @@ class _PageSettingState extends State<PageSetting> {
             onChanged: (bool value) {
               setState(() {
                 additionalSetting3 = value;
+                _saveSetting('additionalSetting3', value);
               });
             },
             backgroundColor: Colors.white,
@@ -165,6 +192,7 @@ class _PageSettingState extends State<PageSetting> {
             onChanged: (bool value) {
               setState(() {
                 readModeNotification = value;
+                _saveSetting('readModeNotification', value);
               });
             },
             backgroundColor: Colors.white,
@@ -175,6 +203,7 @@ class _PageSettingState extends State<PageSetting> {
             onChanged: (bool value) {
               setState(() {
                 salida = value;
+                _saveSetting('salida', value);
               });
             },
             backgroundColor: Colors.white,

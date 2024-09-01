@@ -1,5 +1,5 @@
-import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
+import 'package:sqflite/sqflite.dart';
 
 class DatabaseHelper {
   static final DatabaseHelper _instance = DatabaseHelper._internal();
@@ -33,7 +33,6 @@ class DatabaseHelper {
         token TEXT
       )
     ''');
-
     await db.execute('''
       CREATE TABLE sessions (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -46,14 +45,13 @@ class DatabaseHelper {
         is_selected INTEGER DEFAULT 0  
       )
     ''');
-
     await db.execute('''
       CREATE TABLE settings (
-        key TEXT PRIMARY KEY,
-        value INTEGER
+        wid INTEGER PRIMARY KEY AUTOINCREMENT,
+        setting_key TEXT NOT NULL,
+        setting_value INTEGER NOT NULL
       )
     ''');
-
     await db.execute('''
       CREATE TABLE session_details (
         uuid TEXT PRIMARY KEY,
@@ -76,7 +74,7 @@ class DatabaseHelper {
         public_end_at TEXT,
         start_at TEXT,
         end_at TEXT,
-        doors_open_time TEXT,
+        doors_open time TEXT,
         is_cashless INTEGER,
         returns_start_at TEXT,
         returns_end_at TEXT,
@@ -92,7 +90,6 @@ class DatabaseHelper {
         tickets TEXT
       )
     ''');
-
     await db.execute('''
       CREATE TABLE tickets (
         uuid TEXT PRIMARY KEY,
@@ -125,9 +122,8 @@ class DatabaseHelper {
         referer_user_full_name TEXT,
         banned_at TEXT,
         session_id TEXT
-    )
+      )
     ''');
-
     await db.execute('''
       CREATE TABLE page_state (
         id INTEGER PRIMARY KEY AUTOINCREMENT,

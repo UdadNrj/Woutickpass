@@ -77,11 +77,12 @@ class _SessionsScreenState extends State<SessionsScreen> {
         .where((entry) => entry.value)
         .map((entry) => Session(
               uuid: entry.key,
-              title: '',
-              subtitle: "",
-              wpassCode: "",
-              eventStartAt: "",
-              startAt: DateTime.now(),
+              title: '', // Ajustar si necesitas pasar un título válido
+              subtitle: '', // Ajustar si necesitas pasar un subtítulo válido
+              wpassCode: '', // Ajustar si necesitas un código válido
+              publicStartAt: DateTime.now(), // Asigna una fecha válida
+              publicEndAt: DateTime.now().add(Duration(
+                  hours: 2)), // Asigna una fecha válida para la finalización
             ))
         .toList();
 
@@ -198,9 +199,11 @@ class _SessionsScreenState extends State<SessionsScreen> {
                     border: Border.all(color: Color(0xFFE4E7EC)),
                   ),
                   child: CheckboxListTile(
-                    title: Text(session.title ?? 'Unnamed'),
-                    subtitle: Text(session.startAt.toString() ?? 'No date'),
-                    value: checkedSessions[session.uuid],
+                    title: Text(
+                        session.title.isNotEmpty ? session.title : 'Unnamed'),
+                    subtitle:
+                        Text(session.publicStartAt?.toString() ?? 'No date'),
+                    value: checkedSessions[session.uuid] ?? false,
                     onChanged: (bool? value) {
                       handleCheckboxChange(session.uuid, value);
                     },

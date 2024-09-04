@@ -205,7 +205,7 @@ class _PageEventsState extends State<PageEvents> {
                               ),
                               const SizedBox(height: 8),
                               Text(
-                                '${event.eventStartAt} - Ubicación',
+                                '${event.publicStartAt.toString()} - Ubicación',
                                 style: const TextStyle(
                                   color: Colors.grey,
                                 ),

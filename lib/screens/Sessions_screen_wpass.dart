@@ -94,27 +94,28 @@ class _SessionsScreenState extends State<SessionsScreenWpass> {
                 itemBuilder: (context, index) {
                   Session session = sessions[index];
                   return Padding(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 16.0,
-                      vertical: 8.0,
-                    ),
-                    child: Container(
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(8),
-                        border: Border.all(color: Color(0xFFE4E7EC)),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 16.0,
+                        vertical: 8.0,
                       ),
-                      child: CheckboxListTile(
-                        title: Text(session.title ?? 'Sin nombre'),
-                        subtitle:
-                            Text(session.startAt?.toString() ?? 'Sin fecha'),
-                        value: checkedSessions[session.uuid],
-                        onChanged: (bool? value) {
-                          handleCheckboxChange(session.uuid, value);
-                        },
-                        activeColor: Colors.green,
-                      ),
-                    ),
-                  );
+                      child: Container(
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(8),
+                          border: Border.all(color: Color(0xFFE4E7EC)),
+                        ),
+                        child: CheckboxListTile(
+                          title: Text(session.title.isNotEmpty
+                              ? session.title
+                              : 'Sin nombre'),
+                          subtitle: Text(
+                              session.publicStartAt?.toString() ?? 'Sin fecha'),
+                          value: checkedSessions[session.uuid] ?? false,
+                          onChanged: (bool? value) {
+                            handleCheckboxChange(session.uuid, value);
+                          },
+                          activeColor: Colors.green,
+                        ),
+                      ));
                 },
               );
             },

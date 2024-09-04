@@ -10,8 +10,10 @@ class Ticket {
   final String status;
   @JsonKey(name: 'ticket_code')
   final String ticketCode;
+  final String ticketName;
   final String type;
-  final int total;
+  final int pricePublic;
+  final int commissionPublic;
   @JsonKey(name: 'payment_at')
   final DateTime? paymentAt;
   @JsonKey(name: 'created_at')
@@ -51,6 +53,8 @@ class Ticket {
   final String refererUserFullName;
   @JsonKey(name: 'banned_at')
   final DateTime? bannedAt;
+  @JsonKey(name: 'refund_at')
+  final DateTime? refundAt;
 
   Ticket({
     required this.uuid,
@@ -58,8 +62,10 @@ class Ticket {
     required this.event,
     required this.status,
     required this.ticketCode,
+    required this.ticketName, // Ajustado
     required this.type,
-    required this.total,
+    required this.pricePublic, // Ajustado
+    required this.commissionPublic, // Ajustado
     this.paymentAt,
     this.createdAt,
     this.updatedAt,
@@ -82,6 +88,7 @@ class Ticket {
     required this.question3Answer,
     required this.refererUserFullName,
     this.bannedAt,
+    this.refundAt, // Ajustado
   });
 
   factory Ticket.fromJson(Map<String, dynamic> json) => _$TicketFromJson(json);
@@ -94,8 +101,10 @@ class Ticket {
       'event': event,
       'status': status,
       'ticket_code': ticketCode,
+      'ticket_name': ticketName, // Ajustado
       'type': type,
-      'total': total,
+      'price_public': pricePublic, // Ajustado
+      'commission_public': commissionPublic, // Ajustado
       'payment_at': paymentAt?.toIso8601String(),
       'created_at': createdAt?.toIso8601String(),
       'updated_at': updatedAt?.toIso8601String(),
@@ -118,6 +127,7 @@ class Ticket {
       'question3_answer': question3Answer,
       'referer_user_full_name': refererUserFullName,
       'banned_at': bannedAt?.toIso8601String(),
+      'refund_at': refundAt?.toIso8601String(), // Ajustado
     };
   }
 
@@ -128,8 +138,10 @@ class Ticket {
       event: map['event'] ?? 'Desconocido',
       status: map['status'] ?? 'Desconocido',
       ticketCode: map['ticket_code'] ?? 'Desconocido',
+      ticketName: map['ticket_name'] ?? 'Entrada', // Ajustado
       type: map['type'] ?? 'Desconocido',
-      total: map['total'] ?? 0,
+      pricePublic: map['price_public'] ?? 0, // Ajustado
+      commissionPublic: map['commission_public'] ?? 0, // Ajustado
       paymentAt:
           map['payment_at'] != null ? DateTime.parse(map['payment_at']) : null,
       createdAt:
@@ -164,6 +176,9 @@ class Ticket {
       refererUserFullName: map['referer_user_full_name'] ?? 'Desconocido',
       bannedAt:
           map['banned_at'] != null ? DateTime.parse(map['banned_at']) : null,
+      refundAt: map['refund_at'] != null
+          ? DateTime.parse(map['refund_at'])
+          : null, // Ajustado
     );
   }
 }

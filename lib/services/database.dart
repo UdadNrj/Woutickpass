@@ -18,9 +18,12 @@ class DatabaseHelper {
     final dbPath = await getDatabasesPath();
     final path = join(dbPath, 'app_database.db');
 
+    // Eliminar la base de datos para recrearla
+    await deleteDatabase(path);
+
     return await openDatabase(
       path,
-      version: 1,
+      version: 1, // Mantén la versión en 1 si eliminas la base de datos
       onCreate: _onCreate,
       onDowngrade: onDatabaseDowngradeDelete,
     );
@@ -40,8 +43,8 @@ class DatabaseHelper {
         title TEXT,
         subtitle TEXT,
         wpass_code TEXT, 
-        event_start_at TEXT,
-        start_at TEXT,
+        public_start_at TEXT, 
+        public_end_at TEXT,  
         is_selected INTEGER DEFAULT 0  
       )
     ''');
@@ -74,7 +77,7 @@ class DatabaseHelper {
         public_end_at TEXT,
         start_at TEXT,
         end_at TEXT,
-        doors_open time TEXT,
+        doors_open_time TEXT,
         is_cashless INTEGER,
         returns_start_at TEXT,
         returns_end_at TEXT,
@@ -84,52 +87,48 @@ class DatabaseHelper {
         sell_max_type TEXT,
         tickets_total INTEGER,
         tickets_sold INTEGER,
-        status INTEGER,
-        event_venue TEXT,
-        text_offering INTEGER,
-        tickets TEXT
-      )
-    ''');
-    await db.execute('''
-      CREATE TABLE tickets (
-        uuid TEXT PRIMARY KEY,
-        payment_at TEXT,
-        created_at TEXT,
-        updated_at TEXT,
-        session TEXT,
-        event TEXT,
+        has_settlement INTEGER, 
         status TEXT,
-        ticket_code TEXT, 
-        type TEXT,
-        total INTEGER,
-        accessed_at TEXT,
-        checkin_at TEXT, 
-        last_entry_at TEXT, 
-        last_exit_at TEXT, 
-        name TEXT,
-        dni TEXT,
-        birthdate TEXT,
-        postal_code TEXT,
-        email TEXT,
-        phone TEXT,
-        gender TEXT,
-        question1_text TEXT,
-        question1_answer TEXT,
-        question2_text TEXT,
-        question2_answer TEXT,
-        question3_text TEXT,
-        question3_answer TEXT,
-        referer_user_full_name TEXT,
-        banned_at TEXT,
-        session_id TEXT
-      )
+        event_venue TEXT,
+        text_offering TEXT,
+        tickets TEXT
+    )
     ''');
     await db.execute('''
-      CREATE TABLE page_state (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        key TEXT UNIQUE,
-        value TEXT
-      )
-    ''');
+  CREATE TABLE tickets (
+    uuid TEXT PRIMARY KEY,
+    payment_at TEXT,
+    created_at TEXT,
+    updated_at TEXT,
+    session TEXT,
+    event TEXT,
+    status TEXT,
+    ticket_code TEXT,
+    ticket_name TEXT, 
+    type TEXT,
+    price_public INTEGER, 
+    commission_public INTEGER, 
+    accessed_at TEXT,
+    checkin_at TEXT,
+    last_entry_at TEXT,
+    last_exit_at TEXT,
+    name TEXT,
+    dni TEXT,
+    birthdate TEXT,
+    postal_code TEXT,
+    email TEXT,
+    phone TEXT,
+    gender TEXT,
+    question1_text TEXT,
+    question1_answer TEXT,
+    question2_text TEXT, -- Asegúrate de que esta columna esté incluida
+    question2_answer TEXT, -- Asegúrate de que esta columna esté incluida
+    question3_text TEXT, -- Asegúrate de que esta columna esté incluida
+    question3_answer TEXT, -- Asegúrate de que esta columna esté incluida
+    referer_user_full_name TEXT,
+    banned_at TEXT,
+    refund_at TEXT -- Asegúrate de que esta columna esté incluida
+  )
+''');
   }
 }

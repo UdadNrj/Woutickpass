@@ -34,6 +34,7 @@ class SessionDetails {
   final String sellMaxType;
   final int ticketsTotal;
   final int ticketsSold;
+  final bool hasSettlement; // Agregado para "has_settlement"
   final String status;
   final String eventVenue;
   final String textOffering;
@@ -70,6 +71,7 @@ class SessionDetails {
     required this.sellMaxType,
     required this.ticketsTotal,
     required this.ticketsSold,
+    required this.hasSettlement, // Añadido aquí
     required this.status,
     required this.eventVenue,
     required this.textOffering,
@@ -79,42 +81,58 @@ class SessionDetails {
   factory SessionDetails.fromJson(Map<String, dynamic> json) =>
       _$SessionDetailsFromJson(json);
   Map<String, dynamic> toJson() => _$SessionDetailsToJson(this);
-
   factory SessionDetails.fromMap(Map<String, dynamic> map) {
     return SessionDetails(
-      uuid: map['uuid'],
-      isActive: map['is_active'] == 1,
-      createdAt: DateTime.parse(map['created_at']),
-      updatedAt: DateTime.parse(map['updated_at']),
+      uuid: map['uuid'] ?? '', // Previene null
+      isActive: map['is_active'] == 1, // Conversión de booleanos
+      createdAt: map['created_at'] != null
+          ? DateTime.parse(map['created_at'])
+          : DateTime.now(), // Valor predeterminado si es null
+      updatedAt: map['updated_at'] != null
+          ? DateTime.parse(map['updated_at'])
+          : DateTime.now(), // Valor predeterminado si es null
       isFeatured: map['is_featured'] == 1,
       isPrivate: map['is_private'] == 1,
       isCanceled: map['is_canceled'] == 1,
-      order: map['order'],
-      name: map['name'],
-      slug: map['slug'],
-      description: map['description'],
-      textOutOfStock: map['text_out_of_stock'],
-      textNotAvailable: map['text_not_available'],
-      streamingUrl: map['streaming_url'],
-      streamingDescription: map['streaming_description'],
+      order: map['order'] ?? 0, // Asegurarte de que no sea null
+      name: map['name'] ?? 'Sin nombre',
+      slug: map['slug'] ?? '',
+      description: map['description'] ?? '',
+      textOutOfStock: map['text_out_of_stock'] ?? '',
+      textNotAvailable: map['text_not_available'] ?? '',
+      streamingUrl: map['streaming_url'] ?? '',
+      streamingDescription: map['streaming_description'] ?? '',
       streamingFreeAccess: map['streaming_free_access'] == 1,
-      publicStartAt: DateTime.parse(map['public_start_at']),
-      publicEndAt: DateTime.parse(map['public_end_at']),
-      startAt: DateTime.parse(map['start_at']),
-      endAt: DateTime.parse(map['end_at']),
-      doorsOpenTime: map['doors_open_time'],
+      publicStartAt: map['public_start_at'] != null
+          ? DateTime.parse(map['public_start_at'])
+          : DateTime.now(),
+      publicEndAt: map['public_end_at'] != null
+          ? DateTime.parse(map['public_end_at'])
+          : DateTime.now().add(Duration(hours: 2)),
+      startAt: map['start_at'] != null
+          ? DateTime.parse(map['start_at'])
+          : DateTime.now(),
+      endAt: map['end_at'] != null
+          ? DateTime.parse(map['end_at'])
+          : DateTime.now().add(Duration(hours: 2)),
+      doorsOpenTime: map['doors_open_time'] ?? '',
       isCashless: map['is_cashless'] == 1,
-      returnsStartAt: DateTime.parse(map['returns_start_at']),
-      returnsEndAt: DateTime.parse(map['returns_end_at']),
-      returnsMinAmount: map['returns_min_amount'],
+      returnsStartAt: map['returns_start_at'] != null
+          ? DateTime.parse(map['returns_start_at'])
+          : DateTime.now(),
+      returnsEndAt: map['returns_end_at'] != null
+          ? DateTime.parse(map['returns_end_at'])
+          : DateTime.now().add(Duration(hours: 1)),
+      returnsMinAmount: map['returns_min_amount'] ?? 0,
       hasSellMax: map['has_sell_max'] == 1,
-      sellMax: map['sell_max'],
-      sellMaxType: map['sell_max_type'],
-      ticketsTotal: map['tickets_total'],
-      ticketsSold: map['tickets_sold'],
-      status: map['status'],
-      eventVenue: map['event_venue'],
-      textOffering: map['text_offering'],
+      sellMax: map['sell_max'] ?? 0,
+      sellMaxType: map['sell_max_type'] ?? '',
+      ticketsTotal: map['tickets_total'] ?? 0,
+      ticketsSold: map['tickets_sold'] ?? 0,
+      hasSettlement: map['has_settlement'] == true,
+      status: map['status'] ?? '',
+      eventVenue: map['event_venue'] ?? '',
+      textOffering: map['text_offering'] ?? '',
       tickets: (map['tickets'] as String).split(','),
     );
   }
@@ -151,6 +169,7 @@ class SessionDetails {
       'sell_max_type': sellMaxType,
       'tickets_total': ticketsTotal,
       'tickets_sold': ticketsSold,
+      'has_settlement': hasSettlement, // Añadido aquí
       'status': status,
       'event_venue': eventVenue,
       'text_offering': textOffering,

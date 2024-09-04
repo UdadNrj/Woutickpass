@@ -7,26 +7,30 @@ class Session {
   final String title;
   final String subtitle;
   final String? wpassCode;
-  final String eventStartAt;
-  final DateTime startAt;
+  final DateTime publicStartAt;
+  final DateTime publicEndAt;
 
   const Session({
     required this.uuid,
     required this.title,
     required this.subtitle,
     this.wpassCode,
-    required this.eventStartAt,
-    required this.startAt,
+    required this.publicStartAt,
+    required this.publicEndAt,
   });
-
   factory Session.fromJson(Map<String, dynamic> json) {
     return Session(
-      uuid: json['uuid'],
-      title: json['title'],
-      subtitle: json['subtitle'],
-      wpassCode: json['wpass_code'],
-      eventStartAt: json['event_start_at'],
-      startAt: DateTime.parse(json['start_at']),
+      uuid: json['uuid'] ?? '', // Valor predeterminado si es null
+      title: json['title'] ?? 'Sin título', // Evita errores si el valor es null
+      subtitle: json['subtitle'] ?? 'Sin subtítulo',
+      wpassCode: json['wpass_code'], // Puede ser null, ya que es opcional
+      publicStartAt: json['public_start_at'] != null
+          ? DateTime.parse(json['public_start_at'])
+          : DateTime.now(), // Si es null, usar la fecha actual
+      publicEndAt: json['public_end_at'] != null
+          ? DateTime.parse(json['public_end_at'])
+          : DateTime.now()
+              .add(Duration(hours: 2)), // Fecha predeterminada si es null
     );
   }
 
@@ -36,8 +40,8 @@ class Session {
       'title': title,
       'subtitle': subtitle,
       'wpass_code': wpassCode,
-      'event_start_at': eventStartAt,
-      'start_at': startAt.toIso8601String(),
+      'public_start_at': publicStartAt.toIso8601String(),
+      'public_end_at': publicEndAt.toIso8601String(),
     };
   }
 
@@ -60,24 +64,25 @@ class Session {
       streamingUrl: '',
       streamingDescription: '',
       streamingFreeAccess: false,
-      publicStartAt: DateTime.parse(eventStartAt),
-      publicEndAt: DateTime.parse(eventStartAt).add(Duration(days: 1)),
-      startAt: startAt,
-      endAt: startAt.add(Duration(hours: 2)),
+      publicStartAt: publicStartAt,
+      publicEndAt: publicEndAt.add(Duration(days: 1)),
+      startAt: publicStartAt,
+      endAt: publicStartAt.add(Duration(hours: 2)),
       doorsOpenTime: '',
       isCashless: false,
-      returnsStartAt: startAt,
-      returnsEndAt: startAt.add(Duration(hours: 1)),
+      returnsStartAt: publicStartAt,
+      returnsEndAt: publicStartAt.add(Duration(hours: 1)),
       returnsMinAmount: 0,
       hasSellMax: false,
       sellMax: 0,
       sellMaxType: '',
       ticketsTotal: 0,
       ticketsSold: 0,
+      hasSettlement: true,
       status: '',
       eventVenue: '',
       textOffering: '',
-      tickets: [], // Empty list by default
+      tickets: [],
     );
   }
 
@@ -86,9 +91,9 @@ class Session {
       uuid: details.uuid,
       title: details.name,
       subtitle: details.description,
-      wpassCode: '', // No direct mapping for wpassCode
-      eventStartAt: details.publicStartAt.toIso8601String(),
-      startAt: details.startAt,
+      wpassCode: '',
+      publicStartAt: details.publicStartAt,
+      publicEndAt: details.publicEndAt,
     );
   }
 }

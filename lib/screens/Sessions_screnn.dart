@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:woutickpass/models/objects/comercials.dart';
 import 'package:woutickpass/models/objects/session.dart';
+import 'package:woutickpass/models/objects/tickets.dart';
 import 'package:woutickpass/screens/Tabs/main_nav.dart';
 import 'package:woutickpass/services/api/tickets_api.dart';
 import 'package:woutickpass/services/dao/sessions_dao.dart';
@@ -77,9 +79,20 @@ class _SessionsScreenState extends State<SessionsScreen> {
         .where((entry) => entry.value)
         .map((entry) => Session(
               uuid: entry.key,
-              title: '', // Ajustar si necesitas pasar un título válido
-              subtitle: '', // Ajustar si necesitas pasar un subtítulo válido
-              wpassCode: '', // Ajustar si necesitas un código válido
+              title:
+                  'Título predeterminado', // Ajusta el título según sea necesario
+              subtitle:
+                  'Subtítulo predeterminado', // Ajusta el subtítulo según sea necesario
+              wpassCode:
+                  'Código de pase', // Coloca un código de pase si es necesario
+              commercials: [
+                Commercial(uuid: 'comercial-uuid-1', name: 'Comercial 1'),
+                Commercial(uuid: 'comercial-uuid-2', name: 'Comercial 2'),
+              ], // Lista de objetos 'Commercial'
+              tickets: [
+                Tickets(uuid: 'ticket-uuid-1', name: 'Ticket 1'),
+                Tickets(uuid: 'ticket-uuid-2', name: 'Ticket 2')
+              ], // Lista de objetos 'Ticket'
               publicStartAt: DateTime.now(), // Asigna una fecha válida
               publicEndAt: DateTime.now().add(Duration(
                   hours: 2)), // Asigna una fecha válida para la finalización

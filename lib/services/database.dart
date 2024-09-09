@@ -37,17 +37,20 @@ class DatabaseHelper {
       )
     ''');
     await db.execute('''
-      CREATE TABLE sessions (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        uuid TEXT UNIQUE,
-        title TEXT,
-        subtitle TEXT,
-        wpass_code TEXT, 
-        public_start_at TEXT, 
-        public_end_at TEXT,  
-        is_selected INTEGER DEFAULT 0  
-      )
-    ''');
+  CREATE TABLE sessions (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    uuid TEXT UNIQUE,
+    title TEXT,
+    subtitle TEXT,
+    wpass_code TEXT, 
+    public_start_at TEXT, 
+    public_end_at TEXT,  
+    is_selected INTEGER DEFAULT 0,
+    commercials TEXT, 
+    tickets TEXT 
+  )
+''');
+
     await db.execute('''
       CREATE TABLE settings (
         wid INTEGER PRIMARY KEY AUTOINCREMENT,

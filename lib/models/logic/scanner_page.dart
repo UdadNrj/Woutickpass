@@ -48,7 +48,7 @@
 // }
 
 import 'package:flutter/material.dart';
-import 'package:woutickpass/models/objects/ticket.dart';
+import 'package:woutickpass/models/objects/ticket_details.dart';
 import 'package:woutickpass/screens/Search_AttendeesScreen.dart';
 
 class ScannerPage extends StatefulWidget {

@@ -1,25 +1,30 @@
 import 'package:json_annotation/json_annotation.dart';
 
-part 'ticket.g.dart';
+// Genera el archivo 'ticket_details.g.dart' automáticamente
+part 'ticket_details.g.dart';
 
 @JsonSerializable()
-class Ticket {
+class TicketDetails {
   final String uuid;
-  final String session;
-  final String event;
-  final String status;
-  @JsonKey(name: 'ticket_code')
-  final String ticketCode;
-  final String ticketName;
-  final String type;
-  final int pricePublic;
-  final int commissionPublic;
   @JsonKey(name: 'payment_at')
   final DateTime? paymentAt;
   @JsonKey(name: 'created_at')
   final DateTime? createdAt;
   @JsonKey(name: 'updated_at')
   final DateTime? updatedAt;
+  @JsonKey(name: 'session_uuid') // Cambiado de 'session' a 'session_uuid'
+  final String sessionUuid; // Cambiado de 'session' a 'sessionUuid'
+  final String event;
+  final String status;
+  @JsonKey(name: 'ticket_code')
+  final String ticketCode;
+  @JsonKey(name: 'ticket_name')
+  final String ticketName;
+  final String type;
+  @JsonKey(name: 'price_public')
+  final int pricePublic;
+  @JsonKey(name: 'commission_public')
+  final int commissionPublic;
   @JsonKey(name: 'accessed_at')
   final DateTime? accessedAt;
   @JsonKey(name: 'checkin_at')
@@ -56,19 +61,19 @@ class Ticket {
   @JsonKey(name: 'refund_at')
   final DateTime? refundAt;
 
-  Ticket({
+  TicketDetails({
     required this.uuid,
-    required this.session,
-    required this.event,
-    required this.status,
-    required this.ticketCode,
-    required this.ticketName, // Ajustado
-    required this.type,
-    required this.pricePublic, // Ajustado
-    required this.commissionPublic, // Ajustado
     this.paymentAt,
     this.createdAt,
     this.updatedAt,
+    required this.sessionUuid, // Cambiado de 'session' a 'sessionUuid'
+    required this.event,
+    required this.status,
+    required this.ticketCode,
+    required this.ticketName,
+    required this.type,
+    required this.pricePublic,
+    required this.commissionPublic,
     this.accessedAt,
     this.checkinAt,
     this.lastEntryAt,
@@ -88,26 +93,30 @@ class Ticket {
     required this.question3Answer,
     required this.refererUserFullName,
     this.bannedAt,
-    this.refundAt, // Ajustado
+    this.refundAt,
   });
 
-  factory Ticket.fromJson(Map<String, dynamic> json) => _$TicketFromJson(json);
-  Map<String, dynamic> toJson() => _$TicketToJson(this);
+  // Métodos para mapear a JSON y desde JSON
+  factory TicketDetails.fromJson(Map<String, dynamic> json) =>
+      _$TicketDetailsFromJson(json);
 
+  Map<String, dynamic> toJson() => _$TicketDetailsToJson(this);
+
+  // Métodos de conversión de Map a TicketDetails
   Map<String, dynamic> toMap() {
     return {
       'uuid': uuid,
-      'session': session,
-      'event': event,
-      'status': status,
-      'ticket_code': ticketCode,
-      'ticket_name': ticketName, // Ajustado
-      'type': type,
-      'price_public': pricePublic, // Ajustado
-      'commission_public': commissionPublic, // Ajustado
       'payment_at': paymentAt?.toIso8601String(),
       'created_at': createdAt?.toIso8601String(),
       'updated_at': updatedAt?.toIso8601String(),
+      'session_uuid': sessionUuid, // Asegurarse de usar 'session_uuid'
+      'event': event,
+      'status': status,
+      'ticket_code': ticketCode,
+      'ticket_name': ticketName,
+      'type': type,
+      'price_public': pricePublic,
+      'commission_public': commissionPublic,
       'accessed_at': accessedAt?.toIso8601String(),
       'checkin_at': checkinAt?.toIso8601String(),
       'last_entry_at': lastEntryAt?.toIso8601String(),
@@ -127,42 +136,46 @@ class Ticket {
       'question3_answer': question3Answer,
       'referer_user_full_name': refererUserFullName,
       'banned_at': bannedAt?.toIso8601String(),
-      'refund_at': refundAt?.toIso8601String(), // Ajustado
+      'refund_at': refundAt?.toIso8601String(),
     };
   }
 
-  factory Ticket.fromMap(Map<String, dynamic> map) {
-    return Ticket(
+  factory TicketDetails.fromMap(Map<String, dynamic> map) {
+    return TicketDetails(
       uuid: map['uuid'] ?? 'Desconocido',
-      session: map['session'] ?? 'Desconocido',
+      paymentAt: map['payment_at'] != null
+          ? DateTime.tryParse(map['payment_at'])
+          : null,
+      createdAt: map['created_at'] != null
+          ? DateTime.tryParse(map['created_at'])
+          : null,
+      updatedAt: map['updated_at'] != null
+          ? DateTime.tryParse(map['updated_at'])
+          : null,
+      sessionUuid: map['session_uuid'] ?? 'Desconocido',
       event: map['event'] ?? 'Desconocido',
       status: map['status'] ?? 'Desconocido',
       ticketCode: map['ticket_code'] ?? 'Desconocido',
-      ticketName: map['ticket_name'] ?? 'Entrada', // Ajustado
+      ticketName: map['ticket_name'] ?? 'Entrada',
       type: map['type'] ?? 'Desconocido',
-      pricePublic: map['price_public'] ?? 0, // Ajustado
-      commissionPublic: map['commission_public'] ?? 0, // Ajustado
-      paymentAt:
-          map['payment_at'] != null ? DateTime.parse(map['payment_at']) : null,
-      createdAt:
-          map['created_at'] != null ? DateTime.parse(map['created_at']) : null,
-      updatedAt:
-          map['updated_at'] != null ? DateTime.parse(map['updated_at']) : null,
+      pricePublic: map['price_public'] ?? 0,
+      commissionPublic: map['commission_public'] ?? 0,
       accessedAt: map['accessed_at'] != null
-          ? DateTime.parse(map['accessed_at'])
+          ? DateTime.tryParse(map['accessed_at'])
           : null,
-      checkinAt:
-          map['checkin_at'] != null ? DateTime.parse(map['checkin_at']) : null,
+      checkinAt: map['checkin_at'] != null
+          ? DateTime.tryParse(map['checkin_at'])
+          : null,
       lastEntryAt: map['last_entry_at'] != null
-          ? DateTime.parse(map['last_entry_at'])
+          ? DateTime.tryParse(map['last_entry_at'])
           : null,
       lastExitAt: map['last_exit_at'] != null
-          ? DateTime.parse(map['last_exit_at'])
+          ? DateTime.tryParse(map['last_exit_at'])
           : null,
       name: map['name'] ?? 'Nombre no disponible',
       dni: map['dni'] ?? 'Desconocido',
       birthdate:
-          map['birthdate'] != null ? DateTime.parse(map['birthdate']) : null,
+          map['birthdate'] != null ? DateTime.tryParse(map['birthdate']) : null,
       postalCode: map['postal_code'] ?? 'Desconocido',
       email: map['email'] ?? 'Desconocido',
       phone: map['phone'] ?? 'Desconocido',
@@ -175,10 +188,9 @@ class Ticket {
       question3Answer: map['question3_answer'] ?? 'Desconocido',
       refererUserFullName: map['referer_user_full_name'] ?? 'Desconocido',
       bannedAt:
-          map['banned_at'] != null ? DateTime.parse(map['banned_at']) : null,
-      refundAt: map['refund_at'] != null
-          ? DateTime.parse(map['refund_at'])
-          : null, // Ajustado
+          map['banned_at'] != null ? DateTime.tryParse(map['banned_at']) : null,
+      refundAt:
+          map['refund_at'] != null ? DateTime.tryParse(map['refund_at']) : null,
     );
   }
 }

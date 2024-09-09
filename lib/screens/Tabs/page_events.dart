@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:woutickpass/models/drawers/drawer_code_event.dart';
-import 'package:woutickpass/models/objects/ticket.dart';
+import 'package:woutickpass/models/objects/ticket_details.dart';
 import 'package:woutickpass/models/objects/session.dart';
 import 'package:woutickpass/screens/Sessions_details_screnn.dart';
 import 'package:woutickpass/services/api/tickets_api.dart';
@@ -17,7 +17,7 @@ class PageEvents extends StatefulWidget {
 
 class _PageEventsState extends State<PageEvents> {
   Map<String, bool> loadingStatus = {};
-  Map<String, List<Ticket>> cachedTickets =
+  Map<String, List<TicketDetails>> cachedTickets =
       {}; // Map para almacenar los tickets descargados
 
   @override
@@ -76,7 +76,7 @@ class _PageEventsState extends State<PageEvents> {
       return true;
     }
 
-    List<Ticket> localTickets =
+    List<TicketDetails> localTickets =
         await TicketDAO.instance.getTicketsBySessionId(sessionId);
 
     if (localTickets.isNotEmpty) {
@@ -98,10 +98,10 @@ class _PageEventsState extends State<PageEvents> {
           await TicketsAPI.getTicketsBySessionUuid(sessionId);
 
       if (ticketsJsonList.isNotEmpty) {
-        List<Ticket> tickets = ticketsJsonList
-            .map((json) => json is Ticket
+        List<TicketDetails> tickets = ticketsJsonList
+            .map((json) => json is TicketDetails
                 ? json
-                : Ticket.fromJson(json as Map<String, dynamic>))
+                : TicketDetails.fromJson(json as Map<String, dynamic>))
             .toList();
 
         for (var ticket in tickets) {
@@ -166,7 +166,7 @@ class _PageEventsState extends State<PageEvents> {
                 Session event = widget.selectedEvents[index];
                 bool isLoading = loadingStatus[event.uuid] ?? false;
 
-                List<Ticket> tickets = cachedTickets[event.uuid] ?? [];
+                List<TicketDetails> tickets = cachedTickets[event.uuid] ?? [];
 
                 return GestureDetector(
                   onTap: isLoading

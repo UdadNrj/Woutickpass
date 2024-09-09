@@ -1,19 +1,21 @@
 import 'package:flutter/material.dart';
-import 'package:woutickpass/models/objects/ticket.dart';
+import 'package:woutickpass/models/objects/ticket_details.dart';
 
 class TicketSearchDelegate extends SearchDelegate {
-  final Future<List<Ticket>> ticketsFuture;
+  final Future<List<TicketDetails>> ticketsFuture;
+  final Function(String) filterTickets;
 
-  TicketSearchDelegate({required this.ticketsFuture});
+  TicketSearchDelegate(
+      {required this.ticketsFuture, required this.filterTickets});
 
   @override
   List<Widget> buildActions(BuildContext context) {
     return [
       IconButton(
-        icon: Icon(Icons.clear, color: Colors.black54),
+        icon: Icon(Icons.clear),
         onPressed: () {
-          query = '';
-          showSuggestions(context);
+          query = ''; // Limpia la búsqueda
+          filterTickets(''); // Resetea el filtro
         },
       ),
     ];
@@ -22,87 +24,45 @@ class TicketSearchDelegate extends SearchDelegate {
   @override
   Widget buildLeading(BuildContext context) {
     return IconButton(
-      icon: Icon(Icons.arrow_back, color: Colors.black54),
+      icon: Icon(Icons.arrow_back),
       onPressed: () {
-        close(context, null);
+        close(context, null); // Cierra el buscador
       },
     );
   }
 
   @override
   Widget buildResults(BuildContext context) {
-    return Container(
-      color: Colors.white,
-      child: FutureBuilder<List<Ticket>>(
-        future: ticketsFuture,
-        builder: (context, snapshot) {
-          if (!snapshot.hasData || snapshot.data!.isEmpty) {
-            return Center(
-                child: Text('No hay resultados.',
-                    style: TextStyle(color: Colors.black54)));
-          }
-
-          final tickets = snapshot.data!;
-          final filteredTickets = tickets.where((ticket) {
-            final ticketName = ticket.name.toLowerCase();
-            final ticketCode = ticket.ticketCode.toLowerCase();
-            final ticketType = ticket.event.toLowerCase();
-            final searchQuery = query.toLowerCase();
-
-            return ticketName.contains(searchQuery) ||
-                ticketCode.contains(searchQuery) ||
-                ticketType.contains(searchQuery);
-          }).toList();
-
-          if (filteredTickets.isEmpty) {
-            return Center(
-                child: Text('No se encontraron resultados para "$query".',
-                    style: TextStyle(color: Colors.black54)));
-          }
-
+    filterTickets(query); // Filtra los resultados según el texto ingresado
+    return FutureBuilder<List<TicketDetails>>(
+      future: ticketsFuture,
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return Center(child: CircularProgressIndicator());
+        } else if (snapshot.hasError) {
+          return Center(child: Text('Error: ${snapshot.error}'));
+        } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+          return Center(child: Text('No se encontraron resultados.'));
+        } else {
           return ListView.builder(
-            itemCount: filteredTickets.length,
+            itemCount: snapshot.data!.length,
             itemBuilder: (context, index) {
-              final ticket = filteredTickets[index];
-              return Container(
-                margin: EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
-                child: Card(
-                  color: Colors.white,
-                  elevation: 2.0,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8.0),
-                  ),
-                  child: ListTile(
-                    contentPadding: EdgeInsets.all(16.0),
-                    title: Text(ticket.name,
-                        style: TextStyle(
-                            fontWeight: FontWeight.bold, color: Colors.black)),
-                    subtitle: Text(ticket.ticketCode,
-                        style: TextStyle(color: Colors.black54)),
-                    onTap: () {
-                      close(context, ticket);
-                    },
-                  ),
-                ),
+              final ticket = snapshot.data![index];
+              return ListTile(
+                title:
+                    Text(ticket.name.isNotEmpty ? ticket.name : 'Sin nombre'),
+                subtitle: Text(ticket.ticketCode),
               );
             },
           );
-        },
-      ),
+        }
+      },
     );
   }
 
   @override
   Widget buildSuggestions(BuildContext context) {
-    return Container(
-      color: Colors.white,
-      padding: EdgeInsets.all(16.0),
-      child: Center(
-        child: Text(
-          'Busca por nombre, código o tipo de entrada',
-          style: TextStyle(color: Colors.black54),
-        ),
-      ),
-    );
+    filterTickets(query); // Filtra los resultados de sugerencias
+    return Container(); // Se puede agregar sugerencias si lo deseas
   }
 }

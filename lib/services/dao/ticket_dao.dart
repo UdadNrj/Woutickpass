@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:sqflite/sqflite.dart';
-import 'package:woutickpass/models/objects/ticket.dart';
+import 'package:woutickpass/models/objects/ticket_details.dart';
 import 'package:woutickpass/services/database.dart';
 
 var CHECKIN_AVAILABLE = true;
@@ -12,16 +12,16 @@ class TicketDAO {
 
   Future<Database> get _db async => await DatabaseHelper().database;
 
-  Future<int> insert(Ticket ticket) async {
+  Future<int> insert(TicketDetails ticket) async {
     Database db = await _db;
     int result = await db.insert('tickets', ticket.toMap(),
         conflictAlgorithm: ConflictAlgorithm.replace);
     debugPrint(
-        'Insertado/Actualizado ticket con UUID ${ticket.uuid}. Resultado: $result');
+        'Almacenado/Actualizado ticket con UUID ${ticket.uuid}. Resultado: $result');
     return result;
   }
 
-  Future<int> update(Ticket ticket) async {
+  Future<int> update(TicketDetails ticket) async {
     Database db = await _db;
     return await db.update(
       'tickets',
@@ -49,40 +49,65 @@ class TicketDAO {
     );
   }
 
-  Future<List<Ticket>> getTicketsBySessionId(String sessionId) async {
-    final db = await instance._db;
-    final maps = await db.query(
-      'tickets',
-      where: 'session = ?',
-      whereArgs: [sessionId],
-    );
+  Future<List<TicketDetails>> getTicketsBySessionId(String sessionId) async {
+    final db = await _db;
+    print("Buscando todos los tickets sin filtrar para depuración");
 
+    final maps = await db.query('tickets'); // Sin filtro temporalmente
+
+    print("Tickets encontrados: ${maps.length}");
     if (maps.isNotEmpty) {
-      return maps.map((json) => Ticket.fromMap(json)).toList();
+      return maps.map((json) => TicketDetails.fromMap(json)).toList();
     } else {
       return [];
     }
   }
 
-  Future<List<Ticket>> getAllTickets() async {
-    Database db = await _db;
-    var tickets = await db.query('tickets');
-    return tickets.isNotEmpty
-        ? tickets.map((c) => Ticket.fromMap(c)).toList()
-        : [];
+  Future<void> printAllTickets() async {
+    final db = await _db;
+    final result = await db
+        .query('tickets'); // Consulta todos los tickets en la base de datos
+    print("Todos los tickets en la base de datos: $result");
   }
 
-  Future<Ticket?> getTicketById(String uuid) async {
+  Future<void> fetchAllTickets() async {
+    final db = await _db;
+    final result = await db.query('tickets');
+    print("Todos los tickets en la base de datos: $result");
+  }
+
+  Future<bool> sessionTicketsExist(String sessionId) async {
+    Database db = await _db;
+    var result = await db.query(
+      'tickets',
+      where: 'session_uuid = ?', // Cambiado de 'session' a 'session_uuid'
+      whereArgs: [sessionId],
+    );
+    return result.isNotEmpty;
+  }
+
+  Future<List<TicketDetails>> getAllTickets() async {
+    final db = await instance._db;
+    final maps = await db.query('tickets');
+    print("Todos los tickets: $maps");
+    if (maps.isNotEmpty) {
+      return maps.map((json) => TicketDetails.fromMap(json)).toList();
+    } else {
+      return [];
+    }
+  }
+
+  Future<TicketDetails?> getTicketById(String uuid) async {
     Database db = await _db;
     var result = await db.query(
       'tickets',
       where: 'uuid = ?',
       whereArgs: [uuid],
     );
-    return result.isNotEmpty ? Ticket.fromMap(result.first) : null;
+    return result.isNotEmpty ? TicketDetails.fromMap(result.first) : null;
   }
 
-  Future<List<Ticket>> getTicketsByEvent(String event) async {
+  Future<List<TicketDetails>> getTicketsByEvent(String event) async {
     Database db = await _db;
     var tickets = await db.query(
       'tickets',
@@ -90,7 +115,7 @@ class TicketDAO {
       whereArgs: [event],
     );
     return tickets.isNotEmpty
-        ? tickets.map((c) => Ticket.fromMap(c)).toList()
+        ? tickets.map((c) => TicketDetails.fromMap(c)).toList()
         : [];
   }
 
@@ -104,16 +129,6 @@ class TicketDAO {
     Database db = await _db;
     var result = await db.rawQuery('SELECT DISTINCT type FROM tickets');
     return result.map((row) => row['type'] as String).toList();
-  }
-
-  Future<bool> sessionTicketsExist(String sessionId) async {
-    Database db = await _db;
-    var result = await db.query(
-      'tickets',
-      where: 'session = ?',
-      whereArgs: [sessionId],
-    );
-    return result.isNotEmpty;
   }
 
   Future<Map<String, int>> getTicketStatisticsByEvent(String event) async {
@@ -156,97 +171,3 @@ class TicketDAO {
     return typeStats;
   }
 }
-
-// Future<void> checkIn(int ticketId) async {
-//   final ticket = await TicketDatabase.instance.getTicket(ticketId);
-//   if (ticket = null) {
-//     print("no se encuentra ticketId");
-//     print(ticketId);
-//     return;
-//   }
-//   if (ticket.lastEntryAt = null ||
-//       ticket.lastExitAt != null && ticket.lastExitAt > ticket.lastEntryA) {
-//     if (!CHECKIN_AVAILABLE) {
-//       print("este dispositivo tiene desactivadas las entradas");
-//       return;
-//     }
-//     final now = DateTime.now().toIso8601String();
-//     ticket.lastEntryAt = now; // El check-in también cuenta como entrada
-//     if (ticket.checkinAt == null) {
-//       ticket.checkinAt = now;
-//     }
-//     await TicketDatabase.instance.updateTicket(ticket);
-//     print("Check-in realizado: $now");
-//   }
-//   else {
-//     print("la persona ya ingreso");
-//   }
-//   // Registrar el check-in solo si no se ha registrado antes
-// }
-
-
-
-// Future<void> checkIn(int ticketId) async {
-//   // Buscar el ticket en la base de datos
-//   final ticket = await TicketDatabase.instance.getTicket(ticketId);
-
-//   if (ticket == null) {
-//     // Si no se encuentra el ticket
-//     print("No se encuentra ticketId: $ticketId");
-//     return;
-//   }
-
-//   // Verificar si el último registro de entrada es nulo o si la última salida es posterior a la última entrada
-//   bool puedeIngresar = ticket.lastEntryAt == null ||
-//       (ticket.lastExitAt != null && ticket.lastExitAt!.compareTo(ticket.lastEntryAt!) > 0);
-
-//   if (!puedeIngresar) {
-//     print("La persona ya ingresó");
-//     return;
-//   }
-
-//   if (!CHECKIN_AVAILABLE) {
-//     print("Este dispositivo tiene desactivadas las entradas");
-//     return;
-//   }
-
-//   // Registrar la nueva entrada
-//   final now = DateTime.now().toIso8601String();
-//   ticket.lastEntryAt = now;
-
-//   // Si nunca se ha registrado un check-in, lo registramos ahora
-//   if (ticket.checkinAt == null) {
-//     ticket.checkinAt = now;
-//   }
-
-//   // Actualizar el ticket en la base de datos
-//   await TicketDatabase.instance.updateTicket(ticket);
-//   print("Check-in realizado: $now");
-// }
-
-
-
-
-
-
-// Future<void> registerEntry(int ticketId) async {
-//   final ticket = await TicketDatabase.instance.getTicket(ticketId);
-//   if (ticket != null) {
-//     final now = DateTime.now().toIso8601String();
-//     ticket.lastEntryAt = now;
-
-//     await TicketDatabase.instance.updateTicket(ticket);
-//     print("Entrada registrada: $now");
-//   }
-// }
-
-// Future<void> registerExit(int ticketId) async {
-//   final ticket = await TicketDatabase.instance.getTicket(ticketId);
-//   if (ticket != null) {
-//     final now = DateTime.now().toIso8601String();
-//     ticket.lastExitAt = now;
-
-//     await TicketDatabase.instance.updateTicket(ticket);
-//     print("Salida registrada: $now");
-//   }
-// }

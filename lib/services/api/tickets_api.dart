@@ -3,22 +3,22 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
-import 'package:woutickpass/models/objects/ticket.dart';
+import 'package:woutickpass/models/objects/ticket_details.dart';
 
 class TicketsAPI {
-  static Future<List<Ticket>> getTicketsByUuid(String? uuid) async {
+  static Future<List<TicketDetails>> getTicketsByUuid(String? uuid) async {
     return await _getTickets(
         'https://api-dev.woutick.com/wpass/v1/tickets/$uuid', uuid);
   }
 
-  static Future<List<Ticket>> getTicketsBySessionUuid(
+  static Future<List<TicketDetails>> getTicketsBySessionUuid(
       String? sessionUuid) async {
     return await _getTickets(
         'https://api-dev.woutick.com/wpass/v1/tickets/?session=$sessionUuid',
         sessionUuid);
   }
 
-  static Future<List<Ticket>> _getTickets(String url, String? id) async {
+  static Future<List<TicketDetails>> _getTickets(String url, String? id) async {
     if (id == null || id.isEmpty) {
       throw Exception('El UUID está vacío');
     }
@@ -45,8 +45,8 @@ class TicketsAPI {
         if (response.body.isNotEmpty) {
           List<dynamic> ticketsJson =
               await compute(_parseTickets, response.body);
-          List<Ticket> tickets =
-              ticketsJson.map((json) => Ticket.fromMap(json)).toList();
+          List<TicketDetails> tickets =
+              ticketsJson.map((json) => TicketDetails.fromMap(json)).toList();
           await _storeTickets(tickets);
           return tickets;
         } else {
@@ -87,7 +87,7 @@ class TicketsAPI {
     }
   }
 
-  static Future<void> _storeTickets(List<Ticket> tickets) async {
+  static Future<void> _storeTickets(List<TicketDetails> tickets) async {
     // Aquí puedes implementar la lógica para almacenar las entradas en una base de datos o en cualquier otro lugar.
     // Por ejemplo, puedes usar otro DAO o cualquier otra lógica de almacenamiento.
     // Esta función es un placeholder y debe ser adaptada a tus necesidades.

@@ -3,6 +3,7 @@ import 'package:woutickpass/models/objects/comercials.dart';
 import 'package:woutickpass/models/objects/session_details.dart';
 import 'package:woutickpass/models/objects/tickets.dart';
 
+
 @immutable
 class Session {
   final String uuid;

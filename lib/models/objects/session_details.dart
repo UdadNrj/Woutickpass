@@ -2,6 +2,7 @@ import 'package:json_annotation/json_annotation.dart';
 import 'package:woutickpass/models/objects/comercials.dart';
 import 'package:woutickpass/models/objects/tickets.dart';
 
+
 part 'session_details.g.dart';
 
 @JsonSerializable(explicitToJson: true)

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:woutickpass/models/objects/ticket.dart';
+import 'package:woutickpass/models/objects/ticket_details.dart';
 import 'package:woutickpass/services/dao/ticket_dao.dart';
 
 class AforoStatisticsScreen extends StatefulWidget {
@@ -13,7 +13,7 @@ class AforoStatisticsScreen extends StatefulWidget {
 }
 
 class _AforoStatisticsScreenState extends State<AforoStatisticsScreen> {
-  late Future<List<Ticket>> _ticketsFuture;
+  late Future<List<TicketDetails>> _ticketsFuture;
 
   @override
   void initState() {
@@ -21,7 +21,7 @@ class _AforoStatisticsScreenState extends State<AforoStatisticsScreen> {
     _ticketsFuture = TicketDAO.instance.getTicketsBySessionId(widget.sessionId);
   }
 
-  Map<String, int> _calculateStatistics(List<Ticket> tickets) {
+  Map<String, int> _calculateStatistics(List<TicketDetails> tickets) {
     int sinLeer = 0;
     int dentro = 0;
     int fuera = 0;
@@ -64,7 +64,7 @@ class _AforoStatisticsScreenState extends State<AforoStatisticsScreen> {
         backgroundColor: Colors.white,
         iconTheme: IconThemeData(color: Colors.black),
       ),
-      body: FutureBuilder<List<Ticket>>(
+      body: FutureBuilder<List<TicketDetails>>(
         future: _ticketsFuture,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {

@@ -1,21 +1,14 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'ticket.dart';
+part of 'ticket_details.dart';
 
 // **************************************************************************
 // JsonSerializableGenerator
 // **************************************************************************
 
-Ticket _$TicketFromJson(Map<String, dynamic> json) => Ticket(
+TicketDetails _$TicketDetailsFromJson(Map<String, dynamic> json) =>
+    TicketDetails(
       uuid: json['uuid'] as String,
-      session: json['session'] as String,
-      event: json['event'] as String,
-      status: json['status'] as String,
-      ticketCode: json['ticket_code'] as String,
-      ticketName: json['ticketName'] as String,
-      type: json['type'] as String,
-      pricePublic: (json['pricePublic'] as num).toInt(),
-      commissionPublic: (json['commissionPublic'] as num).toInt(),
       paymentAt: json['payment_at'] == null
           ? null
           : DateTime.parse(json['payment_at'] as String),
@@ -25,6 +18,14 @@ Ticket _$TicketFromJson(Map<String, dynamic> json) => Ticket(
       updatedAt: json['updated_at'] == null
           ? null
           : DateTime.parse(json['updated_at'] as String),
+      sessionUuid: json['session_uuid'] as String,
+      event: json['event'] as String,
+      status: json['status'] as String,
+      ticketCode: json['ticket_code'] as String,
+      ticketName: json['ticket_name'] as String,
+      type: json['type'] as String,
+      pricePublic: (json['price_public'] as num).toInt(),
+      commissionPublic: (json['commission_public'] as num).toInt(),
       accessedAt: json['accessed_at'] == null
           ? null
           : DateTime.parse(json['accessed_at'] as String),
@@ -61,19 +62,20 @@ Ticket _$TicketFromJson(Map<String, dynamic> json) => Ticket(
           : DateTime.parse(json['refund_at'] as String),
     );
 
-Map<String, dynamic> _$TicketToJson(Ticket instance) => <String, dynamic>{
+Map<String, dynamic> _$TicketDetailsToJson(TicketDetails instance) =>
+    <String, dynamic>{
       'uuid': instance.uuid,
-      'session': instance.session,
-      'event': instance.event,
-      'status': instance.status,
-      'ticket_code': instance.ticketCode,
-      'ticketName': instance.ticketName,
-      'type': instance.type,
-      'pricePublic': instance.pricePublic,
-      'commissionPublic': instance.commissionPublic,
       'payment_at': instance.paymentAt?.toIso8601String(),
       'created_at': instance.createdAt?.toIso8601String(),
       'updated_at': instance.updatedAt?.toIso8601String(),
+      'session_uuid': instance.sessionUuid,
+      'event': instance.event,
+      'status': instance.status,
+      'ticket_code': instance.ticketCode,
+      'ticket_name': instance.ticketName,
+      'type': instance.type,
+      'price_public': instance.pricePublic,
+      'commission_public': instance.commissionPublic,
       'accessed_at': instance.accessedAt?.toIso8601String(),
       'checkin_at': instance.checkinAt?.toIso8601String(),
       'last_entry_at': instance.lastEntryAt?.toIso8601String(),

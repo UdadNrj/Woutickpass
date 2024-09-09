@@ -23,9 +23,8 @@ class DatabaseHelper {
 
     return await openDatabase(
       path,
-      version: 1, // Mantén la versión en 1 si eliminas la base de datos
+      version: 1,
       onCreate: _onCreate,
-      onDowngrade: onDatabaseDowngradeDelete,
     );
   }
 
@@ -36,20 +35,21 @@ class DatabaseHelper {
         token TEXT
       )
     ''');
+
     await db.execute('''
-  CREATE TABLE sessions (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    uuid TEXT UNIQUE,
-    title TEXT,
-    subtitle TEXT,
-    wpass_code TEXT, 
-    public_start_at TEXT, 
-    public_end_at TEXT,  
-    is_selected INTEGER DEFAULT 0,
-    commercials TEXT, 
-    tickets TEXT 
-  )
-''');
+      CREATE TABLE sessions (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        uuid TEXT UNIQUE,
+        title TEXT,
+        subtitle TEXT,
+        wpass_code TEXT, 
+        public_start_at TEXT, 
+        public_end_at TEXT,  
+        is_selected INTEGER DEFAULT 0,
+        commercials TEXT, 
+        tickets TEXT 
+       )
+    ''');
 
     await db.execute('''
       CREATE TABLE settings (
@@ -58,80 +58,76 @@ class DatabaseHelper {
         setting_value INTEGER NOT NULL
       )
     ''');
+
     await db.execute('''
-      CREATE TABLE session_details (
-        uuid TEXT PRIMARY KEY,
-        is_active INTEGER,
-        created_at TEXT,
-        updated_at TEXT,
-        is_featured INTEGER,
-        is_private INTEGER,
-        is_canceled INTEGER,
-        order_number INTEGER,  
-        name TEXT,
-        slug TEXT,
-        description TEXT,
-        text_out_of_stock TEXT,
-        text_not_available TEXT,
-        streaming_url TEXT,
-        streaming_description TEXT,
-        streaming_free_access INTEGER,
-        public_start_at TEXT,
-        public_end_at TEXT,
-        start_at TEXT,
-        end_at TEXT,
-        doors_open_time TEXT,
-        is_cashless INTEGER,
-        returns_start_at TEXT,
-        returns_end_at TEXT,
-        returns_min_amount INTEGER,
-        has_sell_max INTEGER,
-        sell_max INTEGER,
-        sell_max_type TEXT,
-        tickets_total INTEGER,
-        tickets_sold INTEGER,
-        has_settlement INTEGER, 
-        status TEXT,
-        event_venue TEXT,
-        text_offering TEXT,
-        tickets TEXT
+    CREATE TABLE session_details (
+      uuid TEXT PRIMARY KEY,
+      is_active INTEGER,
+      is_canceled INTEGER,
+      name TEXT,
+      subtitle TEXT,
+      public_start_at TEXT,
+      public_end_at TEXT,
+      commercials TEXT,  -- Esto puede ser un JSON serializado
+      tickets TEXT       -- Esto puede ser un JSON serializado
     )
-    ''');
+  ''');
+
     await db.execute('''
-  CREATE TABLE tickets (
-    uuid TEXT PRIMARY KEY,
-    payment_at TEXT,
-    created_at TEXT,
-    updated_at TEXT,
-    session TEXT,
-    event TEXT,
-    status TEXT,
-    ticket_code TEXT,
-    ticket_name TEXT, 
-    type TEXT,
-    price_public INTEGER, 
-    commission_public INTEGER, 
-    accessed_at TEXT,
-    checkin_at TEXT,
-    last_entry_at TEXT,
-    last_exit_at TEXT,
-    name TEXT,
-    dni TEXT,
-    birthdate TEXT,
-    postal_code TEXT,
-    email TEXT,
-    phone TEXT,
-    gender TEXT,
-    question1_text TEXT,
-    question1_answer TEXT,
-    question2_text TEXT, -- Asegúrate de que esta columna esté incluida
-    question2_answer TEXT, -- Asegúrate de que esta columna esté incluida
-    question3_text TEXT, -- Asegúrate de que esta columna esté incluida
-    question3_answer TEXT, -- Asegúrate de que esta columna esté incluida
-    referer_user_full_name TEXT,
-    banned_at TEXT,
-    refund_at TEXT -- Asegúrate de que esta columna esté incluida
-  )
-''');
+    CREATE TABLE tickets (
+      uuid TEXT PRIMARY KEY,
+      payment_at TEXT,
+      created_at TEXT,
+      updated_at TEXT,
+      session_uuid TEXT,  -- Clave externa que referencia session_details
+      event TEXT,
+      status TEXT,
+      ticket_code TEXT,
+      ticket_name TEXT,
+      type TEXT,
+      price_public INTEGER,
+      commission_public INTEGER,
+      accessed_at TEXT,
+      checkin_at TEXT,
+      last_entry_at TEXT,
+      last_exit_at TEXT,
+      name TEXT,
+      dni TEXT,
+      birthdate TEXT,
+      postal_code TEXT,
+      email TEXT,
+      phone TEXT,
+      gender TEXT,
+      question1_text TEXT,
+      question1_answer TEXT,
+      question2_text TEXT,
+      question2_answer TEXT,
+      question3_text TEXT,
+      question3_answer TEXT,
+      referer_user_full_name TEXT,
+      banned_at TEXT,
+      refund_at TEXT,
+      FOREIGN KEY (session_uuid) REFERENCES session_details(uuid) ON DELETE CASCADE
+    )
+  ''');
+
+    await db.execute('''
+    CREATE TABLE commercials (
+      uuid TEXT PRIMARY KEY,
+      name TEXT,
+      session_uuid TEXT,  -- Clave externa que referencia session_details
+      FOREIGN KEY (session_uuid) REFERENCES session_details(uuid) ON DELETE CASCADE
+    )
+  ''');
+  }
+
+  Future<List<Map<String, dynamic>>> getTicketsForSession(
+      String sessionId) async {
+    final db = await database;
+    return await db.query(
+      'tickets',
+      where: 'session_uuid = ?',
+      whereArgs: [sessionId],
+    );
   }
 }

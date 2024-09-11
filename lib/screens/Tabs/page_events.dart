@@ -71,7 +71,7 @@ class _PageEventsState extends State<PageEvents> {
 
   Future<bool> _useCachedOrLocalTickets(String sessionId) async {
     if (cachedTickets.containsKey(sessionId)) {
-      debugPrint('Using cached tickets for session $sessionId');
+      debugPrint('Using storage tickets for session $sessionId');
       setState(() {});
       return true;
     }

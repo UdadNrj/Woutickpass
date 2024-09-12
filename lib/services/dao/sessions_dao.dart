@@ -1,5 +1,6 @@
 import 'package:sqflite/sqflite.dart';
 import 'package:woutickpass/models/objects/session.dart';
+import 'package:woutickpass/models/objects/session_details.dart';
 import 'package:woutickpass/services/database.dart';
 
 class SessionsDAO {
@@ -139,17 +140,17 @@ class SessionsDAO {
     });
   }
 
-  Future<void> storeSessions(List<Session> sessions) async {
+  Future<void> storeSessions(List<SessionDetails> sessionDetailsList) async {
     await _runDatabaseOperation(() async {
       final db = await DatabaseHelper().database;
       try {
         await db.transaction((txn) async {
           await txn.delete('sessions');
 
-          for (var session in sessions) {
+          for (var sessionDetails in sessionDetailsList) {
             await txn.insert(
               'sessions',
-              session.toJson(),
+              sessionDetails.toMap(), // Usamos toMap de SessionDetails
               conflictAlgorithm: ConflictAlgorithm.replace,
             );
           }

@@ -92,7 +92,7 @@ class Session {
   static Session fromSessionDetails(SessionDetails details) {
     return Session(
       uuid: details.uuid,
-      title: details.name,
+      title: details.title,
       subtitle: details.subtitle,
       wpassCode: null, // Ajusta según sea necesario
       publicStartAt: details.publicStartAt,
@@ -108,7 +108,7 @@ class Session {
       uuid: uuid,
       isActive: true,
       isCanceled: false,
-      name: title,
+      title: title,
       subtitle: subtitle,
       publicStartAt: publicStartAt,
       publicEndAt: publicEndAt,

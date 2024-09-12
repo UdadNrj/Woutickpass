@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:woutickpass/models/objects/session.dart';
+import 'package:woutickpass/models/objects/session_details.dart';
 import 'package:woutickpass/screens/Tabs/button_nav.dart';
 import 'package:woutickpass/services/controllers/route.dart';
 
 class MainPage extends StatefulWidget {
   final String token;
   final int currentIndex;
-  final List<Session> selectedEvents;
+  final List<SessionDetails> selectedEvents;
 
   const MainPage({
     Key? key,
@@ -57,10 +57,7 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver {
           });
         },
       ),
-      body: Routes(
-        index: _currentIndex,
-        selectedEvents: widget.selectedEvents,
-      ),
+      body: Routes(index: _currentIndex, selectedEvents: []),
     );
   }
 }

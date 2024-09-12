@@ -13,7 +13,7 @@ class SessionAPI {
       'https://api-dev.woutick.com/wpass/v1/session/';
 
   // Método para obtener detalles de sesión por UUID
-  static Future<List<SessionDetails>> getSessionByUuid(String uuid) async {
+  static Future<SessionDetails> getSessionByUuid(String uuid) async {
     if (uuid.isEmpty) {
       throw Exception('Hace falta un UUID');
     }
@@ -33,7 +33,7 @@ class SessionAPI {
   }
 
   // Método común para obtener detalles de sesión
-  static Future<List<SessionDetails>> _getSessionDetails(String url) async {
+  static Future<SessionDetails> _getSessionDetails(String url) async {
     final headers = {'Content-Type': 'application/json'};
     debugPrint('Sending GET request to URL: $url');
 
@@ -47,7 +47,15 @@ class SessionAPI {
       debugPrint('Response body: ${response.body}');
 
       if (response.statusCode == 200) {
-        return compute(_parseSessionDetails, response.body);
+        final jsonResponse = json.decode(response.body);
+
+        // Verifica si la respuesta es un mapa (objeto)
+        if (jsonResponse is Map<String, dynamic>) {
+          return SessionDetails.fromJson(jsonResponse);
+        } else {
+          throw Exception(
+              'Se esperaba un objeto JSON, pero se recibió una lista u otro tipo.');
+        }
       } else {
         throw Exception(
             'Error al obtener detalles de la sesión. Código de estado: ${response.statusCode}. Cuerpo de la respuesta: ${response.body}');

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:woutickpass/models/objects/ticket_details.dart';
+import 'package:woutickpass/screens/Search_AttendeesScreen.dart';
 import 'package:woutickpass/services/dao/ticket_dao.dart';
 
 class AttendeeListScreen extends StatefulWidget {
@@ -44,18 +45,19 @@ class _AttendeeListScreenState extends State<AttendeeListScreen> {
     });
   }
 
+  // Filtra los tickets según la consulta de búsqueda (sin distinción entre mayúsculas/minúsculas)
   void _filterTickets(String query) {
     if (_allTickets.isNotEmpty) {
       setState(() {
         _filteredTickets = _allTickets.where((ticket) {
           final ticketName = ticket.name.toLowerCase();
           final ticketCode = ticket.ticketCode.toLowerCase();
-          final event = ticket.event.toLowerCase();
+          final email = ticket.email.toLowerCase();
           final searchQuery = query.toLowerCase();
 
           return ticketName.contains(searchQuery) ||
               ticketCode.contains(searchQuery) ||
-              event.contains(searchQuery);
+              email.contains(searchQuery);
         }).toList();
         print("Tickets filtrados: ${_filteredTickets.length}");
       });
@@ -69,19 +71,31 @@ class _AttendeeListScreenState extends State<AttendeeListScreen> {
       appBar: AppBar(
         backgroundColor: Colors.white,
         centerTitle: true,
-        title: Text('Asistentes'),
+        title: Text(
+          'Asistentes',
+          style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
+        ),
         actions: [
           IconButton(
-            icon: Icon(Icons.refresh), // Botón de refresco
+            icon: Icon(Icons.refresh, color: Colors.black), // Botón de refresco
             onPressed: _loadTickets, // Recarga los tickets
           ),
           IconButton(
-            icon: Icon(Icons.search), // Icono de búsqueda
+            icon: Icon(Icons.search, color: Colors.black), // Icono de búsqueda
             onPressed: () {
-              // Implementar búsqueda aquí
+              // Abre el buscador usando SearchDelegate
+              showSearch(
+                context: context,
+                delegate: TicketSearchDelegate(
+                  ticketsFuture: _ticketsFuture,
+                  filterTickets:
+                      _filterTickets, // Pasamos la función de filtrado
+                ),
+              );
             },
           ),
         ],
+        elevation: 1, // Para dar un ligero borde inferior a la AppBar
       ),
       body: FutureBuilder<List<TicketDetails>>(
         future: _ticketsFuture,
@@ -93,7 +107,7 @@ class _AttendeeListScreenState extends State<AttendeeListScreen> {
           } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
             return Center(child: Text('No hay entradas disponibles.'));
           } else {
-            final tickets = snapshot.data!;
+            final tickets = _filteredTickets; // Usa los tickets filtrados
 
             return ListView.builder(
               itemCount: tickets.length,
@@ -101,22 +115,35 @@ class _AttendeeListScreenState extends State<AttendeeListScreen> {
                 final ticket = tickets[index];
                 return Card(
                   color: Colors.white,
+                  elevation: 2,
                   margin: EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
                   child: ListTile(
                     contentPadding: EdgeInsets.all(16.0),
                     title: Text(
                       ticket.name.isNotEmpty ? ticket.name : 'Sin nombre',
-                      style: TextStyle(fontWeight: FontWeight.bold),
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16,
+                        color: Colors.black87,
+                      ),
                     ),
                     subtitle: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text('Estado: ${ticket.status}'),
+                        Text('Estado: ${ticket.status}',
+                            style: TextStyle(color: Colors.grey[600])),
                         Text(
-                            'Correo: ${ticket.email.isNotEmpty ? ticket.email : 'No disponible'}'),
-                        Text('Código: ${ticket.ticketCode}'),
-                        Text('Evento: ${ticket.event}'),
-                        Text('Sesión: ${ticket.sessionUuid}'),
+                            'Correo: ${ticket.email.isNotEmpty ? ticket.email : 'No disponible'}',
+                            style: TextStyle(color: Colors.grey[600])),
+                        Text('Código: ${ticket.ticketCode}',
+                            style: TextStyle(color: Colors.grey[600])),
+                        Text('Evento: ${ticket.event}',
+                            style: TextStyle(color: Colors.grey[600])),
+                        Text('Sesión: ${ticket.sessionUuid}',
+                            style: TextStyle(color: Colors.grey[600])),
                       ],
                     ),
                     isThreeLine: true,

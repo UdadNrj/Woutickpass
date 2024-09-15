@@ -28,67 +28,65 @@ class CommercialsDAO {
     }
   }
 
-  Future<List<Commercial>> getCommercialsBySession(String sessionUuid) async {
+  Future<List<Commercial>> getCommercialsBySession(String sessionId) async {
     final db = await DatabaseHelper().database;
-    try {
-      final List<Map<String, dynamic>> maps = await db.query(
-        'commercials',
-        where:
-            'session_uuid = ?', // Asegúrate de que esta columna existe en la tabla
-        whereArgs: [sessionUuid],
-      );
 
-      if (maps.isEmpty) {
-        print("No se encontraron comerciales para la sesión $sessionUuid");
-      }
+    // Cambia 'session_id' a 'session_uuid'
+    final List<Map<String, dynamic>> result = await db.query(
+      'commercials',
+      where: 'session_uuid = ?', // Cambiado aquí
+      whereArgs: [sessionId],
+    );
 
-      return maps.map((map) => Commercial.fromMap(map)).toList();
-    } catch (e) {
-      print("Error al recuperar comerciales para la sesión $sessionUuid: $e");
-      return [];
+    if (result.isNotEmpty) {
+      return result
+          .map((commercial) => Commercial.fromMap(commercial))
+          .toList();
+    } else {
+      return []; // Si no hay comerciales encontrados
     }
   }
+}
 
-  // Método para actualizar un comercial
-  Future<void> updateCommercial(Commercial commercial) async {
-    final db = await DatabaseHelper().database;
-    try {
-      await db.update(
-        'commercials',
-        commercial.toMap(),
-        where: 'uuid = ?',
-        whereArgs: [commercial.uuid],
-      );
-      print("Comercial actualizado exitosamente: ${commercial.uuid}");
-    } catch (e) {
-      print("Error al actualizar el comercial: $e");
-    }
+// Método para actualizar un comercial
+Future<void> updateCommercial(Commercial commercial) async {
+  final db = await DatabaseHelper().database;
+  try {
+    await db.update(
+      'commercials',
+      commercial.toMap(),
+      where: 'uuid = ?',
+      whereArgs: [commercial.uuid],
+    );
+    print("Comercial actualizado exitosamente: ${commercial.uuid}");
+  } catch (e) {
+    print("Error al actualizar el comercial: $e");
   }
+}
 
-  // Método para eliminar un comercial por su uuid
-  Future<void> deleteCommercial(String commercialUuid) async {
-    final db = await DatabaseHelper().database;
-    try {
-      await db.delete(
-        'commercials',
-        where: 'uuid = ?',
-        whereArgs: [commercialUuid],
-      );
-      print("Comercial eliminado exitosamente: $commercialUuid");
-    } catch (e) {
-      print("Error al eliminar el comercial: $e");
-    }
+// Método para eliminar un comercial por su uuid
+Future<void> deleteCommercial(String commercialUuid) async {
+  final db = await DatabaseHelper().database;
+  try {
+    await db.delete(
+      'commercials',
+      where: 'uuid = ?',
+      whereArgs: [commercialUuid],
+    );
+    print("Comercial eliminado exitosamente: $commercialUuid");
+  } catch (e) {
+    print("Error al eliminar el comercial: $e");
   }
+}
 
-  // Método para obtener todos los comerciales sin filtrar por sesión
-  Future<List<Commercial>> getAllCommercials() async {
-    final db = await DatabaseHelper().database;
-    try {
-      final List<Map<String, dynamic>> maps = await db.query('commercials');
-      return maps.map((map) => Commercial.fromMap(map)).toList();
-    } catch (e) {
-      print("Error al recuperar todos los comerciales: $e");
-      return [];
-    }
+// Método para obtener todos los comerciales sin filtrar por sesión
+Future<List<Commercial>> getAllCommercials() async {
+  final db = await DatabaseHelper().database;
+  try {
+    final List<Map<String, dynamic>> maps = await db.query('commercials');
+    return maps.map((map) => Commercial.fromMap(map)).toList();
+  } catch (e) {
+    print("Error al recuperar todos los comerciales: $e");
+    return [];
   }
 }

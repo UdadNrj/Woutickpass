@@ -99,56 +99,60 @@ class _AforoStatisticsScreenState extends State<AforoStatisticsScreen> {
       body: FutureBuilder<List<TicketDetails>>(
         future: _ticketsFuture,
         builder: (context, ticketSnapshot) {
+          // Maneja diferentes estados del Future de tickets
+          if (ticketSnapshot.connectionState == ConnectionState.waiting) {
+            return Center(child: CircularProgressIndicator());
+          } else if (ticketSnapshot.hasError) {
+            return Center(
+                child:
+                    Text('Error al cargar entradas: ${ticketSnapshot.error}'));
+          } else if (!ticketSnapshot.hasData || ticketSnapshot.data!.isEmpty) {
+            return Center(child: Text('No hay entradas disponibles.'));
+          }
+
+          // Cuando ya tenemos datos de tickets
+          final tickets = ticketSnapshot.data!;
+
           return FutureBuilder<List<Commercial>>(
             future: _commercialsFuture,
             builder: (context, commercialSnapshot) {
-              if (ticketSnapshot.connectionState == ConnectionState.waiting ||
-                  commercialSnapshot.connectionState ==
-                      ConnectionState.waiting) {
+              // Maneja diferentes estados del Future de comerciales
+              if (commercialSnapshot.connectionState ==
+                  ConnectionState.waiting) {
                 return Center(child: CircularProgressIndicator());
-              } else if (ticketSnapshot.hasError ||
-                  commercialSnapshot.hasError) {
+              } else if (commercialSnapshot.hasError) {
                 return Center(
                     child: Text(
-                        'Error: ${ticketSnapshot.error ?? commercialSnapshot.error}'));
-              } else if (!ticketSnapshot.hasData ||
-                  ticketSnapshot.data!.isEmpty) {
-                print("No hay datos de tickets");
-                return Center(child: Text('No hay entradas disponibles.'));
+                        'Error al cargar comerciales: ${commercialSnapshot.error}'));
               } else if (!commercialSnapshot.hasData ||
                   commercialSnapshot.data!.isEmpty) {
-                print("No hay datos de comerciales");
                 return Center(child: Text('No hay comerciales disponibles.'));
-              } else {
-                final tickets = ticketSnapshot.data!;
-                final commercials = commercialSnapshot.data!;
-
-                print(
-                    "Mostrando ${tickets.length} tickets y ${commercials.length} comerciales");
-
-                final ticketStatistics = _calculateTicketStatistics(tickets);
-                final commercialStatistics =
-                    _calculateCommercialStatistics(commercials);
-
-                return Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: SingleChildScrollView(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        // Sección de Aforo
-                        _buildSectionTitle('Estadísticas de Aforo'),
-                        _buildTicketStatistics(ticketStatistics, tickets),
-                        SizedBox(height: 16),
-
-                        // Sección de Comerciales
-                        _buildSectionTitle('Estadísticas de Comerciales'),
-                        _buildCommercialStatistics(commercialStatistics),
-                      ],
-                    ),
-                  ),
-                );
               }
+
+              // Cuando ya tenemos tanto tickets como comerciales
+              final commercials = commercialSnapshot.data!;
+              print(
+                  "Mostrando ${tickets.length} tickets y ${commercials.length} comerciales");
+
+              final ticketStatistics = _calculateTicketStatistics(tickets);
+              final commercialStatistics =
+                  _calculateCommercialStatistics(commercials);
+
+              return Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: SingleChildScrollView(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      _buildSectionTitle('Estadísticas de Aforo'),
+                      _buildTicketStatistics(ticketStatistics, tickets),
+                      SizedBox(height: 16),
+                      _buildSectionTitle('Estadísticas de Comerciales'),
+                      _buildCommercialStatistics(commercialStatistics),
+                    ],
+                  ),
+                ),
+              );
             },
           );
         },
@@ -172,28 +176,30 @@ class _AforoStatisticsScreenState extends State<AforoStatisticsScreen> {
             Text('Aforo',
                 style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
             SizedBox(height: 8),
-            Text('Sin leer: ${ticketStatistics['sinLeer']}'),
-            Text('Dentro: ${ticketStatistics['dentro']}'),
-            Text('Fuera: ${ticketStatistics['fuera']}'),
+            Text('Sin leer: ${ticketStatistics['sinLeer'] ?? 0}'),
+            Text('Dentro: ${ticketStatistics['dentro'] ?? 0}'),
+            Text('Fuera: ${ticketStatistics['fuera'] ?? 0}'),
             Divider(),
             Text('Tipos de entrada',
                 style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
             SizedBox(height: 8),
-            ...ticketStatistics.entries
-                .where((entry) =>
-                    entry.key != 'sinLeer' &&
-                    entry.key != 'dentro' &&
-                    entry.key != 'fuera')
-                .map((entry) {
-              return Text('${entry.key}: ${entry.value}/${tickets.length}');
-            }).toList(),
+            if (ticketStatistics.isNotEmpty)
+              ...ticketStatistics.entries
+                  .where((entry) =>
+                      entry.key != 'sinLeer' &&
+                      entry.key != 'dentro' &&
+                      entry.key != 'fuera')
+                  .map((entry) {
+                return Text('${entry.key}: ${entry.value}/${tickets.length}');
+              }).toList()
+            else
+              Text('No hay tipos de entrada disponibles'),
           ],
         ),
       ),
     );
   }
 
-  // Construir la sección de estadísticas de comerciales
   Widget _buildCommercialStatistics(Map<String, int> commercialStatistics) {
     return Card(
       shape: RoundedRectangleBorder(
@@ -208,9 +214,12 @@ class _AforoStatisticsScreenState extends State<AforoStatisticsScreen> {
             Text('Comerciales',
                 style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
             SizedBox(height: 8),
-            ...commercialStatistics.entries.map((entry) {
-              return Text('${entry.key}: ${entry.value}');
-            }).toList(),
+            if (commercialStatistics.isNotEmpty)
+              ...commercialStatistics.entries.map((entry) {
+                return Text('${entry.key}: ${entry.value}');
+              }).toList()
+            else
+              Text('No hay comerciales disponibles'),
           ],
         ),
       ),

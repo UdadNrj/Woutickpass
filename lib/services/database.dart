@@ -39,13 +39,15 @@ class DatabaseHelper {
     await db.execute('''
       CREATE TABLE sessions (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
+        is_selected INTEGER DEFAULT 0,
         uuid TEXT UNIQUE,
         title TEXT,
         subtitle TEXT,
+        status INTEGER,
+        is_canceled INTEGER,
         wpass_code TEXT, 
         public_start_at TEXT, 
         public_end_at TEXT,  
-        is_selected INTEGER DEFAULT 0,
         commercials TEXT, 
         tickets TEXT 
        )
@@ -115,8 +117,8 @@ class DatabaseHelper {
     CREATE TABLE commercials (
       uuid TEXT PRIMARY KEY,
       name TEXT,
-      session_uuid TEXT,  -- Clave externa que referencia session_details
-      FOREIGN KEY (session_uuid) REFERENCES session_details(uuid) ON DELETE CASCADE
+      session_uuid TEXT,
+      FOREIGN KEY(session_uuid) REFERENCES sessions(uuid) ON DELETE CASCADE
     )
   ''');
   }

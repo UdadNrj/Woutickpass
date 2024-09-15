@@ -1,64 +1,35 @@
-import 'package:json_annotation/json_annotation.dart';
-
-// Genera el archivo 'ticket_details.g.dart' automáticamente
-part 'ticket_details.g.dart';
-
-@JsonSerializable()
 class TicketDetails {
   final String uuid;
-  @JsonKey(name: 'payment_at')
   final DateTime? paymentAt;
-  @JsonKey(name: 'created_at')
   final DateTime? createdAt;
-  @JsonKey(name: 'updated_at')
   final DateTime? updatedAt;
-  @JsonKey(name: 'session_uuid') // Cambiado de 'session' a 'session_uuid'
-  final String sessionUuid; // Cambiado de 'session' a 'sessionUuid'
+  final String sessionUuid;
   final String event;
   final String status;
-  @JsonKey(name: 'ticket_code')
   final String ticketCode;
-  @JsonKey(name: 'ticket_name')
   final String ticketName;
   final String type;
-  @JsonKey(name: 'price_public')
   final int pricePublic;
-  @JsonKey(name: 'commission_public')
   final int commissionPublic;
-  @JsonKey(name: 'accessed_at')
   final DateTime? accessedAt;
-  @JsonKey(name: 'checkin_at')
   final DateTime? checkinAt;
-  @JsonKey(name: 'last_entry_at')
   final DateTime? lastEntryAt;
-  @JsonKey(name: 'last_exit_at')
   final DateTime? lastExitAt;
   final String name;
   final String dni;
-  @JsonKey(name: 'birthdate')
   final DateTime? birthdate;
-  @JsonKey(name: 'postal_code')
   final String postalCode;
   final String email;
   final String phone;
   final String gender;
-  @JsonKey(name: 'question1_text')
   final String question1Text;
-  @JsonKey(name: 'question1_answer')
   final String question1Answer;
-  @JsonKey(name: 'question2_text')
   final String question2Text;
-  @JsonKey(name: 'question2_answer')
   final String question2Answer;
-  @JsonKey(name: 'question3_text')
   final String question3Text;
-  @JsonKey(name: 'question3_answer')
   final String question3Answer;
-  @JsonKey(name: 'referer_user_full_name')
   final String refererUserFullName;
-  @JsonKey(name: 'banned_at')
   final DateTime? bannedAt;
-  @JsonKey(name: 'refund_at')
   final DateTime? refundAt;
 
   TicketDetails({
@@ -66,7 +37,7 @@ class TicketDetails {
     this.paymentAt,
     this.createdAt,
     this.updatedAt,
-    required this.sessionUuid, // Cambiado de 'session' a 'sessionUuid'
+    required this.sessionUuid,
     required this.event,
     required this.status,
     required this.ticketCode,
@@ -96,20 +67,143 @@ class TicketDetails {
     this.refundAt,
   });
 
-  // Métodos para mapear a JSON y desde JSON
-  factory TicketDetails.fromJson(Map<String, dynamic> json) =>
-      _$TicketDetailsFromJson(json);
+  // Método copyWith para crear una copia del objeto con campos modificados
+  TicketDetails copyWith({
+    String? uuid,
+    DateTime? paymentAt,
+    DateTime? createdAt,
+    DateTime? updatedAt,
+    String? sessionUuid,
+    String? event,
+    String? status,
+    String? ticketCode,
+    String? ticketName,
+    String? type,
+    int? pricePublic,
+    int? commissionPublic,
+    DateTime? accessedAt,
+    DateTime? checkinAt,
+    DateTime? lastEntryAt,
+    DateTime? lastExitAt,
+    String? name,
+    String? dni,
+    DateTime? birthdate,
+    String? postalCode,
+    String? email,
+    String? phone,
+    String? gender,
+    String? question1Text,
+    String? question1Answer,
+    String? question2Text,
+    String? question2Answer,
+    String? question3Text,
+    String? question3Answer,
+    String? refererUserFullName,
+    DateTime? bannedAt,
+    DateTime? refundAt,
+  }) {
+    return TicketDetails(
+      uuid: uuid ?? this.uuid,
+      paymentAt: paymentAt ?? this.paymentAt,
+      createdAt: createdAt ?? this.createdAt,
+      updatedAt: updatedAt ?? this.updatedAt,
+      sessionUuid: sessionUuid ?? this.sessionUuid,
+      event: event ?? this.event,
+      status: status ?? this.status,
+      ticketCode: ticketCode ?? this.ticketCode,
+      ticketName: ticketName ?? this.ticketName,
+      type: type ?? this.type,
+      pricePublic: pricePublic ?? this.pricePublic,
+      commissionPublic: commissionPublic ?? this.commissionPublic,
+      accessedAt: accessedAt ?? this.accessedAt,
+      checkinAt: checkinAt ?? this.checkinAt,
+      lastEntryAt: lastEntryAt ?? this.lastEntryAt,
+      lastExitAt: lastExitAt ?? this.lastExitAt,
+      name: name ?? this.name,
+      dni: dni ?? this.dni,
+      birthdate: birthdate ?? this.birthdate,
+      postalCode: postalCode ?? this.postalCode,
+      email: email ?? this.email,
+      phone: phone ?? this.phone,
+      gender: gender ?? this.gender,
+      question1Text: question1Text ?? this.question1Text,
+      question1Answer: question1Answer ?? this.question1Answer,
+      question2Text: question2Text ?? this.question2Text,
+      question2Answer: question2Answer ?? this.question2Answer,
+      question3Text: question3Text ?? this.question3Text,
+      question3Answer: question3Answer ?? this.question3Answer,
+      refererUserFullName: refererUserFullName ?? this.refererUserFullName,
+      bannedAt: bannedAt ?? this.bannedAt,
+      refundAt: refundAt ?? this.refundAt,
+    );
+  }
 
-  Map<String, dynamic> toJson() => _$TicketDetailsToJson(this);
+  // Método fromJson para convertir JSON a TicketDetails
+  factory TicketDetails.fromJson(Map<String, dynamic> json) {
+    return TicketDetails(
+      uuid: json['uuid'] ?? '',
+      paymentAt: json['payment_at'] != null
+          ? DateTime.tryParse(json['payment_at'])
+          : null,
+      createdAt: json['created_at'] != null
+          ? DateTime.tryParse(json['created_at'])
+          : null,
+      updatedAt: json['updated_at'] != null
+          ? DateTime.tryParse(json['updated_at'])
+          : null,
+      sessionUuid: json['session_uuid'] ?? '',
+      event: json['event'] ?? '',
+      status: json['status'] ?? '',
+      ticketCode: json['ticket_code'] ?? '',
+      ticketName: json['ticket_name'] ?? '',
+      type: json['type'] ?? '',
+      pricePublic: json['price_public'] ?? 0,
+      commissionPublic: json['commission_public'] ?? 0,
+      accessedAt: json['accessed_at'] != null
+          ? DateTime.tryParse(json['accessed_at'])
+          : null,
+      checkinAt: json['checkin_at'] != null
+          ? DateTime.tryParse(json['checkin_at'])
+          : null,
+      lastEntryAt: json['last_entry_at'] != null
+          ? DateTime.tryParse(json['last_entry_at'])
+          : null,
+      lastExitAt: json['last_exit_at'] != null
+          ? DateTime.tryParse(json['last_exit_at'])
+          : null,
+      name: json['name'] ?? '',
+      dni: json['dni'] ?? '',
+      birthdate: json['birthdate'] != null
+          ? DateTime.tryParse(json['birthdate'])
+          : null,
+      postalCode: json['postal_code'] ?? '',
+      email: json['email'] ?? '',
+      phone: json['phone'] ?? '',
+      gender: json['gender'] ?? '',
+      question1Text: json['question1_text'] ?? '',
+      question1Answer: json['question1_answer'] ?? '',
+      question2Text: json['question2_text'] ?? '',
+      question2Answer: json['question2_answer'] ?? '',
+      question3Text: json['question3_text'] ?? '',
+      question3Answer: json['question3_answer'] ?? '',
+      refererUserFullName: json['referer_user_full_name'] ?? '',
+      bannedAt: json['banned_at'] != null
+          ? DateTime.tryParse(json['banned_at'])
+          : null,
+      refundAt: json['refund_at'] != null
+          ? DateTime.tryParse(json['refund_at'])
+          : null,
+    );
+  }
 
-  // Métodos de conversión de Map a TicketDetails
-  Map<String, dynamic> toMap() {
+  // Método toJson para convertir TicketDetails a JSON
+  Map<String, dynamic> toJson() {
     return {
       'uuid': uuid,
       'payment_at': paymentAt?.toIso8601String(),
       'created_at': createdAt?.toIso8601String(),
       'updated_at': updatedAt?.toIso8601String(),
-      'session_uuid': sessionUuid, // Asegurarse de usar 'session_uuid'
+      'session_uuid': sessionUuid,
       'event': event,
       'status': status,
       'ticket_code': ticketCode,
@@ -140,6 +234,7 @@ class TicketDetails {
     };
   }
 
+  // Método para crear una instancia de TicketDetails desde un Map (para DAO)
   factory TicketDetails.fromMap(Map<String, dynamic> map) {
     return TicketDetails(
       uuid: map['uuid'] ?? 'Desconocido',
@@ -192,5 +287,43 @@ class TicketDetails {
       refundAt:
           map['refund_at'] != null ? DateTime.tryParse(map['refund_at']) : null,
     );
+  }
+
+  // Conversión a Map para la base de datos
+  Map<String, dynamic> toMap() {
+    return {
+      'uuid': uuid,
+      'payment_at': paymentAt?.toIso8601String(),
+      'created_at': createdAt?.toIso8601String(),
+      'updated_at': updatedAt?.toIso8601String(),
+      'session_uuid': sessionUuid,
+      'event': event,
+      'status': status,
+      'ticket_code': ticketCode,
+      'ticket_name': ticketName,
+      'type': type,
+      'price_public': pricePublic,
+      'commission_public': commissionPublic,
+      'accessed_at': accessedAt?.toIso8601String(),
+      'checkin_at': checkinAt?.toIso8601String(),
+      'last_entry_at': lastEntryAt?.toIso8601String(),
+      'last_exit_at': lastExitAt?.toIso8601String(),
+      'name': name,
+      'dni': dni,
+      'birthdate': birthdate?.toIso8601String(),
+      'postal_code': postalCode,
+      'email': email,
+      'phone': phone,
+      'gender': gender,
+      'question1_text': question1Text,
+      'question1_answer': question1Answer,
+      'question2_text': question2Text,
+      'question2_answer': question2Answer,
+      'question3_text': question3Text,
+      'question3_answer': question3Answer,
+      'referer_user_full_name': refererUserFullName,
+      'banned_at': bannedAt?.toIso8601String(),
+      'refund_at': refundAt?.toIso8601String(),
+    };
   }
 }

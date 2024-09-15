@@ -2,45 +2,53 @@ class Commercial {
   final String uuid;
   final String name;
 
-  Commercial({
-    required this.uuid,
-    required this.name,
-  });
+  Commercial({required this.uuid, required this.name});
 
-  // Convierte un JSON en una instancia de Commercial
+  // Método para crear un objeto a partir de JSON (manual)
   factory Commercial.fromJson(Map<String, dynamic> json) {
-    if (json['name'] == null || json['name'].isEmpty) {
-      print(
-          "Advertencia: El campo 'name' está vacío o es null en el comercial con uuid ${json['uuid']}");
+    String name = json['name'] ??
+        'Desconocido'; // Asigna 'Desconocido' si el nombre es null o vacío
+    if (name.isEmpty) {
+      name =
+          'Desconocido'; // Si el campo está vacío, también asigna 'Desconocido'
     }
     return Commercial(
       uuid: json['uuid'] ?? '',
-      name: json['name'] ??
-          'Nombre desconocido', // Cambiar a un valor por defecto claro
+      name: name,
     );
   }
 
-  // Convierte la instancia de Commercial en un JSON
+  // Método para convertir un objeto a JSON
   Map<String, dynamic> toJson() {
     return {
       'uuid': uuid,
-      'name': name,
+      'name': name.isEmpty
+          ? 'Desconocido'
+          : name, // Asegurarse de que no esté vacío
     };
   }
 
-  // Convierte un Map de SQLite a una instancia de Commercial
+  // Método para crear un objeto a partir de un Map (manual)
   factory Commercial.fromMap(Map<String, dynamic> map) {
+    String name = map['name'] ??
+        'Desconocido'; // Asigna 'Desconocido' si el nombre es null o vacío
+    if (name.isEmpty) {
+      name =
+          'Desconocido'; // Si el campo está vacío, también asigna 'Desconocido'
+    }
     return Commercial(
       uuid: map['uuid'] ?? '',
-      name: map['name'] ?? '',
+      name: name,
     );
   }
 
-  // Convierte la instancia de Commercial en un Map para SQLite
+  // Método para convertir un objeto a un Map
   Map<String, dynamic> toMap() {
     return {
       'uuid': uuid,
-      'name': name,
+      'name': name.isEmpty
+          ? 'Desconocido'
+          : name, // Asegurarse de que no esté vacío
     };
   }
 }

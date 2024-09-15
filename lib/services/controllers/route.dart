@@ -20,11 +20,12 @@ class Routes extends StatelessWidget {
       case 0:
         return PageMultiEvents();
       case 1:
-        return PageEvents(selectedEvents: selectedEvents);
+        return PageEvents(
+            selectedEvents: selectedEvents); // Pasar los eventos seleccionados
       case 2:
         return PageSetting();
       default:
-        return Center(child: Text('Pantalla Desconocida'));
+        return const Center(child: Text('Pantalla Desconocida'));
     }
   }
 }

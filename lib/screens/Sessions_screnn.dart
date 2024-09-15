@@ -1,11 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:woutickpass/models/objects/session.dart';
 import 'package:woutickpass/models/objects/session_details.dart';
+import 'package:woutickpass/models/objects/ticket_details.dart';
 import 'package:woutickpass/screens/Tabs/main_nav.dart';
 import 'package:woutickpass/services/api/tickets_api.dart';
+import 'package:woutickpass/services/dao/comercial_dao.dart';
 import 'package:woutickpass/services/dao/sessions_dao.dart';
 import 'package:woutickpass/services/api/auth_session_api.dart';
 import 'package:woutickpass/services/api/session_api.dart';
+import 'package:woutickpass/services/dao/ticket_dao.dart';
+import 'package:woutickpass/services/database.dart';
 
 class SessionsScreen extends StatefulWidget {
   final String token;
@@ -83,14 +87,14 @@ class _SessionsScreenState extends State<SessionsScreen> {
         selectedSessions); // Guarda las sesiones seleccionadas
   }
 
-  // Descargar tickets y detalles para las sesiones seleccionadas
+// Descargar tickets y detalles para las sesiones seleccionadas
   Future<void> _downloadSelectedSessions() async {
-    final selectedSessions = checkedSessions.entries
+    final selectedSessionUUIDs = checkedSessions.entries
         .where((entry) => entry.value)
         .map((entry) => entry.key)
         .toList();
 
-    if (selectedSessions.isEmpty) {
+    if (selectedSessionUUIDs.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('No sessions selected for download.')),
       );
@@ -103,36 +107,69 @@ class _SessionsScreenState extends State<SessionsScreen> {
     );
 
     bool allDownloadsSuccessful = true;
-    List<SessionDetails> selectedSessionDetails =
-        []; // Lista para almacenar los detalles
+    List<SessionDetails> selectedSessionDetails = [];
+    List<Session> selectedSessions = [];
 
-    for (var uuid in selectedSessions) {
-      try {
-        // 1. Descargar los detalles de la sesión
-        final sessionDetails = await SessionAPI.getSessionByUuid(uuid);
-        await SessionsDAO()
-            .storeSessions([sessionDetails]); // Guardar los detalles localmente
+    try {
+      // Obtén todas las sesiones desde la API usando el token del usuario
+      List<Session> allSessions = await AuthSessionAPI.getSession(widget.token);
 
-        // 2. Descargar los tickets asociados a esa sesión
-        final tickets = await TicketsAPI.getTicketsBySessionUuid(uuid);
-        if (tickets.isEmpty) {
+      // Filtra las sesiones seleccionadas usando los UUIDs seleccionados
+      selectedSessions = allSessions
+          .where((session) => selectedSessionUUIDs.contains(session.uuid))
+          .toList();
+
+      // Descargar detalles adicionales y tickets para cada sesión seleccionada
+      for (var session in selectedSessions) {
+        try {
+          // Verifica si los detalles de la sesión ya están almacenados localmente
+          if (!await _isSessionDetailsStored(session.uuid)) {
+            final sessionDetails =
+                await SessionAPI.getSessionByUuid(session.uuid);
+
+            // Almacena los detalles de la sesión
+            await _storeSessionDetails(sessionDetails);
+
+            // Descargar y almacenar los tickets específicos de la sesión
+            final tickets =
+                await TicketsAPI.getTicketsBySessionUuid(session.uuid);
+            if (tickets.isEmpty) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                    content: Text(
+                        'No tickets available for session ${session.uuid}.')),
+              );
+            } else {
+              // Almacenar los tickets usando TicketDAO
+              for (var ticket in tickets) {
+                // Usar copyWith para asignar el sessionUuid correcto
+                ticket = ticket.copyWith(sessionUuid: session.uuid);
+
+                // Almacenar el ticket
+                await TicketDAO.instance.insert(ticket);
+              }
+
+              print(
+                  'Tickets downloaded and stored for session ${session.uuid}');
+            }
+
+            selectedSessionDetails.add(sessionDetails);
+          } else {
+            print(
+                'Session details for session ${session.uuid} are already stored locally.');
+          }
+        } catch (e) {
+          print('Error downloading session ${session.uuid}: $e');
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('No tickets available for session $uuid.')),
+            SnackBar(
+                content: Text('Error downloading session ${session.uuid}')),
           );
-        } else {
-          print('Tickets downloaded for session $uuid');
+          allDownloadsSuccessful = false;
         }
-
-        // 3. Añadir los detalles de la sesión descargada a la lista
-        selectedSessionDetails.add(sessionDetails);
-      } catch (e) {
-        print('Error downloading session $uuid: $e');
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error downloading session $uuid')),
-        );
-        allDownloadsSuccessful =
-            false; // Marcar como no exitoso si hay un error
       }
+    } catch (e) {
+      print('Error retrieving sessions: $e');
+      allDownloadsSuccessful = false;
     }
 
     // Redirigir a la página principal con las sesiones seleccionadas
@@ -142,8 +179,7 @@ class _SessionsScreenState extends State<SessionsScreen> {
         builder: (context) => MainPage(
           token: widget.token,
           currentIndex: 1,
-          selectedEvents:
-              selectedSessionDetails, // Pasar las sesiones seleccionadas
+          selectedEvents: selectedSessions,
         ),
       ),
     );
@@ -158,6 +194,34 @@ class _SessionsScreenState extends State<SessionsScreen> {
         ),
       ),
     );
+  }
+
+// Método que verifica si los detalles de la sesión ya están almacenados
+  Future<bool> _isSessionDetailsStored(String sessionId) async {
+    // Aquí llamas al DAO para verificar si los detalles de la sesión ya están almacenados
+    final storedSessionDetails = await SessionsDAO().getSessionById(sessionId);
+    return storedSessionDetails != null;
+  }
+
+  Future<void> _storeSessionDetails(SessionDetails sessionDetails) async {
+    final db = await DatabaseHelper().database;
+    try {
+      await db.transaction((txn) async {
+        // Almacena los detalles de la sesión dentro de la transacción
+        await SessionsDAO().storeSessions([sessionDetails], txn);
+
+        // Almacena los comerciales relacionados dentro de la misma transacción
+        for (var commercial in sessionDetails.commercials) {
+          await CommercialsDAO().storeCommercial(
+              commercial, txn); // Asegúrate de pasar la transacción
+        }
+      });
+
+      print(
+          'Session details and commercials stored for session ${sessionDetails.uuid}');
+    } catch (e) {
+      print('Error storing session details: $e');
+    }
   }
 
   @override

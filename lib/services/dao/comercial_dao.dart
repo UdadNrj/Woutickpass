@@ -2,57 +2,29 @@ import 'package:sqflite/sqflite.dart';
 import 'package:woutickpass/models/objects/comercials.dart';
 import 'package:woutickpass/services/database.dart';
 
-class CommercialDAO {
-  Future<void> addCommercial(Commercial commercial) async {
-    final db = await DatabaseHelper().database;
+class CommercialsDAO {
+  // Método para almacenar un comercial con transacción
+  Future<void> storeCommercial(Commercial commercial, Transaction? txn) async {
     try {
-      await db.transaction((txn) async {
+      if (txn != null) {
+        // Inserta el comercial en la tabla 'commercials' usando la transacción
         await txn.insert(
           'commercials',
-          commercial.toJson(),
+          commercial.toMap(),
           conflictAlgorithm: ConflictAlgorithm.replace,
         );
-      });
-      print("Commercial añadido: ${commercial.uuid}");
-    } catch (e) {
-      print("Error al añadir el commercial: $e");
-    }
-  }
-
-  Future<void> removeCommercial(String uuid) async {
-    final db = await DatabaseHelper().database;
-    try {
-      await db.transaction((txn) async {
-        await txn.delete(
+      } else {
+        // Si no se pasa transacción, usa el método regular de base de datos
+        final db = await DatabaseHelper().database;
+        await db.insert(
           'commercials',
-          where: 'uuid = ?',
-          whereArgs: [uuid],
+          commercial.toMap(),
+          conflictAlgorithm: ConflictAlgorithm.replace,
         );
-      });
-      print("Commercial eliminado con UUID: $uuid");
+      }
+      print("Comercial almacenado exitosamente: ${commercial.uuid}");
     } catch (e) {
-      print("Error al eliminar el commercial: $e");
-    }
-  }
-
-  Future<void> storeCommercials(
-      List<Commercial> commercials, String sessionUuid) async {
-    final db = await DatabaseHelper().database;
-    try {
-      await db.transaction((txn) async {
-        await txn.delete('commercials',
-            where: 'session_uuid = ?', whereArgs: [sessionUuid]);
-        for (var commercial in commercials) {
-          await txn.insert(
-            'commercials',
-            commercial.toJson(),
-            conflictAlgorithm: ConflictAlgorithm.replace,
-          );
-        }
-      });
-      print("Commercials guardados para la sesión $sessionUuid");
-    } catch (e) {
-      print("Error en storeCommercials para la sesión $sessionUuid: $e");
+      print("Error al almacenar el comercial: $e");
     }
   }
 
@@ -61,39 +33,62 @@ class CommercialDAO {
     try {
       final List<Map<String, dynamic>> maps = await db.query(
         'commercials',
-        where: 'session_uuid = ?',
+        where:
+            'session_uuid = ?', // Asegúrate de que esta columna existe en la tabla
         whereArgs: [sessionUuid],
       );
-      return maps.isNotEmpty
-          ? maps.map((json) => Commercial.fromJson(json)).toList()
-          : [];
+
+      if (maps.isEmpty) {
+        print("No se encontraron comerciales para la sesión $sessionUuid");
+      }
+
+      return maps.map((map) => Commercial.fromMap(map)).toList();
     } catch (e) {
-      print("Error al obtener commercials para la sesión $sessionUuid: $e");
+      print("Error al recuperar comerciales para la sesión $sessionUuid: $e");
       return [];
     }
   }
 
-  // Método para obtener estadísticas de comerciales
-  Future<Map<String, int>> getCommercialStatistics(String sessionUuid) async {
+  // Método para actualizar un comercial
+  Future<void> updateCommercial(Commercial commercial) async {
     final db = await DatabaseHelper().database;
-
-    final result = await db.query(
-      'commercials',
-      where: 'session_uuid = ?',
-      whereArgs: [sessionUuid],
-    );
-
-    Map<String, int> stats = {};
-    for (var commercial in result) {
-      // Casting explícito a String
-      String name = (commercial['name'] as String?) ?? 'Unknown';
-      if (stats.containsKey(name)) {
-        stats[name] = stats[name]! + 1;
-      } else {
-        stats[name] = 1;
-      }
+    try {
+      await db.update(
+        'commercials',
+        commercial.toMap(),
+        where: 'uuid = ?',
+        whereArgs: [commercial.uuid],
+      );
+      print("Comercial actualizado exitosamente: ${commercial.uuid}");
+    } catch (e) {
+      print("Error al actualizar el comercial: $e");
     }
+  }
 
-    return stats;
+  // Método para eliminar un comercial por su uuid
+  Future<void> deleteCommercial(String commercialUuid) async {
+    final db = await DatabaseHelper().database;
+    try {
+      await db.delete(
+        'commercials',
+        where: 'uuid = ?',
+        whereArgs: [commercialUuid],
+      );
+      print("Comercial eliminado exitosamente: $commercialUuid");
+    } catch (e) {
+      print("Error al eliminar el comercial: $e");
+    }
+  }
+
+  // Método para obtener todos los comerciales sin filtrar por sesión
+  Future<List<Commercial>> getAllCommercials() async {
+    final db = await DatabaseHelper().database;
+    try {
+      final List<Map<String, dynamic>> maps = await db.query('commercials');
+      return maps.map((map) => Commercial.fromMap(map)).toList();
+    } catch (e) {
+      print("Error al recuperar todos los comerciales: $e");
+      return [];
+    }
   }
 }

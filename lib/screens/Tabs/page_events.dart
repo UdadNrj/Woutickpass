@@ -98,16 +98,20 @@ class _PageEventsState extends State<PageEvents> {
           await TicketsAPI.getTicketsBySessionUuid(sessionId);
 
       if (ticketsJsonList.isNotEmpty) {
-        List<TicketDetails> tickets = ticketsJsonList
-            .map((json) => json is TicketDetails
-                ? json
-                : TicketDetails.fromJson(json as Map<String, dynamic>))
-            .toList();
+        // Mapear la lista de JSON a objetos TicketDetails
+        List<TicketDetails> tickets = ticketsJsonList.map((json) {
+          // Verifica que cada elemento sea un Map<String, dynamic>
+          if (json is Map<String, dynamic>) {
+            return TicketDetails.fromJson(json);
+          } else {
+            throw Exception("Formato de JSON inválido para TicketDetails");
+          }
+        }).toList();
 
+        // Almacenar cada ticket en la base de datos
         for (var ticket in tickets) {
           await TicketDAO.instance.insert(ticket);
         }
-
         cachedTickets[sessionId] = tickets;
 
         debugPrint('Tickets downloaded and stored for session $sessionId');

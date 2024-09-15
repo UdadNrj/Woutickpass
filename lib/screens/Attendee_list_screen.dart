@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:woutickpass/models/objects/ticket_details.dart';
-import 'package:woutickpass/screens/Search_AttendeesScreen.dart';
 import 'package:woutickpass/services/dao/ticket_dao.dart';
 
 class AttendeeListScreen extends StatefulWidget {
@@ -23,10 +22,10 @@ class _AttendeeListScreenState extends State<AttendeeListScreen> {
   @override
   void initState() {
     super.initState();
-    _loadTickets();
-    TicketDAO.instance.printAllTickets();
+    _loadTickets(); // Llamada a _loadTickets() cuando se inicializa el widget
   }
 
+  // Método para cargar los tickets de la base de datos
   void _loadTickets() {
     setState(() {
       print("Cargando tickets para sessionId: ${widget.sessionId}");
@@ -74,19 +73,12 @@ class _AttendeeListScreenState extends State<AttendeeListScreen> {
         actions: [
           IconButton(
             icon: Icon(Icons.refresh), // Botón de refresco
-            onPressed: _loadTickets,
+            onPressed: _loadTickets, // Recarga los tickets
           ),
           IconButton(
             icon: Icon(Icons.search), // Icono de búsqueda
             onPressed: () {
-              showSearch(
-                context: context,
-                delegate: TicketSearchDelegate(
-                  ticketsFuture:
-                      _ticketsFuture, // Pasamos el Future a la búsqueda
-                  filterTickets: _filterTickets, // Pasamos la función de filtro
-                ),
-              );
+              // Implementar búsqueda aquí
             },
           ),
         ],
@@ -97,13 +89,10 @@ class _AttendeeListScreenState extends State<AttendeeListScreen> {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return Center(child: CircularProgressIndicator());
           } else if (snapshot.hasError) {
-            print('Error al cargar los tickets: ${snapshot.error}');
             return Center(child: Text('Error al cargar tickets.'));
           } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-            print('No hay tickets disponibles en el snapshot');
             return Center(child: Text('No hay entradas disponibles.'));
           } else {
-            print('Tickets cargados en pantalla: ${snapshot.data!.length}');
             final tickets = snapshot.data!;
 
             return ListView.builder(

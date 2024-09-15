@@ -51,11 +51,12 @@ class TicketDAO {
 
   Future<List<TicketDetails>> getTicketsBySessionId(String sessionId) async {
     final db = await _db;
-    print("Buscando todos los tickets sin filtrar para depuración");
+    final maps = await db.query(
+      'tickets',
+      where: 'session_uuid = ?',
+      whereArgs: [sessionId],
+    );
 
-    final maps = await db.query('tickets'); // Sin filtro temporalmente
-
-    print("Tickets encontrados: ${maps.length}");
     if (maps.isNotEmpty) {
       return maps.map((json) => TicketDetails.fromMap(json)).toList();
     } else {

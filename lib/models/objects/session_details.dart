@@ -1,17 +1,14 @@
-import 'package:json_annotation/json_annotation.dart';
+import 'dart:convert'; // Necesario para jsonEncode y jsonDecode
 import 'package:woutickpass/models/objects/comercials.dart';
 import 'package:woutickpass/models/objects/tickets.dart';
 
-part 'session_details.g.dart'; // Archivo generado automáticamente por json_serializable
-
-@JsonSerializable(explicitToJson: true)
 class SessionDetails {
   final String uuid;
-  final bool isActive;
-  final bool isCanceled;
+  final String isActive; // Cadena de texto para estado activo
+  final String isCanceled; // Cadena de texto para estado cancelado
   final String title;
   final String subtitle;
-  final String? wpassCode; // Campo opcional wpassCode
+  final String? wpassCode; // Campo opcional
   final DateTime publicStartAt;
   final DateTime publicEndAt;
   final List<Commercial> commercials;
@@ -30,58 +27,96 @@ class SessionDetails {
     required this.tickets,
   });
 
-  // *** JSON SERIALIZATION AUTOMÁTICA ***
-  factory SessionDetails.fromJson(Map<String, dynamic> json) =>
-      _$SessionDetailsFromJson(json);
-
-  Map<String, dynamic> toJson() => _$SessionDetailsToJson(this);
-
-  // *** MAP SERIALIZATION MANUAL ***
-
-  /// Método para crear un objeto a partir de un Map (como los que se usan en bases de datos locales)
-  factory SessionDetails.fromMap(Map<String, dynamic> map) {
+  // Método para crear un objeto a partir de JSON (manual)
+  factory SessionDetails.fromJson(Map<String, dynamic> json) {
     return SessionDetails(
-      uuid: map['uuid'] ?? '',
-      isActive: (map['status'] != null &&
-          map['status'] == 3), // Convertimos status == 3 a isActive
-      isCanceled: (map['is_canceled'] != null && map['is_canceled'] == true)
-          ? true
-          : false, // Si es null, será false
-      title: map['title'] ?? 'Sin título', // Título predeterminado si es null
-      subtitle: map['subtitle'] ??
-          'Sin subtítulo', // Subtítulo predeterminado si es null
-      wpassCode: map['wpass_code'], // Opcional
-      publicStartAt: map['public_start_at'] != null
-          ? DateTime.parse(map['public_start_at'])
-          : DateTime.now(), // Fecha predeterminada si es null
-      publicEndAt: map['public_end_at'] != null
-          ? DateTime.parse(map['public_end_at'])
-          : DateTime.now().add(Duration(days: 365)), // Fecha predeterminada
-      commercials: (map['commercials'] as List<dynamic>?)
-              ?.map((item) => Commercial.fromMap(item as Map<String, dynamic>))
-              .toList() ??
-          [], // Lista vacía si es null
-      tickets: (map['tickets'] as List<dynamic>?)
-              ?.map((item) => Tickets.fromMap(item as Map<String, dynamic>))
-              .toList() ??
-          [], // Lista vacía si es null
+      uuid: json['uuid'] ?? '',
+      isActive: (json['status'] != null && json['status'] == 3)
+          ? 'active'
+          : 'inactive', // Conversión manual de status a isActive
+      isCanceled: json['is_canceled'] == true
+          ? 'true'
+          : 'false', // Conversión manual a cadena
+      title: json['title'] ?? 'Sin título', // Valor predeterminado si es null
+      subtitle: json['subtitle'] ??
+          'Sin subtítulo', // Valor predeterminado si es null
+      wpassCode: json['wpass_code'], // Este puede ser null
+      publicStartAt: DateTime.parse(json['public_start_at'] ??
+          DateTime.now()
+              .toIso8601String()), // Si es null, asigna la fecha actual
+      publicEndAt: DateTime.parse(json['public_end_at'] ??
+          DateTime.now()
+              .add(Duration(days: 365))
+              .toIso8601String()), // Si es null, fecha un año después
+      commercials: (json['commercials'] as List<dynamic>)
+          .map((e) => Commercial.fromJson(e as Map<String, dynamic>))
+          .toList(),
+      tickets: (json['tickets'] as List<dynamic>)
+          .map((e) => Tickets.fromJson(e as Map<String, dynamic>))
+          .toList(),
     );
   }
 
-  /// Método para convertir el objeto a un Map (usado para guardar en bases de datos locales)
-  Map<String, dynamic> toMap() {
+  // Método para convertir un objeto a JSON (manual)
+  Map<String, dynamic> toJson() {
     return {
       'uuid': uuid,
-      'status': isActive ? 3 : 0, // Convertimos isActive a status (3 es activo)
-      'is_canceled': isCanceled ? 1 : 0, // Convertimos isCanceled a 1 o 0
+      'status': isActive == 'active' ? 3 : 0, // Convertimos isActive a status
+      'is_canceled': isCanceled == 'true', // Convertimos isCanceled a boolean
       'title': title,
       'subtitle': subtitle,
       'wpass_code': wpassCode,
       'public_start_at': publicStartAt.toIso8601String(),
       'public_end_at': publicEndAt.toIso8601String(),
-      'commercials':
-          commercials.map((commercial) => commercial.toMap()).toList(),
-      'tickets': tickets.map((ticket) => ticket.toMap()).toList(),
+      'commercials': commercials.map((e) => e.toJson()).toList(),
+      'tickets': tickets.map((e) => e.toJson()).toList(),
+    };
+  }
+
+  // Método para crear un objeto a partir de un Map (manual)
+  factory SessionDetails.fromMap(Map<String, dynamic> map) {
+    return SessionDetails(
+      uuid: map['uuid'] ?? '',
+      isActive: (map['status'] != null && map['status'] == 3)
+          ? 'active'
+          : 'inactive', // Conversión manual de status a isActive
+      isCanceled: map['is_canceled'] == 1
+          ? 'true'
+          : 'false', // Convertimos 1 o 0 a cadena 'true' o 'false'
+      title: map['title'] ?? 'Sin título', // Valor predeterminado si es null
+      subtitle:
+          map['subtitle'] ?? 'Sin subtítulo', // Valor predeterminado si es null
+      wpassCode: map['wpass_code'], // Este puede ser null
+      publicStartAt: DateTime.parse(map['public_start_at'] ??
+          DateTime.now()
+              .toIso8601String()), // Si es null, asigna la fecha actual
+      publicEndAt: DateTime.parse(map['public_end_at'] ??
+          DateTime.now()
+              .add(Duration(days: 365))
+              .toIso8601String()), // Si es null, fecha un año después
+      commercials: (jsonDecode(map['commercials']) as List<dynamic>)
+          .map((e) => Commercial.fromMap(e as Map<String, dynamic>))
+          .toList(),
+      tickets: (jsonDecode(map['tickets']) as List<dynamic>)
+          .map((e) => Tickets.fromMap(e as Map<String, dynamic>))
+          .toList(),
+    );
+  }
+
+  // Método para convertir un objeto a un Map (manual)
+  Map<String, dynamic> toMap() {
+    return {
+      'uuid': uuid,
+      'status': isActive == 'active' ? 3 : 0, // Convertimos isActive a status
+      'is_canceled':
+          isCanceled == 'true' ? 1 : 0, // Convertimos isCanceled a 1 o 0
+      'title': title,
+      'subtitle': subtitle,
+      'wpass_code': wpassCode,
+      'public_start_at': publicStartAt.toIso8601String(),
+      'public_end_at': publicEndAt.toIso8601String(),
+      'commercials': jsonEncode(commercials.map((e) => e.toMap()).toList()),
+      'tickets': jsonEncode(tickets.map((e) => e.toMap()).toList()),
     };
   }
 }

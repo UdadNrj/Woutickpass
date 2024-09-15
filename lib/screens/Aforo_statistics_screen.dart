@@ -23,7 +23,7 @@ class _AforoStatisticsScreenState extends State<AforoStatisticsScreen> {
     super.initState();
     _ticketsFuture = TicketDAO.instance.getTicketsBySessionId(widget.sessionId);
     _commercialsFuture =
-        CommercialDAO().getCommercialsBySession(widget.sessionId);
+        CommercialsDAO().getCommercialsBySession(widget.sessionId);
 
     // Debugging
     _ticketsFuture.then((tickets) {
@@ -136,82 +136,14 @@ class _AforoStatisticsScreenState extends State<AforoStatisticsScreen> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
-                          'Título evento',
-                          style: TextStyle(
-                              fontSize: 24, fontWeight: FontWeight.bold),
-                        ),
-                        SizedBox(height: 8),
-                        Text('01/10/2024 12:00h - Ubicación'),
+                        // Sección de Aforo
+                        _buildSectionTitle('Estadísticas de Aforo'),
+                        _buildTicketStatistics(ticketStatistics, tickets),
                         SizedBox(height: 16),
-                        Container(
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(8),
-                            color: Colors.grey[200],
-                          ),
-                          padding: EdgeInsets.all(16),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text('Aforo',
-                                  style: TextStyle(
-                                      fontSize: 18,
-                                      fontWeight: FontWeight.bold)),
-                              SizedBox(height: 8),
-                              Text('Sin leer: ${ticketStatistics['sinLeer']}'),
-                              Text('Dentro: ${ticketStatistics['dentro']}'),
-                              Text('Fuera: ${ticketStatistics['fuera']}'),
-                            ],
-                          ),
-                        ),
-                        SizedBox(height: 16),
-                        Container(
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(8),
-                            color: Colors.grey[200],
-                          ),
-                          padding: EdgeInsets.all(16),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text('Tipos de entrada',
-                                  style: TextStyle(
-                                      fontSize: 18,
-                                      fontWeight: FontWeight.bold)),
-                              SizedBox(height: 8),
-                              ...ticketStatistics.entries
-                                  .where((entry) =>
-                                      entry.key != 'sinLeer' &&
-                                      entry.key != 'dentro' &&
-                                      entry.key != 'fuera')
-                                  .map((entry) {
-                                return Text(
-                                    '${entry.key}: ${entry.value}/${tickets.length}');
-                              }).toList(),
-                            ],
-                          ),
-                        ),
-                        SizedBox(height: 16),
-                        Container(
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(8),
-                            color: Colors.grey[200],
-                          ),
-                          padding: EdgeInsets.all(16),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text('Estadísticas de Comerciales',
-                                  style: TextStyle(
-                                      fontSize: 18,
-                                      fontWeight: FontWeight.bold)),
-                              SizedBox(height: 8),
-                              ...commercialStatistics.entries.map((entry) {
-                                return Text('${entry.key}: ${entry.value}');
-                              }).toList(),
-                            ],
-                          ),
-                        ),
+
+                        // Sección de Comerciales
+                        _buildSectionTitle('Estadísticas de Comerciales'),
+                        _buildCommercialStatistics(commercialStatistics),
                       ],
                     ),
                   ),
@@ -220,6 +152,79 @@ class _AforoStatisticsScreenState extends State<AforoStatisticsScreen> {
             },
           );
         },
+      ),
+    );
+  }
+
+  // Construir la sección de estadísticas de tickets
+  Widget _buildTicketStatistics(
+      Map<String, int> ticketStatistics, List<TicketDetails> tickets) {
+    return Card(
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(8),
+      ),
+      elevation: 4,
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text('Aforo',
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+            SizedBox(height: 8),
+            Text('Sin leer: ${ticketStatistics['sinLeer']}'),
+            Text('Dentro: ${ticketStatistics['dentro']}'),
+            Text('Fuera: ${ticketStatistics['fuera']}'),
+            Divider(),
+            Text('Tipos de entrada',
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+            SizedBox(height: 8),
+            ...ticketStatistics.entries
+                .where((entry) =>
+                    entry.key != 'sinLeer' &&
+                    entry.key != 'dentro' &&
+                    entry.key != 'fuera')
+                .map((entry) {
+              return Text('${entry.key}: ${entry.value}/${tickets.length}');
+            }).toList(),
+          ],
+        ),
+      ),
+    );
+  }
+
+  // Construir la sección de estadísticas de comerciales
+  Widget _buildCommercialStatistics(Map<String, int> commercialStatistics) {
+    return Card(
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(8),
+      ),
+      elevation: 4,
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text('Comerciales',
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+            SizedBox(height: 8),
+            ...commercialStatistics.entries.map((entry) {
+              return Text('${entry.key}: ${entry.value}');
+            }).toList(),
+          ],
+        ),
+      ),
+    );
+  }
+
+  // Método para construir el título de las secciones
+  Widget _buildSectionTitle(String title) {
+    return Text(
+      title,
+      style: TextStyle(
+        fontSize: 20,
+        fontWeight: FontWeight.bold,
+        color: Colors.black87,
       ),
     );
   }

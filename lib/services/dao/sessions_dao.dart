@@ -1,6 +1,7 @@
 import 'package:sqflite/sqflite.dart';
 import 'package:woutickpass/models/objects/session.dart';
 import 'package:woutickpass/models/objects/session_details.dart';
+import 'package:woutickpass/services/dao/comercial_dao.dart';
 import 'package:woutickpass/services/database.dart';
 
 class SessionsDAO {
@@ -140,26 +141,41 @@ class SessionsDAO {
     });
   }
 
-  Future<void> storeSessions(List<SessionDetails> sessionDetailsList) async {
-    await _runDatabaseOperation(() async {
-      final db = await DatabaseHelper().database;
-      try {
-        await db.transaction((txn) async {
-          await txn.delete('sessions');
+  Future<void> _storeSessionDetails(SessionDetails sessionDetails) async {
+    final db = await DatabaseHelper().database;
+    try {
+      await db.transaction((txn) async {
+        // Almacena los detalles de la sesión dentro de la transacción
+        await SessionsDAO().storeSessions([sessionDetails], txn);
 
-          for (var sessionDetails in sessionDetailsList) {
-            await txn.insert(
-              'sessions',
-              sessionDetails.toMap(), // Usamos toMap de SessionDetails
-              conflictAlgorithm: ConflictAlgorithm.replace,
-            );
-          }
-        });
-        print("Sesiones almacenadas exitosamente");
-      } catch (e) {
-        print("Error al almacenar las sesiones: $e");
+        // Almacena los comerciales relacionados dentro de la misma transacción
+        for (var commercial in sessionDetails.commercials) {
+          await CommercialsDAO().storeCommercial(commercial, txn);
+        }
+      });
+
+      print(
+          'Session details and commercials stored for session ${sessionDetails.uuid}');
+    } catch (e) {
+      print('Error storing session details: $e');
+    }
+  }
+
+  Future<void> storeSessions(
+      List<SessionDetails> sessionDetailsList, Transaction txn) async {
+    try {
+      for (var sessionDetails in sessionDetailsList) {
+        // Inserta los detalles de la sesión en la tabla 'sessions' usando la transacción
+        await txn.insert(
+          'sessions',
+          sessionDetails.toMap(),
+          conflictAlgorithm: ConflictAlgorithm.replace,
+        );
       }
-    });
+      print("Sesiones almacenadas exitosamente");
+    } catch (e) {
+      print("Error al almacenar las sesiones: $e");
+    }
   }
 
   Future<void> updateSelectedSessions(List<String> sessionUuids) async {

@@ -73,7 +73,6 @@ class SessionDetails {
     };
   }
 
-  // Método para crear un objeto a partir de un Map (manual)
   factory SessionDetails.fromMap(Map<String, dynamic> map) {
     return SessionDetails(
       uuid: map['uuid'] ?? '',
@@ -94,12 +93,24 @@ class SessionDetails {
           DateTime.now()
               .add(Duration(days: 365))
               .toIso8601String()), // Si es null, fecha un año después
-      commercials: (jsonDecode(map['commercials']) as List<dynamic>)
-          .map((e) => Commercial.fromMap(e as Map<String, dynamic>))
-          .toList(),
-      tickets: (jsonDecode(map['tickets']) as List<dynamic>)
-          .map((e) => Tickets.fromMap(e as Map<String, dynamic>))
-          .toList(),
+
+      // Deserializar comerciales si es una cadena JSON
+      commercials: map['commercials'] is String
+          ? (jsonDecode(map['commercials']) as List<dynamic>)
+              .map((e) => Commercial.fromMap(e as Map<String, dynamic>))
+              .toList()
+          : (map['commercials'] as List<dynamic>)
+              .map((e) => Commercial.fromMap(e as Map<String, dynamic>))
+              .toList(),
+
+      // Deserializar tickets si es una cadena JSON
+      tickets: map['tickets'] is String
+          ? (jsonDecode(map['tickets']) as List<dynamic>)
+              .map((e) => Tickets.fromMap(e as Map<String, dynamic>))
+              .toList()
+          : (map['tickets'] as List<dynamic>)
+              .map((e) => Tickets.fromMap(e as Map<String, dynamic>))
+              .toList(),
     );
   }
 
@@ -115,6 +126,7 @@ class SessionDetails {
       'wpass_code': wpassCode,
       'public_start_at': publicStartAt.toIso8601String(),
       'public_end_at': publicEndAt.toIso8601String(),
+      // Convertimos las listas a JSON si son Listas, si ya es un JSON, lo dejamos
       'commercials': jsonEncode(commercials.map((e) => e.toMap()).toList()),
       'tickets': jsonEncode(tickets.map((e) => e.toMap()).toList()),
     };

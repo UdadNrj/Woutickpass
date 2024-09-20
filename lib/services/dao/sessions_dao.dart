@@ -119,26 +119,25 @@ class SessionsDAO {
     });
   }
 
-  Future<Session?> getSessionById(String uuid) async {
-    return await _runDatabaseQuery(() async {
-      final db = await DatabaseHelper().database;
-      try {
-        final List<Map<String, dynamic>> maps = await db.query(
-          'sessions',
-          where: 'uuid = ?',
-          whereArgs: [uuid],
-        );
+  Future<SessionDetails?> getSessionById(String sessionId) async {
+    final db = await DatabaseHelper().database;
+    try {
+      final List<Map<String, dynamic>> maps = await db.query(
+        'sessions',
+        where: 'uuid = ?',
+        whereArgs: [sessionId],
+      );
 
-        if (maps.isNotEmpty) {
-          return Session.fromJson(maps.first);
-        } else {
-          return null;
-        }
-      } catch (e) {
-        print("Error al obtener la sesión $uuid: $e");
+      if (maps.isNotEmpty) {
+        return SessionDetails.fromJson(
+            maps.first); // Cambiar para retornar SessionDetails
+      } else {
         return null;
       }
-    });
+    } catch (e) {
+      print("Error al obtener la sesión $sessionId: $e");
+      return null;
+    }
   }
 
   Future<void> _storeSessionDetails(SessionDetails sessionDetails) async {

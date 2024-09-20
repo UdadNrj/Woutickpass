@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:woutickpass/models/objects/session_details.dart';
 import 'package:woutickpass/models/objects/ticket_details.dart';
 import 'package:woutickpass/models/objects/comercials.dart';
+import 'package:woutickpass/services/dao/sessions_dao.dart';
 import 'package:woutickpass/services/dao/ticket_dao.dart';
 import 'package:woutickpass/services/dao/comercial_dao.dart';
 
@@ -17,44 +19,49 @@ class AforoStatisticsScreen extends StatefulWidget {
 class _AforoStatisticsScreenState extends State<AforoStatisticsScreen> {
   late Future<List<TicketDetails>> _ticketsFuture;
   late Future<List<Commercial>> _commercialsFuture;
+  late Future<SessionDetails?> _sessionDetailsFuture;
 
   @override
   void initState() {
     super.initState();
-    _ticketsFuture = TicketDAO.instance.getTicketsBySessionId(widget.sessionId);
-    _commercialsFuture =
-        CommercialsDAO().getCommercialsBySession(widget.sessionId);
+    _loadTicketsAndCommercials();
+    _loadSessionDetails();
+  }
 
-    // Debugging
-    _ticketsFuture.then((tickets) {
-      print("Tickets obtenidos: ${tickets.length}");
-    }).catchError((error) {
-      print("Error al obtener tickets: $error");
-    });
-
-    _commercialsFuture.then((commercials) {
-      print("Comerciales obtenidos: ${commercials.length}");
-    }).catchError((error) {
-      print("Error al obtener comerciales: $error");
+  // Método para cargar los detalles de la sesión usando el SessionsDAO
+  void _loadSessionDetails() {
+    setState(() {
+      _sessionDetailsFuture = SessionsDAO().getSessionById(widget.sessionId);
     });
   }
 
+  // Método para cargar los tickets y comerciales
+  void _loadTicketsAndCommercials() {
+    setState(() {
+      _ticketsFuture =
+          TicketDAO.instance.getTicketsBySessionId(widget.sessionId);
+      _commercialsFuture =
+          CommercialsDAO().getCommercialsBySession(widget.sessionId);
+    });
+  }
+
+  // Calcular estadísticas de tickets
   Map<String, int> _calculateTicketStatistics(List<TicketDetails> tickets) {
-    int sinLeer = 0;
+    int sinLeer = tickets
+        .length; // Todos los tickets descargados inicialmente están "sin leer"
     int dentro = 0;
     int fuera = 0;
     Map<String, int> tiposDeEntrada = {};
 
     for (var ticket in tickets) {
       switch (ticket.status) {
-        case 'sin_leer':
-          sinLeer++;
-          break;
         case 'dentro':
           dentro++;
+          sinLeer--; // Si están "dentro", restamos de "sin leer"
           break;
         case 'fuera':
           fuera++;
+          sinLeer--; // Si están "fuera", restamos de "sin leer"
           break;
       }
 
@@ -72,6 +79,7 @@ class _AforoStatisticsScreenState extends State<AforoStatisticsScreen> {
     };
   }
 
+  // Calcular estadísticas de comerciales
   Map<String, int> _calculateCommercialStatistics(
       List<Commercial> commercials) {
     Map<String, int> commercialStats = {};
@@ -95,67 +103,174 @@ class _AforoStatisticsScreenState extends State<AforoStatisticsScreen> {
         title: Text('Aforo y Comerciales'),
         backgroundColor: Colors.white,
         iconTheme: IconThemeData(color: Colors.black),
+        actions: [
+          IconButton(
+            icon: Icon(Icons.refresh),
+            onPressed: () {
+              _loadTicketsAndCommercials();
+              _loadSessionDetails();
+            }, // Botón de refresco manual
+          ),
+        ],
       ),
-      body: FutureBuilder<List<TicketDetails>>(
-        future: _ticketsFuture,
-        builder: (context, ticketSnapshot) {
-          // Maneja diferentes estados del Future de tickets
-          if (ticketSnapshot.connectionState == ConnectionState.waiting) {
-            return Center(child: CircularProgressIndicator());
-          } else if (ticketSnapshot.hasError) {
-            return Center(
-                child:
-                    Text('Error al cargar entradas: ${ticketSnapshot.error}'));
-          } else if (!ticketSnapshot.hasData || ticketSnapshot.data!.isEmpty) {
-            return Center(child: Text('No hay entradas disponibles.'));
-          }
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Tarjeta para mostrar los detalles de la sesión
+              FutureBuilder<SessionDetails?>(
+                future: _sessionDetailsFuture,
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return Center(child: CircularProgressIndicator());
+                  } else if (snapshot.hasError) {
+                    return Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                              'Error al cargar los detalles de la sesión: ${snapshot.error}'),
+                          ElevatedButton(
+                            onPressed: _loadSessionDetails, // Intentar recargar
+                            child: Text('Reintentar'),
+                          ),
+                        ],
+                      ),
+                    );
+                  } else if (!snapshot.hasData || snapshot.data == null) {
+                    return Center(
+                        child:
+                            Text('No hay detalles de la sesión disponibles.'));
+                  }
 
-          // Cuando ya tenemos datos de tickets
-          final tickets = ticketSnapshot.data!;
+                  final sessionDetails = snapshot.data!;
+                  return _buildSessionDetailsCard(sessionDetails);
+                },
+              ),
+              SizedBox(height: 16),
 
-          return FutureBuilder<List<Commercial>>(
-            future: _commercialsFuture,
-            builder: (context, commercialSnapshot) {
-              // Maneja diferentes estados del Future de comerciales
-              if (commercialSnapshot.connectionState ==
-                  ConnectionState.waiting) {
-                return Center(child: CircularProgressIndicator());
-              } else if (commercialSnapshot.hasError) {
-                return Center(
-                    child: Text(
-                        'Error al cargar comerciales: ${commercialSnapshot.error}'));
-              } else if (!commercialSnapshot.hasData ||
-                  commercialSnapshot.data!.isEmpty) {
-                return Center(child: Text('No hay comerciales disponibles.'));
-              }
+              // Tarjeta para mostrar las estadísticas de tickets
+              FutureBuilder<List<TicketDetails>>(
+                future: _ticketsFuture,
+                builder: (context, ticketSnapshot) {
+                  if (ticketSnapshot.connectionState ==
+                      ConnectionState.waiting) {
+                    return Center(child: CircularProgressIndicator());
+                  } else if (ticketSnapshot.hasError) {
+                    return Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                              'Error al cargar entradas: ${ticketSnapshot.error}'),
+                          ElevatedButton(
+                            onPressed:
+                                _loadTicketsAndCommercials, // Intentar recargar los datos
+                            child: Text('Reintentar'),
+                          ),
+                        ],
+                      ),
+                    );
+                  } else if (!ticketSnapshot.hasData ||
+                      ticketSnapshot.data!.isEmpty) {
+                    return Center(child: Text('No hay entradas disponibles.'));
+                  }
 
-              // Cuando ya tenemos tanto tickets como comerciales
-              final commercials = commercialSnapshot.data!;
-              print(
-                  "Mostrando ${tickets.length} tickets y ${commercials.length} comerciales");
+                  // Datos de tickets disponibles
+                  final tickets = ticketSnapshot.data!;
+                  final ticketStatistics = _calculateTicketStatistics(tickets);
 
-              final ticketStatistics = _calculateTicketStatistics(tickets);
-              final commercialStatistics =
-                  _calculateCommercialStatistics(commercials);
+                  return _buildTicketStatistics(ticketStatistics, tickets);
+                },
+              ),
+              SizedBox(height: 16),
 
-              return Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: SingleChildScrollView(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      _buildSectionTitle('Estadísticas de Aforo'),
-                      _buildTicketStatistics(ticketStatistics, tickets),
-                      SizedBox(height: 16),
-                      _buildSectionTitle('Estadísticas de Comerciales'),
-                      _buildCommercialStatistics(commercialStatistics),
-                    ],
-                  ),
-                ),
-              );
-            },
-          );
-        },
+              // Mostrar sección de comerciales independientemente de los tickets
+              FutureBuilder<List<Commercial>>(
+                future: _commercialsFuture,
+                builder: (context, commercialSnapshot) {
+                  if (commercialSnapshot.connectionState ==
+                      ConnectionState.waiting) {
+                    return Center(child: CircularProgressIndicator());
+                  } else if (commercialSnapshot.hasError) {
+                    return Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                              'Error al cargar comerciales: ${commercialSnapshot.error}'),
+                          ElevatedButton(
+                            onPressed:
+                                _loadTicketsAndCommercials, // Intentar recargar comerciales
+                            child: Text('Reintentar'),
+                          ),
+                        ],
+                      ),
+                    );
+                  } else if (!commercialSnapshot.hasData ||
+                      commercialSnapshot.data!.isEmpty) {
+                    return Center(
+                        child: Text('No hay comerciales disponibles.'));
+                  }
+
+                  final commercials = commercialSnapshot.data!;
+                  final commercialStatistics =
+                      _calculateCommercialStatistics(commercials);
+                  return _buildCommercialStatistics(commercialStatistics);
+                },
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+// Método para construir la tarjeta con los detalles completos de la sesión
+  Widget _buildSessionDetailsCard(SessionDetails sessionDetails) {
+    return Card(
+      color: Colors.white,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(8),
+      ),
+      elevation: 4,
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+          Text(
+            'Detalles completos del evento',
+            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+          ),
+          SizedBox(height: 8),
+
+          // Título del evento
+          Text(
+            'Título del evento: ${sessionDetails.title}',
+            style: TextStyle(fontSize: 16),
+          ),
+
+          // Subtítulo del evento
+          if (sessionDetails
+              .subtitle.isNotEmpty) // Mostrar solo si hay subtítulo
+            Text(
+              'Subtítulo: ${sessionDetails.subtitle}',
+              style: TextStyle(fontSize: 16),
+            ),
+
+          // Código opcional de wpass
+          if (sessionDetails.wpassCode !=
+              null) // Mostrar solo si existe wpassCode
+            Text(
+              'Código WPass: ${sessionDetails.wpassCode}',
+              style: TextStyle(fontSize: 16),
+            ),
+
+          SizedBox(height: 16),
+
+          // Lista de tickets asociados sin mostrar el estado
+        ]),
       ),
     );
   }
@@ -164,6 +279,7 @@ class _AforoStatisticsScreenState extends State<AforoStatisticsScreen> {
   Widget _buildTicketStatistics(
       Map<String, int> ticketStatistics, List<TicketDetails> tickets) {
     return Card(
+      color: Colors.white,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(8),
       ),
@@ -200,8 +316,10 @@ class _AforoStatisticsScreenState extends State<AforoStatisticsScreen> {
     );
   }
 
+  // Construir la sección de estadísticas de comerciales
   Widget _buildCommercialStatistics(Map<String, int> commercialStatistics) {
     return Card(
+      color: Colors.white,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(8),
       ),
@@ -222,18 +340,6 @@ class _AforoStatisticsScreenState extends State<AforoStatisticsScreen> {
               Text('No hay comerciales disponibles'),
           ],
         ),
-      ),
-    );
-  }
-
-  // Método para construir el título de las secciones
-  Widget _buildSectionTitle(String title) {
-    return Text(
-      title,
-      style: TextStyle(
-        fontSize: 20,
-        fontWeight: FontWeight.bold,
-        color: Colors.black87,
       ),
     );
   }

@@ -6,6 +6,8 @@ import 'package:http/http.dart' as http;
 import 'package:woutickpass/models/objects/ticket_details.dart';
 
 class TicketsAPI {
+  static const String apiKey = 'GkL%2F+8}7E.3dKaC]PmxQz]am~#E#av_4,utP2Wg*hBq';
+
   static Future<List<TicketDetails>> getTicketsByUuid(String? uuid) async {
     return await _getTickets(
         'https://api-dev.woutick.com/wpass/v1/tickets/$uuid', uuid);
@@ -25,6 +27,7 @@ class TicketsAPI {
 
     final headers = {
       'Content-Type': 'application/json',
+      'Api-Key': apiKey,
     };
 
     debugPrint('Sending GET request to URL: $url');
